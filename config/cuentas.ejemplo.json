@@ -1,0 +1,12 @@
+[
+  {
+    "nombre": "cuenta1",
+    "firma": "Tu firma de fondeo",
+    "tamano": 50000,
+    "perdidaDiariaMax": 1000,
+    "drawdownMax": 2000,
+    "tipoDrawdown": "trailing",
+    "trailingSeFrenaEnInicial": true,
+    "objetivo": 3000
+  }
+]
