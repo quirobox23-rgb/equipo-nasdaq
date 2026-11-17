@@ -57,6 +57,15 @@ export const config = {
     password: process.env.FACTOR_METRICAS_PASSWORD,
   },
 
+  /** Calendario de resultados empresariales (Finnhub, clave gratuita en finnhub.io). */
+  finnhubKey: process.env.FINNHUB_KEY,
+
+  /** Hábitos que el coach te pregunta cada mañana (meditar, boxeo...). */
+  coachArchivo: process.env.COACH_ARCHIVO ?? './config/coach.json',
+
+  /** Con SOLO_TEXTO=1 los mensajes no llevan precios exactos, solo contexto (modo de venta sin licencia de CME). */
+  soloTexto: process.env.SOLO_TEXTO === '1',
+
   dataDir: process.env.DATA_DIR ?? './data',
   cuentasArchivo: process.env.CUENTAS_ARCHIVO ?? './config/cuentas.json',
   puerto: num(process.env.PORT, 3000),

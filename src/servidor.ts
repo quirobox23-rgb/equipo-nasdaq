@@ -4,10 +4,13 @@ import http from 'node:http'
 import crypto from 'node:crypto'
 import { config } from './config.ts'
 import { leer, guardar } from './almacen.ts'
-import { interpretarRespuesta, evaluarBienestar, type CheckIn } from './personal/coach.ts'
+import { interpretarRespuesta, cargarAjustesCoach, respuestaCheckin, type CheckIn, type EventoDelDia } from './personal/coach.ts'
+import { cargarCalendario } from './sources/calendario.ts'
+import { eventosDelDia, ventanasDeRiesgo } from './equipo/macro.ts'
+import { cargarMiembros, type MiembroFed } from './equipo/fed.ts'
 import { interpretarComandoPnl, type EstadoCuenta } from './personal/gestor.ts'
 import { mensajero } from './mensajeria/index.ts'
-import { claveDia } from './tiempo.ts'
+import { claveDia, hora } from './tiempo.ts'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -31,13 +34,33 @@ export async function procesarMensaje(texto: string, ahora = new Date()): Promis
   }
 
   const dia = claveDia(ahora, config.tzUsuaria)
+  const { habitos } = await cargarAjustesCoach()
   const todos = await leer<Record<string, CheckIn>>('checkins', {})
-  const c = { ...todos[dia], ...interpretarRespuesta(texto, dia) }
+  const nuevo = interpretarRespuesta(texto, dia, habitos)
+  const c: CheckIn = { ...todos[dia], ...nuevo, habitos: { ...todos[dia]?.habitos, ...nuevo.habitos } }
   todos[dia] = c
   await guardar('checkins', todos)
-  const h = evaluarBienestar(c)[0]
-  const faltan = [c.horasSueno === undefined && 'horas de sueño', c.entrenado === undefined && 'si has entrenado', c.animo === undefined && 'cómo te sientes'].filter(Boolean)
-  return `Gracias. ${h.titulo}${faltan.length ? `\nSi quieres, dime también: ${faltan.join(', ')}.` : ''}`
+  return respuestaCheckin(c, habitos, c.sesgo ? await eventosFuertesDeHoy(ahora) : [])
+}
+
+/** Datos y discursos fuertes que quedan hoy, para el comentario del coach sobre tu sesgo. */
+async function eventosFuertesDeHoy(ahora: Date): Promise<EventoDelDia[]> {
+  try {
+    const cal = await cargarCalendario()
+    const miembros = await cargarMiembros()
+    return ventanasDeRiesgo(eventosDelDia(cal, ahora))
+      .filter(v => v.fin > ahora)
+      .map(v => ({ titulo: traducir(v.evento.titulo, miembros), hora: hora(v.evento.fecha, config.tzUsuaria) }))
+  } catch {
+    return []
+  }
+}
+
+/** "Fed Chair Warsh Speaks" → "habla Kevin Warsh"; el resto, tal cual. */
+function traducir(titulo: string, miembros: MiembroFed[]): string {
+  const m = miembros.find(x => new RegExp(`\\b${x.apellido}\\b`, 'i').test(titulo))
+  if (m && /Speaks|Testifies/i.test(titulo)) return `habla ${m.nombre} ${m.apellido}`
+  return titulo
 }
 
 function firmaValida(cuerpo: string, firma: string | undefined): boolean {

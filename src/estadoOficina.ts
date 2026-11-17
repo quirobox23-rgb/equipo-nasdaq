@@ -19,8 +19,10 @@ export function resumirEstado(h: Hallazgo[], equipos: string[], ahora: Date, men
   const agentes: EstadoOficina['agentes'] = {}
   const orden = { alerta: 0, atencion: 1, info: 2 } as const
   for (const x of [...h].sort((a, b) => orden[a.nivel] - orden[b.nivel])) {
-    if (agentes[x.agente]) continue
-    agentes[x.agente] = {
+    // El gráfico ya no tiene mesa: sus avisos de rango los lleva Volatilidad y rango.
+    const id = x.agente === 'grafico' ? 'volatilidad' : x.agente
+    if (agentes[id]) continue
+    agentes[id] = {
       estado: x.nivel === 'alerta' ? 'alerta' : x.nivel === 'atencion' ? 'trabajando' : 'descanso',
       mensaje: x.titulo,
       hora: ahora.toISOString(),

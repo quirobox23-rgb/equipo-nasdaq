@@ -8,6 +8,8 @@ import type { Hallazgo } from '../tipos.ts'
 export interface ReglasCuenta {
   nombre: string
   firma?: string
+  /** challenge: pasando la evaluación. fondeada: ya aprobada. */
+  fase?: 'challenge' | 'fondeada' | 'personal'
   tamano: number
   /** Pérdida máxima en un día, en dólares. */
   perdidaDiariaMax?: number
@@ -72,11 +74,24 @@ export function revisarCuenta(r: ReglasCuenta, e: EstadoCuenta): Revision {
 
 const usd = (n: number) => `${Math.round(n).toLocaleString('es-ES')} $`
 
+/** "Tienes 5 cuentas activas: 3 fondeadas y 2 en challenge." */
+export function resumenCuentas(reglas: ReglasCuenta[]): string {
+  const n = reglas.length
+  const cuantas = (f: ReglasCuenta['fase']) => reglas.filter(r => r.fase === f).length
+  const partes = [
+    cuantas('fondeada') && `${cuantas('fondeada')} ${cuantas('fondeada') === 1 ? 'fondeada' : 'fondeadas'}`,
+    cuantas('challenge') && `${cuantas('challenge')} en challenge`,
+    cuantas('personal') && `${cuantas('personal')} con capital propio`,
+  ].filter(Boolean) as string[]
+  const detalle = partes.length > 1 ? `${partes.slice(0, -1).join(', ')} y ${partes[partes.length - 1]}` : partes[0]
+  return `Tienes ${n} ${n === 1 ? 'cuenta activa' : 'cuentas activas'}${detalle ? `: ${detalle}` : ''}.`
+}
+
 export function evaluarCuentas(reglas: ReglasCuenta[], estados: EstadoCuenta[]): Hallazgo[] {
   if (reglas.length === 0) {
     return [{ agente: 'cuentas', nivel: 'info', titulo: 'Aún no tengo las reglas de tus cuentas (config/cuentas.json).' }]
   }
-  const out: Hallazgo[] = []
+  const out: Hallazgo[] = [{ agente: 'cuentas', nivel: 'info', titulo: resumenCuentas(reglas) }]
   for (const r of reglas) {
     const e = estados.find(x => x.nombre === r.nombre)
     if (!e) { out.push({ agente: 'cuentas', nivel: 'info', titulo: `${r.nombre}: sin datos de hoy.` }); continue }
