@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { TrendingUp, Eye, EyeOff, Check, AlertCircle, MailCheck } from 'lucide-react'
+import { Eye, EyeOff, Check, AlertCircle, MailCheck } from 'lucide-react'
 import { useAuthStore, useAuthStatus } from '@/store/useAuthStore'
 import { isSupabaseConfigured } from '@/lib/supabaseClient'
 import { IconCircle } from '@/components/ui'
+import LogoEntropia from '@/components/layout/LogoEntropia'
 import styles from './LoginScreen.module.css'
 
 // ─────────────────────────────────────────────
@@ -93,24 +94,8 @@ function LoginScreenLegacy() {
       background: 'var(--bg)', padding: 20,
     }}>
       <div style={{ width: '100%', maxWidth: 380 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, marginBottom: 28 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 12, background: 'var(--accent-gradient)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-            boxShadow: '0 4px 16px -2px rgba(59,130,246,0.5)',
-          }}>
-            <TrendingUp size={24} color="#fff" strokeWidth={2.4} />
-          </div>
-          <div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 21, letterSpacing: 0.2 }}>
-              <span style={{ color: 'var(--text)', fontWeight: 500 }}>FACTOR</span>{' '}
-              <span style={{
-                background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-                fontWeight: 900,
-              }}>MÉTRICAS</span>
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text3)', marginTop: 1, textAlign: 'right', textTransform: 'uppercase', letterSpacing: 0.6 }}>Equipo Nasdaq</div>
-          </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+          <LogoEntropia alto={30} />
         </div>
 
       <form onSubmit={handleSubmit} className="card" style={{ width: '100%', padding: 28 }}>
@@ -265,15 +250,7 @@ function LoginScreen({ initialMode = 'login' }) {
 
   const brand = (extraClass = '') => (
     <div className={`${styles.brand} ${extraClass}`}>
-      <div className={styles.brandIcon}>
-        <TrendingUp size={32} color="#fff" strokeWidth={2.4} />
-      </div>
-      <div>
-        <div className={styles.brandWord}>
-          <span className={styles.brandFactor}>FACTOR</span> <span className={styles.brandMetricas}>MÉTRICAS</span>
-        </div>
-        <div className={styles.brandSub}>Equipo Nasdaq</div>
-      </div>
+      <LogoEntropia alto={34} />
     </div>
   )
 

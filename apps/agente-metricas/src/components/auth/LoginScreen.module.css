@@ -48,7 +48,7 @@
 .benefitText { font-size: 14px; color: var(--text2); line-height: 1.5; }
 
 /* ── Marca (mismo lockup que el topbar, a mayor escala — mismo tamaño
-   que el Logo "lg" de la pantalla de acceso de Agente Macro) ── */
+   que el Logo "lg" de la pantalla de acceso de Entropia Markets) ── */
 .brand { display: flex; align-items: center; gap: 10px; }
 .brandIcon {
   width: 64px; height: 64px; border-radius: 16px; flex-shrink: 0;
@@ -74,11 +74,11 @@
 }
 .formWrap { width: 100%; max-width: 400px; }
 
-/* Bajada del título: --text2 como en Agente Macro (el .page-sub general
+/* Bajada del título: --text2 como en Entropia Markets (el .page-sub general
    usa --text3). Anidada para ganarle a .page-sub de index.css. */
 .form .sub, .sent .sub { margin: 6px 0 22px; color: var(--text2); }
 
-/* Inputs iguales a la pantalla de acceso de Agente Macro: altura (12px de
+/* Inputs iguales a la pantalla de acceso de Entropia Markets: altura (12px de
    padding + line-height 1.5), fondo --bg-panel2 (más oscuro que el --bg3
    general), placeholder --text2 y foco con anillo fino de 1px. */
 .form :global(.form-group) input {

@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
-import { TrendingUp, ChevronDown } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { Home as HomeIcon, Wallet, History, Map, Brain, Tag } from 'lucide-react'
 import styles from './AppShell.module.css'
+import LogoEntropia from './LogoEntropia'
 import { useTheme, useToggleTheme, useStore } from '@/store/useStore'
 import { NAVIGATION } from '@/config/navigation'
 import TierBadge from '@/components/premium/TierBadge'
@@ -25,7 +26,7 @@ const BOTTOM_NAV_ITEMS = [
 // Navigation structure is now centralized in src/config/navigation.js
 // This uses NAVIGATION constant which is imported above
 
-// Íconos sol/luna — mismo trazo que el ThemeToggle de Agente Macro
+// Íconos sol/luna — mismo trazo que el ThemeToggle de Entropia Markets
 // (santos-trader-factor-macro/src/components/ThemeToggle.tsx), no son
 // de lucide-react a propósito, para que el toggle se vea igual en las
 // dos apps hermanas.
@@ -131,15 +132,7 @@ export default function AppShell({ children }) {
       {/* Topbar — logo (misma franja del sidebar, fondo distinto) + cuenta */}
       <header className={styles.topbar}>
         <button className={styles.brand} onClick={() => navigate('/')} aria-label="Ir a Home">
-          <div className={styles.brandIcon}>
-            <TrendingUp size={18} color="#fff" strokeWidth={2.4} />
-          </div>
-          <div className={styles.brandText}>
-            <div className={styles.brandWord}>
-              <span className={styles.brandFactor}>AGENTE</span> <span className={styles.brandMetricas}>MÉTRICAS</span>
-            </div>
-            <div className={styles.brandSub}>Equipo Nasdaq</div>
-          </div>
+          <LogoEntropia alto={22} />
         </button>
 
         <div className={styles.topbarRight}>

@@ -21,6 +21,7 @@ import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
 import type { Hallazgo } from './tipos.ts'
 import { registrarEstado } from './estadoOficina.ts'
+import { describirReadiness, marketReadiness, traderReadiness, type Nota } from './readiness.ts'
 import { claveDia, diaAnterior, hora, minutosDelDia } from './tiempo.ts'
 
 async function intentar<T>(nombre: string, f: () => Promise<T>): Promise<T | null> {
@@ -112,6 +113,16 @@ async function macroYFed(cal: EventoMacro[] | null, ahora: Date): Promise<Hallaz
   return [...agendaDelDia(cal.filter(e => !esFed(e, miembros)), ahora), ...agendaFed(cal, ahora, miembros)]
 }
 
+/**
+ * Para la respuesta al check-in: la nota de mercado de la guía de hoy (si la
+ * hubo) y tu nota con el check-in y tus cuentas.
+ */
+export async function readinessTrasCheckin(c: CheckIn, ahora = new Date()): Promise<string[]> {
+  const r = await leer<{ dia: string; mercado: Nota } | null>('readiness', null)
+  if (!r || r.dia !== claveDia(ahora, config.tzUsuaria)) return []
+  return describirReadiness(r.mercado, traderReadiness(c, await cuentas(ahora)))
+}
+
 /** Resultados de las grandes del Nasdaq de hoy y de ayer tras el cierre. */
 async function resultados(ahora: Date): Promise<Hallazgo[]> {
   if (!config.finnhubKey) return []
@@ -147,13 +158,16 @@ export async function guiaDiaria(ahora = new Date()): Promise<string> {
     ...(await cuentas()),
   ]
   const { habitos } = await cargarAjustesCoach()
+  const mercado = marketReadiness(h)
+  await guardar('readiness', { dia: claveDia(ahora, config.tzUsuaria), mercado })
   const contexto = [
     `📅 Hoy es ${fechaLarga(ahora)}.`,
+    ...describirReadiness(mercado, null),
     ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto)),
     `💬 ${preguntaCheckin(habitos)}`,
   ]
   const paraIA = [
-    'Empieza diciendo qué día es hoy (📅) y luego cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
+    'Empieza diciendo qué día es hoy (📅); justo después pon el bloque de Daily Trading Readiness (🧭) tal cual, y luego cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
     'Si hay datos o discursos importantes, explica en una frase por qué pueden mover el NQ, sin adivinar la dirección.',
     'Termina con la pregunta del coach (💬) tal cual.',
     ...(config.soloTexto ? [SIN_PRECIOS] : []),
@@ -175,11 +189,15 @@ export async function preApertura(ahora = new Date()): Promise<string> {
     ...etiquetar(inf),
     ...noticias.slice(0, 4),
     ...evaluarBienestar(await checkinDeHoy(ahora)),
-    ...(await cuentas()),
   ]
+  const cu = await cuentas()
+  h.push(...cu)
   await registrarClaves(h)
   await registrarEstado(h, inf.map(i => i.eq.nombre), ahora, true)
-  return enviar(await redactar('apertura', h, config.soloTexto ? [] : inf.flatMap(i => i.contexto), config.soloTexto ? [SIN_PRECIOS] : [], nombreEquipos(inf)))
+  const readiness = describirReadiness(marketReadiness(h), traderReadiness(await checkinDeHoy(ahora), cu))
+  const contexto = [...readiness, ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto))]
+  const paraIA = ['Pon el bloque de Daily Trading Readiness (🧭) tal cual al principio.', ...(config.soloTexto ? [SIN_PRECIOS] : [])]
+  return enviar(await redactar('apertura', h, contexto, paraIA, nombreEquipos(inf)))
 }
 
 /**

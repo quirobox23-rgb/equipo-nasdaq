@@ -6,7 +6,7 @@ import { useAuthUser } from '@/lib/studentSession'
 
 // Puerta de entrada — solo el login, pantalla completa, sin Navigation ni
 // Sidebar (a diferencia de /home, ver (app)/layout.tsx). La landing pública
-// de Agente Macro pasa a santostrader.com/factor-macro; la Landing de antes
+// de Entropia Markets pasa a santostrader.com/factor-macro; la Landing de antes
 // (components/Landing + AccessGateCta + DataSphere) queda en el repo sin uso.
 //
 // Mientras Firebase comprueba la sesión (user === undefined) se muestra solo

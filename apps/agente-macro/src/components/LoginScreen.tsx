@@ -9,11 +9,11 @@ import { Logo } from '@/components/Logo'
 
 // Pantalla de acceso — la entrada de la app (src/app/page.tsx). Diseño del
 // wireframe AccesoMacro (santos-trader-web/md/wireframes) y de la pantalla
-// de acceso de Agente Métricas (LoginScreen en AuthGate.jsx, 2026-10-07):
+// de acceso de Entropia Analytics (LoginScreen en AuthGate.jsx, 2026-10-07):
 // panel con titular y beneficios a la izquierda, formulario sin caja a la
 // derecha; debajo de 900px el panel se oculta y el logo sube al formulario.
 //
-// Como Agente Métricas: Entrar, "¿No tenés cuenta? Creá una" y "¿Olvidaste
+// Como Entropia Analytics: Entrar, "¿No tenés cuenta? Creá una" y "¿Olvidaste
 // tu contraseña?" (Firebase, email + contraseña). Cualquiera puede crear su
 // cuenta; después pone el código gratis o el VIP, que decide qué secciones
 // ve (ver src/lib/alumno.ts).

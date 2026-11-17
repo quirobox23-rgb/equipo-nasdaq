@@ -319,7 +319,7 @@ function DashboardPortada({ navigate, accounts, trades }) {
           solo viven las 2 acciones de la portada, en su jerarquía
           (Ver mis métricas #1, Mapas #2 — ver docs/buenas-practicas-ui-design.md,
           regla 6-3-1). ActionCard (ver StyleGuide → Cards → "Tarjetas
-          de acción", traída de Agente Macro). El botón mantiene la
+          de acción", traída de Entropia Markets). El botón mantiene la
           jerarquía: primary en Mis Métricas, outline en Mapas. */}
       <div className="section-gap" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <ActionCard

@@ -39,7 +39,7 @@ const AGENT_CODE_LABELS: Record<string, string> = {
   'NOVA-M108': 'Renta Fija',
 }
 
-// Tipos del briefing de Nova / Agente Macro
+// Tipos del briefing de Nova / Entropia Markets
 interface NovaAgent {
   agent: string
   status: string
@@ -417,7 +417,7 @@ export default function MentorIAPage() {
         <div className="lg:col-span-3">
           <div className="card p-6">
             <div className="flex items-center gap-2.5 mb-5 pb-3.5 border-b border-base-line">
-              <span className="font-display text-base font-black text-base-text uppercase tracking-wide">Briefing Ejecutivo — Agente Macro</span>
+              <span className="font-display text-base font-black text-base-text uppercase tracking-wide">Briefing Ejecutivo — Entropia Markets</span>
               {briefing ? (
                 <span className="ml-auto"><Badge variant="pos">LLM Activo</Badge></span>
               ) : (
@@ -516,7 +516,7 @@ export default function MentorIAPage() {
               </div>
             ) : (
               <div className="text-base-muted text-sm">
-                <p className="mb-2">Agente Macro está operativo pero el motor de razonamiento LLM no está disponible.</p>
+                <p className="mb-2">Entropia Markets está operativo pero el motor de razonamiento LLM no está disponible.</p>
                 <p className="text-xs text-base-muted">Verifica que ANTHROPIC_API_KEY esté configurada y que tengas créditos disponibles en Anthropic.</p>
                 <div className="mt-4 p-3 bg-base-panel2 rounded border border-base-line">
                   <div className="text-xs text-base-text">Tendencia mecánica: {report?.trend} | Confianza: {report?.confidence}%</div>
@@ -585,8 +585,8 @@ export default function MentorIAPage() {
               <SectionLabel>Estado</SectionLabel>
               <p className="text-xs text-base-muted leading-relaxed">
                 {briefing
-                  ? 'Agente Macro ha generado un briefing con razonamiento de IA sobre los 8 agentes especializados.'
-                  : 'Agente Macro está funcionando en modo fallback mecánico sin motor de razonamiento LLM.'}
+                  ? 'Entropia Markets ha generado un briefing con razonamiento de IA sobre los 8 agentes especializados.'
+                  : 'Entropia Markets está funcionando en modo fallback mecánico sin motor de razonamiento LLM.'}
               </p>
             </div>
           </div>
@@ -596,7 +596,7 @@ export default function MentorIAPage() {
 
       {/* Footer */}
       <div className="text-center text-xs text-base-muted pt-4 border-t border-base-line">
-        Agente Macro — Generado por 8 agentes especializados + Claude Sonnet 4.6 — No es consejo de inversión
+        Entropia Markets — Generado por 8 agentes especializados + Claude Sonnet 4.6 — No es consejo de inversión
       </div>
     </div>
   )

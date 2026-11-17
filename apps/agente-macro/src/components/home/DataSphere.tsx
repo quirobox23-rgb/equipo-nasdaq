@@ -6,7 +6,7 @@ interface Props {
   pulse?: number
 }
 
-// Puerto de la esfera de datos de Hero.jsx (Agente Métricas) — misma
+// Puerto de la esfera de datos de Hero.jsx (Entropia Analytics) — misma
 // distribución "phyllotaxis" (ángulo dorado) determinística y bezel de
 // instrumento. Dos diferencias a propósito respecto al original: las
 // órbitas tipo átomo se reemplazan por la geografía real de

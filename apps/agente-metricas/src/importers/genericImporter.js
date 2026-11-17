@@ -2,7 +2,7 @@
 //  EDGELOG · Generic / Fallback Importer
 //
 //  Maneja:
-//    - CSVs exportados desde el propio Agente Métricas
+//    - CSVs exportados desde el propio Entropia Analytics
 //    - Formatos desconocidos con columnas estándar
 //  Devuelve NormalizedTrade[] — nunca AppTrade[].
 // ─────────────────────────────────────────────

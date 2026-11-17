@@ -10,7 +10,7 @@ import { dayName } from '@/components/calendar/parts'
 import { formatPeriod, RatioChip } from '@/components/PendingMetricsCard'
 import { ReadingBlock, MetricsBlock, RegimeValue, ActionCard, EarningsBlock, type HeroMetric } from '@/components/home/HomeBlocks'
 
-// El Mercado Hoy — mismo esquema que el Inicio de Agente Métricas
+// El Mercado Hoy — mismo esquema que el Inicio de Entropia Analytics
 // (diseño: mockup-home-v2), en tres franjas:
 //   1. Rangos del NQ (ayer y semana en curso), VIX y régimen — el "estado
 //      general", como la franja de números del Inicio de Métricas

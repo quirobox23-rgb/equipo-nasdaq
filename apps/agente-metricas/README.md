@@ -1,6 +1,6 @@
-# Agente Métricas
+# Entropia Analytics
 
-El diario y las métricas de trading de Equipo Nasdaq: cuentas de fondeo, drawdown, métricas, mapas, rutina diaria e importación de operaciones desde CSV de muchas plataformas (Tradovate, NinjaTrader, Rithmic, Topstep, MT4/MT5, TradingView...).
+El diario y las métricas de trading de Entropia: cuentas de fondeo, drawdown, métricas, mapas, rutina diaria e importación de operaciones desde CSV de muchas plataformas (Tradovate, NinjaTrader, Rithmic, Topstep, MT4/MT5, TradingView...).
 
 Parte del código de Factor Métricas (copiado el 17-11-2026 desde `santos-trader-factor-metricas`, commit `acccb65`) con nombre, colores (azul, antracita y cian), tipografía (Space Grotesk + Inter) y distribución propios: navegación en pestañas horizontales. Es independiente: usa su propio Supabase, sin analítica, emails ni enlaces de Factor.
 

@@ -2,7 +2,7 @@
 import { useId, type ComponentType } from 'react'
 
 // IconDisplay — ícono grande, sin fondo, trazo grueso con gradiente de
-// marca. Nivel "4. Icon display" del design system de Agente Métricas
+// marca. Nivel "4. Icon display" del design system de Entropia Analytics
 // (homologado 2026-09-21). Uso: bloques de feature/marketing (landing,
 // onboarding), nunca UI de producto — para eso están IconCircle / las
 // clases de color de Tailwind (text-brand, text-pos, etc.).

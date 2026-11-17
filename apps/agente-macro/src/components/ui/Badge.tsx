@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 // Badge genérico — fondo tenue + texto de color, radius 4px (no pill).
 // Variantes con los tokens reales del proyecto (brand/secondary/pos/neg/
-// neutral/grey) — homologado con Agente Métricas (verde primario/
+// neutral/grey) — homologado con Entropia Analytics (verde primario/
 // secundario, semáforo, gris). El lima (accent) queda afuera del
 // set por estar sin uso activo — igual que en Métricas.
 export type BadgeVariant = 'brand' | 'secondary' | 'pos' | 'neg' | 'neutral' | 'grey'

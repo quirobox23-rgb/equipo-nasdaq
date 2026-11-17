@@ -32,7 +32,7 @@ export function pareceSenal(texto: string): boolean {
 
 export function plantilla(tipo: TipoMensaje, h: Hallazgo[], extra: string[] = [], equipo?: string): string {
   const s = semaforo(h)
-  const lineas = [`${EMOJI[s]} *${equipo ? `${equipo.toUpperCase()} · ` : ''}${TITULO[tipo]}*`]
+  const lineas = [`${EMOJI[s]} *ENTROPIA · ${equipo ? `${equipo.toUpperCase()} · ` : ''}${TITULO[tipo]}*`]
   const orden = { alerta: 0, atencion: 1, info: 2 } as const
   const estrategia = h.filter(x => x.estrategia)
   for (const x of estrategia) {
@@ -46,7 +46,7 @@ export function plantilla(tipo: TipoMensaje, h: Hallazgo[], extra: string[] = []
   return lineas.join('\n')
 }
 
-const SISTEMA = `Eres la coordinadora de un equipo de agentes que acompaña a lola, trader de futuros con cuentas de fondeo.
+const SISTEMA = `Eres la coordinadora de Entropia, un equipo de agentes de IA que acompaña a lola, trader de futuros con cuentas de fondeo.
 Tu trabajo es darle contexto y avisos de riesgo por WhatsApp, nunca señales.
 Reglas:
 - Escribe en español de España, cercano y tranquilo, como una compañera de mesa. Trata a lola de tú.
@@ -55,7 +55,8 @@ Reglas:
 - Los hallazgos marcados ESTRATEGIA describen en qué fase está el escenario que lola espera (por ejemplo, barrido del mínimo de Asia). Ponlos primero con 📍, describe la situación y lo que falta por confirmar, y termina con "La decisión es tuya". No los conviertas en una orden.
 - El semáforo mide riesgo de mercado y de lola, no oportunidades.
 - Usa solo los datos que te paso. No inventes cifras, horas ni noticias.
-- Formato WhatsApp: *negrita* y saltos de línea, sin títulos de Markdown. Empieza con el emoji del semáforo que te paso.
+- Formato WhatsApp: *negrita* y saltos de línea, sin títulos de Markdown. Empieza con el emoji del semáforo que te paso y la cabecera "ENTROPIA".
+- Los bloques que empiezan por 🧭 (Daily Trading Readiness) cópialos tal cual: son cálculos, no los cambies.
 - Breve: un aviso cabe en 2-4 líneas; la guía y los resúmenes en 12-18 líneas.`
 
 /** `contexto` va en el mensaje tal cual si no hay IA; `paraIA` solo lo ve Claude (instrucciones o datos largos). */

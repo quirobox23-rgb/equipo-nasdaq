@@ -183,7 +183,7 @@ export function Card({ children, className, title, style }) {
 }
 
 // ── PanelHeader ───────────────────────────────
-// Cabecera de bloque (traída de Agente Macro): título sobrio a la
+// Cabecera de bloque (traída de Entropia Markets): título sobrio a la
 // izquierda y aclaración (fuente, unidad o badge) a la derecha, sobre
 // --bg-panel2. Primer hijo de una .card.card--flush; el contenido va
 // en .card__body. Ver StyleGuide → Cabecera de bloque.
@@ -212,7 +212,7 @@ export function SectionTitle({ children, variant = 'muted', style }) {
 }
 
 // ── ActionCard ────────────────────────────────
-// Tarjeta de acción (traída de Agente Macro): .card--image con ícono
+// Tarjeta de acción (traída de Entropia Markets): .card--image con ícono
 // display a la derecha. Título · descripción · botón .btn-lg (primary
 // en la principal, outline en la otra). Ver StyleGuide → Tarjetas de acción.
 // compact: para columnas angostas (ej. 1/3 del grid) — columna del

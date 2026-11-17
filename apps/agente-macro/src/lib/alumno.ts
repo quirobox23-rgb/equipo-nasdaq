@@ -5,7 +5,7 @@ import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import type { User } from 'firebase/auth'
 import { getDb } from '@/lib/firebase/client'
 
-// alumno.ts — niveles de acceso, como los códigos de Agente Métricas.
+// alumno.ts — niveles de acceso, como los códigos de Entropia Analytics.
 // Cualquiera puede crearse una cuenta con su email y contraseña; después
 // pone un código que desbloquea un nivel:
 //

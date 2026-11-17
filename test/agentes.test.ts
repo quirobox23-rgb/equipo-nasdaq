@@ -126,5 +126,5 @@ test('jefe: semáforo y nunca señales', () => {
   assert.ok(pareceSenal('ponte corto si pierde 21000'))
   assert.ok(!pareceSenal('No operes ahora, espera a que pase el dato'))
   const txt = plantilla('aviso', [{ agente: 'macro', nivel: 'alerta', titulo: 'No operes ahora: CPI.' }])
-  assert.ok(txt.startsWith('🔴 *Aviso*'))
+  assert.ok(txt.startsWith('🔴 *ENTROPIA · Aviso*'))
 })

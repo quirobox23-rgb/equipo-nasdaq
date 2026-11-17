@@ -273,7 +273,7 @@
 }
 
 /* ── Theme switch — sol/luna, vive en el topbar (ver ThemeToggle.tsx
-   de Agente Macro, mismo diseño en las dos apps hermanas) ── */
+   de Entropia Markets, mismo diseño en las dos apps hermanas) ── */
 .themeSwitch {
   display: flex;
   align-items: center;
@@ -306,7 +306,7 @@
   color: #0f1623;
 }
 
-/* ── Agente Métricas: navegación en pestañas horizontales bajo la barra
+/* ── Entropia Analytics: navegación en pestañas horizontales bajo la barra
    superior (en lugar de barra lateral). En móvil sigue la barra inferior. ── */
 @media (min-width: 769px) {
   .appBody { flex-direction: column; }

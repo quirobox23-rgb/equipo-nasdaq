@@ -98,7 +98,7 @@ function useNovedadesAnalisis(enabled: boolean): number {
 
 interface NavItem { Icon: (p: SVGProps<SVGSVGElement>) => React.ReactElement; label: string; href: string }
 
-// Tres niveles, como en Agente Métricas (ver src/lib/alumno.ts): Básico con
+// Tres niveles, como en Entropia Analytics (ver src/lib/alumno.ts): Básico con
 // el código gratis, Intermedio con el VIP y Equipo (solo nivel admin).
 // Las pestañas que el nivel del usuario no abre llevan candado.
 const GROUPS: { title: string; adminOnly?: boolean; items: NavItem[] }[] = [
@@ -152,7 +152,7 @@ function NavLink({ item, active, locked = false, count = 0 }: { item: NavItem; a
   )
 }
 
-// Mismo estilo que el sidebar de Agente Métricas (AppShell.module.css):
+// Mismo estilo que el sidebar de Entropia Analytics (AppShell.module.css):
 // el estado activo es un box gris con contorno interno sutil — sin ícono
 // ni barra en verde de marca, la marca queda reservada para CTAs/logo.
 export function Sidebar() {
@@ -163,7 +163,7 @@ export function Sidebar() {
   const isLocked = (href: string) => nivel !== undefined && !canSee(nivel, routeLevel(href))
   const novedades = useNovedadesAnalisis(nivel !== undefined && !isLocked(ANALISIS))
 
-  // Agente Macro: navegación en pestañas horizontales bajo la barra superior,
+  // Entropia Markets: navegación en pestañas horizontales bajo la barra superior,
   // agrupadas por nivel (Básico, Intermedio, Equipo).
   return (
     <nav className="app-tabs sticky top-16 z-40 border-b border-base-line overflow-x-auto">

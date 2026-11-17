@@ -8,7 +8,7 @@ import { RELEVANT_STARS } from '@/lib/weekCalendar'
 import { DayStars, KeyDayBadge, NqRange, OutcomeBadge, StarMark, TodayTag, dayName } from './parts'
 
 // Vista Tabla del calendario de Eventos — mismo patrón que la vista Tabla de
-// Portafolio en Agente Métricas: cabecera gris, columnas ordenables, filas
+// Portafolio en Entropia Analytics: cabecera gris, columnas ordenables, filas
 // agrupadas por día. Click en una fila → drawer.
 
 interface Props {
