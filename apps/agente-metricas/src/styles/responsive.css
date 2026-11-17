@@ -1,0 +1,62 @@
+/* ─────────────────────────────────────────────
+   NOVA METRICS — Responsive (tablet / móvil)
+   Breakpoints: 768px (tablet), 480px (móvil)
+
+   Aditivo: no reescribe estilos inline existentes. Solo ajusta
+   layout a través de clases que YA usa toda la app (.grid-2 ...
+   .grid-6, .card, .page-inner, table) — así cualquier pantalla que
+   ya use esas clases se vuelve responsive gratis, sin tocar su JSX.
+───────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .page-inner { padding: 16px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+
+  .grid-6 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-5 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-3 { grid-template-columns: 1fr !important; }
+  .grid-2 { grid-template-columns: 1fr !important; }
+
+  /* Deja sitio a la bottom nav fija (ver AppShell.module.css) */
+  .main-content { padding-bottom: 64px; }
+}
+
+@media (max-width: 480px) {
+  .grid-6, .grid-5, .grid-4, .grid-3 { grid-template-columns: 1fr !important; }
+
+  .heatmap-hours-grid { grid-template-columns: repeat(4, 1fr) !important; }
+
+  /* Modales — nunca más anchos que el viewport (cualquier modal de
+     la app usa className="card" dentro de un overlay fixed) */
+  .card { max-width: calc(100vw - 32px); }
+
+  /* ── Tablas → cards (Historial) ── */
+  .mobile-table-cards thead { display: none; }
+  .mobile-table-cards tbody tr {
+    display: block;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 12px;
+    background: var(--bg2);
+  }
+  .mobile-table-cards td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+    border: none !important;
+    font-size: 12px;
+  }
+  .mobile-table-cards td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text3);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    flex-shrink: 0;
+  }
+}

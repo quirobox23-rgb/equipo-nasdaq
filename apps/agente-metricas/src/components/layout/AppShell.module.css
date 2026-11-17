@@ -1,0 +1,338 @@
+/* ── App shell v2 — topbar (logo + cuenta) sobre sidebar + main ── */
+.appShellV2 {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+.topbar {
+  display: flex;
+  align-items: stretch;
+  height: 64px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+.topbarRight {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  padding: 0 24px;
+}
+.topbarPlanes {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: var(--font);
+  padding: 7px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 180ms, background 180ms, color 180ms;
+}
+.topbarPlanes:hover { background: var(--bg3); border-color: var(--border2); color: var(--text); }
+
+/* ── Account menu — cluster de cuenta con dropdown ── */
+.accountMenu { position: relative; }
+.accountTrigger {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 6px 10px 6px 6px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 180ms, background 180ms;
+}
+.accountTrigger:hover { border-color: var(--border2); background: var(--bg3); }
+.accountAvatar {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  background: var(--bg4);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text); font-size: 12px; font-weight: 700; font-family: var(--font);
+}
+.topbarEmail {
+  font-size: 12.5px;
+  color: var(--text2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+.accountDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  box-shadow: 0 8px 24px -6px rgba(0,0,0,0.4);
+  padding: 6px;
+  z-index: 200;
+}
+.accountDropdownItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: calc(var(--r) - 2px);
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 500;
+  font-family: var(--font);
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.accountDropdownItem:hover { background: var(--bg4); color: var(--text); }
+
+.appBody {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: var(--sidebar);
+  min-width: var(--sidebar);
+  background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0)), var(--bg2);
+  border-right: 1px solid var(--border);
+  box-shadow: 1px 0 0 rgba(59,130,246,0.04);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Logo / brand — vive en el topbar, misma franja que el sidebar */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: var(--sidebar);
+  min-width: var(--sidebar);
+  flex-shrink: 0;
+  padding: 0 16px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  text-align: left;
+}
+.brandIcon {
+  width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+  background: var(--accent-gradient);
+  display: flex; align-items: center; justify-content: center;
+}
+.brandText { min-width: 0; }
+.brandWord {
+  font-family: var(--font-heading);
+  font-size: 15.5px;
+  letter-spacing: 0.1px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.brandFactor { color: var(--text); font-weight: 500; }
+.brandMetricas {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  font-weight: 900;
+}
+.brandSub {
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+/* Nav */
+.nav { flex: 1; }
+.navSection { padding: 0 12px; margin-bottom: 14px; }
+.navLabel {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 12px 8px 8px;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Sprint 11: los items que siguen a un navLabel dentro de la misma
+   sección (por ahora, solo "Metrix" tiene label) quedan como
+   sub-apartados: ligera indentación y menor peso visual, sin tocar
+   rutas ni componentes. */
+/* Color/peso subidos un escalón (antes --text3 / 350: se veía apagado) */
+.navSection > .navLabel ~ .navItem {
+  padding-left: 22px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text2);
+}
+.navSection > .navLabel ~ .navItem:hover { color: var(--text); }
+.navSection > .navLabel ~ .navItem.active {
+  color: var(--text);
+  font-weight: 450;
+}
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--r);
+  color: var(--text2);
+  font-size: 12.5px;
+  font-weight: 400;
+  text-decoration: none;
+  transition: background 180ms cubic-bezier(0.4, 0, 0.2, 1), color 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 2px;
+  user-select: none;
+  position: relative;
+}
+.navItem:hover { background: var(--bg4); color: var(--text); }
+.navItem.active {
+  background: var(--bg5);
+  color: var(--text);
+  font-weight: 500;
+  box-shadow: 0 0 0 1px var(--border3) inset;
+}
+.navItem.active::before {
+  content: '';
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 16px;
+  border-radius: 0 3px 3px 0;
+  background: var(--text2);
+}
+.navIcon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.navItem.active .navIcon { opacity: 1; }
+
+/* ── BOTTOM NAV — solo móvil ── */
+.bottomNav {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+
+  .bottomNav {
+    display: flex;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    height: 60px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border2);
+    z-index: 900;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  .bottomNavItem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    color: var(--text3);
+    font-size: 9.5px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .bottomNavActive { color: var(--brand); }
+
+  /* Topbar en móvil: el logo ya no necesita el ancho fijo del sidebar
+     (que está oculto), y el bloque de cuenta se compacta. */
+  .brand { width: auto; min-width: 0; flex: 1; }
+  .topbarEmail { display: none; }
+}
+
+/* ── Theme switch — sol/luna, vive en el topbar (ver ThemeToggle.tsx
+   de Agente Macro, mismo diseño en las dos apps hermanas) ── */
+.themeSwitch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  color: var(--text2);
+  cursor: pointer;
+  transition: border-color 180ms, background 180ms, color 180ms;
+}
+.themeSwitch:hover { background: var(--bg3); border-color: var(--border2); color: var(--text); }
+
+/* ── Light mode overrides ── */
+:global([data-theme="light"]) .sidebar {
+  background: var(--bg);
+  border-right: 1px solid rgba(0,0,0,0.08);
+}
+:global([data-theme="light"]) .topbar {
+  background: #ffffff;
+}
+:global([data-theme="light"]) .navItem:hover {
+  background: #f0f4ff;
+  color: #111827;
+}
+:global([data-theme="light"]) .navItem.active {
+  background: #e8ecf4;
+  color: #0f1623;
+}
+
+/* ── Agente Métricas: navegación en pestañas horizontales bajo la barra
+   superior (en lugar de barra lateral). En móvil sigue la barra inferior. ── */
+@media (min-width: 769px) {
+  .appBody { flex-direction: column; }
+  .brand { width: auto; min-width: 0; padding: 0 24px; }
+  .sidebar {
+    width: auto; min-width: 0; height: 46px; flex-shrink: 0;
+    flex-direction: row; align-items: stretch;
+    padding: 0 24px; overflow-x: auto; overflow-y: hidden;
+    border-right: none; border-bottom: 1px solid var(--border);
+    box-shadow: none;
+  }
+  .nav { display: flex; align-items: stretch; flex: none; }
+  .nav > .navSection { display: flex; align-items: stretch; padding: 0; margin: 0; }
+  .nav > .navSection + .navSection { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
+  .navSection .navSection { display: flex; align-items: stretch; padding: 0; margin: 0; }
+  .navLabel { align-self: center; padding: 0 6px 0 0; font-size: 9.5px; letter-spacing: 1.2px; }
+  .navItem, .navSection > .navLabel ~ .navItem {
+    padding: 0 14px; margin: 0; border-radius: 0; white-space: nowrap;
+    border-bottom: 2px solid transparent; font-size: 12.5px;
+  }
+  .navItem:hover { background: transparent; }
+  .navItem.active, .navSection > .navLabel ~ .navItem.active {
+    background: transparent; box-shadow: none; border-bottom-color: var(--accent); color: var(--text);
+  }
+  .navItem.active::before { display: none; }
+  .navItem.active .navIcon { color: var(--accent); }
+}
+:global([data-theme="light"]) .navItem.active { background: transparent; }
+:global([data-theme="light"]) .sidebar { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.08); }

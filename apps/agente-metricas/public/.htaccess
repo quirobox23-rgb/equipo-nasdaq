@@ -1,0 +1,15 @@
+# SPA routing — React Router maneja las rutas en el cliente.
+# Sin esto, entrar directo a una URL como /styleguide devuelve 404
+# porque Apache busca un archivo físico que no existe.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Servir archivos y carpetas reales tal cual (assets, imágenes, etc.)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Todo lo demás cae a index.html para que React Router resuelva la ruta
+  RewriteRule ^ index.html [L]
+</IfModule>

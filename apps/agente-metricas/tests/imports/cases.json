@@ -1,0 +1,155 @@
+[
+  {
+    "file": "fundednext-50k-2026-10-08.csv",
+    "firm": "FundedNext (Tradovate)",
+    "format": "tradovate",
+    "trades": 4,
+    "operations": 4,
+    "grossPnl": -372.5,
+    "contracts": 28,
+    "platform": {
+      "balanceBefore": 50000,
+      "balanceAfter": 49574
+    },
+    "commissionPerContract": 1.91,
+    "netPnl": -425.98,
+    "note": "Balance de Tradovate 49574 (redondeado). La última posición promedia 3 entradas y cuenta como 1 trade de 13 contratos."
+  },
+  {
+    "file": "apex-performance-sample.csv",
+    "firm": "Apex (Tradovate)",
+    "format": "tradovate",
+    "trades": 11,
+    "operations": 10,
+    "grossPnl": 1519.5,
+    "contracts": 17,
+    "commissionPerContract": 1.04,
+    "netPnl": 1501.82
+  },
+  {
+    "file": "tradovate-legacy1-performance.csv",
+    "firm": "Legacy 1 (Tradovate)",
+    "format": "tradovate",
+    "trades": 17,
+    "operations": 17,
+    "grossPnl": 1827,
+    "contracts": 89
+  },
+  {
+    "file": "tradovate-legacy2-performance.csv",
+    "firm": "Legacy 2 (Tradovate)",
+    "format": "tradovate",
+    "trades": 70,
+    "operations": 70,
+    "grossPnl": 2975.5,
+    "contracts": 361
+  },
+  {
+    "file": "apex-pa0002-may-jun-2026.csv",
+    "firm": "Apex PA-0002 (Tradovate)",
+    "format": "tradovate",
+    "trades": 36,
+    "operations": 35,
+    "grossPnl": 1635,
+    "contracts": 41,
+    "commissionPerContract": 1.04,
+    "netPnl": 1592.36
+  },
+  {
+    "file": "apex-pa0002-jul-ago-2026.csv",
+    "firm": "Apex PA-0002 (Tradovate)",
+    "format": "tradovate",
+    "trades": 69,
+    "operations": 62,
+    "grossPnl": 2202.5,
+    "contracts": 137,
+    "commissionPerContract": 1.04,
+    "netPnl": 2060.02
+  },
+  {
+    "file": "apex-pa0002-2026-10-08.csv",
+    "firm": "Apex PA-0002 (Tradovate)",
+    "format": "tradovate",
+    "trades": 12,
+    "operations": 8,
+    "grossPnl": 326.5,
+    "contracts": 17,
+    "commissionPerContract": 1.04,
+    "netPnl": 308.82,
+    "note": "Sesión nocturna 07/10 → 08/10; las fechas no dependen de la zona horaria del navegador."
+  },
+  {
+    "file": "ftmo-100k-2026-08-19.csv",
+    "firm": "FTMO 100K (MetriX)",
+    "format": "ftmo",
+    "trades": 394,
+    "operations": 128,
+    "grossPnl": -7151.34,
+    "note": "Export del Trading Journal de MetriX. Profit es bruto; el PnL que importa ya resta Swap y Commissions del propio archivo (-6223.28 bruto → -7151.34 neto). Aunque la cuenta tenga comisión configurada (1.04), no se suma: el archivo ya trae las suyas.",
+    "commissionPerContract": 1.04,
+    "netPnl": -7151.34
+  },
+  {
+    "file": "wsf-fase1-ddmm.csv",
+    "firm": "WSF Fase 1 (fechas DD/MM)",
+    "format": "tradelocker",
+    "trades": 17,
+    "operations": 15,
+    "grossPnl": 196.61,
+    "firstDate": "2026-08-12",
+    "lastDate": "2026-10-15",
+    "note": "Fechas DD/MM/YYYY: las que tienen día ≤ 12 (08/10) se leían como MM/DD y desordenaban la curva de capital. Profit 256.39 + Swap -59.78."
+  },
+  {
+    "file": "ogm-mt5-report-utf16.html",
+    "firm": "OGM 2-Step Funded (MT5 HTML)",
+    "format": "mt5_html",
+    "trades": 53,
+    "operations": 37,
+    "grossPnl": -60.78,
+    "withdrawals": {
+      "count": 0,
+      "total": 0
+    },
+    "firstDate": "2026-05-27",
+    "lastDate": "2026-10-15",
+    "note": "Trade History Report del terminal MT5 tal cual sale (UTF-16 con BOM, celda oculta colspan=8 en cada fila). -60.78 = Total Net Profit del propio reporte (Profit + Commission + Swap). Nombre y número de cuenta anonimizados."
+  },
+  {
+    "file": "fundednext-mt5-report-es-utf16.html",
+    "firm": "FundedNext 2-Step (MT5 HTML, español)",
+    "format": "mt5_html",
+    "trades": 250,
+    "operations": 140,
+    "grossPnl": 468.36,
+    "withdrawals": {
+      "count": 7,
+      "total": 474.91
+    },
+    "firstDate": "2025-10-21",
+    "lastDate": "2026-10-20",
+    "note": "Informe del historial de trading del terminal MT5 en español (UTF-16 con BOM). El <title> lleva 'Informe del historial de trading' y se confundía con el CSV en español (0 trades). 468.36 = Beneficio Neto del propio reporte. 7 retiros (charge con comentario Withdraw/Direct-Withdraw-acs) por 474.91: balance MT5 5993.45 = 6000 + 468.36 − 474.91. 250 posiciones; el reporte cuenta 281 operaciones porque algunas se cerraron en parciales. Nombre y número de cuenta anonimizados."
+  },
+  {
+    "file": "alpha-tradelocker-statement.pdf-tokens.json",
+    "firm": "Alpha Capital (TradeLocker, account statement PDF)",
+    "format": "tradelocker",
+    "trades": 45,
+    "operations": 45,
+    "grossPnl": -263.14,
+    "firstDate": "2026-05-28",
+    "lastDate": "2026-10-15",
+    "note": "Texto extraído con pdf.js del 'Account statement' en PDF (Alpha Capital solo da PDF), anonimizado. 117 ejecuciones → 45 operaciones juntando por posición neta. -263.14 = Settled PnL total del propio statement (la financiación, -0.40, va aparte)."
+  },
+  {
+    "file": "exness-orders.csv",
+    "firm": "Exness (cuenta real)",
+    "format": "exness",
+    "trades": 57,
+    "operations": 13,
+    "grossPnl": 235.81,
+    "firstDate": "2025-07-22",
+    "lastDate": "2026-10-29",
+    "note": "Balance real 307.54. El archivo trae operaciones de 2025 (-21.41, acaban en stop out) de antes del depósito de $50: 50 + 257.22 de 2026 = 307.22 (0.32 de resto). Sin depósitos ni retiros en el export."
+  }
+]
