@@ -1,0 +1,36 @@
+{
+  "name": "Construction Spending",
+  "aliases": [
+    "Construction Spending",
+    "Gasto en Construcción"
+  ],
+  "description": "Variación mensual del gasto en construcción (residencial, no residencial y público).",
+  "narrative": "Indica la inversión en estructuras, parte del PIB.",
+  "scenarioPositive": "Gasto mejor de lo esperado → USD alcista ↑.",
+  "scenarioNegative": "Gasto peor de lo esperado → USD bajista ↓.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD"
+  ],
+  "assetsBeat": {
+    "USD": "up"
+  },
+  "assetsInline": {
+    "USD": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 10:00 ET",
+  "scenarioShortBetter": "Gasto fuerte: impacto bajo",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Gasto débil: impacto bajo",
+  "dependencies": "Sale a la vez que el ISM Manufacturing, que es el que manda.",
+  "comments": "Impacto casi nulo, 10:00 ET.",
+  "specialRules": [
+    "EN LA SOMBRA DEL ISM: Coincide con el ISM y queda eclipsado."
+  ],
+  "notes": "Publicación: mensual, primer día hábil del mes, 10:00 ET."
+}

@@ -1,0 +1,39 @@
+﻿{
+    "scenarioPositive":  "BEAT → Consumo fuerte → USD alcista ↑",
+    "scenarioNegative":  "MISS → Consumo débil → USD bajista ↓",
+    "importance":  "med",
+    "stars": 3,
+    "scenarioNeutral":  "INLINE → Normal",
+    "assetsInline":  {
+                         "NASDAQ":  "neutral",
+                         "SPX":  "neutral",
+                         "USD":  "neutral"
+                     },
+    "affectedAssets":  [
+                           "USD",
+                           "NASDAQ",
+                           "SPX"
+                       ],
+    "name":  "Consumer Confidence",
+    "specialRules":  [
+
+                     ],
+    "description":  "Índice de confianza del consumidor",
+    "dependencies":  "",
+    "assetsBeat":  {
+                       "NASDAQ":  "down",
+                       "SPX":  "down",
+                       "USD":  "up"
+                   },
+    "aliases":  [
+                    "Conference Board Consumer Confidence"
+                ],
+    "assetsMiss":  {
+                       "NASDAQ":  "up",
+                       "SPX":  "up",
+                       "USD":  "down"
+                   },
+    "notes":  "",
+    "comments":  "",
+    "narrative":  "Consumer Confidence = optimismo del consumidor"
+}

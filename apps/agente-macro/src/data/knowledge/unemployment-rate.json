@@ -1,0 +1,24 @@
+{
+  "name": "Unemployment Rate",
+  "aliases": ["Unemployment", "Jobless Rate", "U-Rate"],
+  "description": "Porcentaje de población desempleada. Indicador clave de salud laboral. Publicado primer viernes del mes con NFP.",
+  "narrative": "Desempleo bajo = mercado laboral fuerte = Fed sube tasas. Desempleo alto = economía débil = Fed baja tasas.",
+  "scenarioPositive": "Unemployment BAJA más que esperado → Empleo fuerte → Fed hawkish → USD alcista ↑, NASDAQ bajista ↓, Gold bajista ↓.",
+  "scenarioNegative": "Unemployment SUBE más que esperado → Empleo débil → Fed dovish → USD bajista ↓, NASDAQ alcista ↑, Gold alcista ↑.",
+  "scenarioNeutral": "Unemployment INLINE (como esperado) → Sin cambios significativos.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "SPX"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "SPX": "down" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "SPX": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "SPX": "up" },
+  "importance": "med",
+  "stars": 4,
+  "betterWhen": "lower",
+  "dependencies": "Unemployment Rate + NFP = contexto laboral completo. A veces suben juntos (participation baja). Unemployment Rate = tasa, NFP = volumen.",
+  "comments": "Publicado con NFP. Menos volátil que NFP pero importante para confirmación.",
+  "specialRules": [
+    "PARTICIPATION RATE: Tasa de desempleo puede bajar aunque se pierdan empleos (si gente sale workforce).",
+    "FED TARGET: Fed tiene dual mandate: máximo empleo + estabilidad de precios. Unemployment = parte del mandate.",
+    "SAHM RULE: Si unemployment sube 0.5% en 3 meses = riesgo de recesión (predictor histórico)."
+  ],
+  "notes": "Publicación: Primer viernes 08:30 ET con NFP. Secundario a NFP pero confirmativo."
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Treasury Currency Report",
+  "aliases": [
+    "Treasury Currency Report",
+    "Informe de Divisas del Tesoro"
+  ],
+  "description": "Informe semestral del Tesoro sobre las políticas cambiarias de los socios comerciales (quién podría estar manipulando su divisa).",
+  "narrative": "Sin dato numérico. Puede mover divisas concretas si se señala a un país.",
+  "scenarioPositive": "Sin señalar a nadie → sin impacto.",
+  "scenarioNegative": "Señala a un país como manipulador → tensión comercial, volatilidad en esa divisa.",
+  "scenarioNeutral": "Sin novedades → sin impacto.",
+  "affectedAssets": [
+    "USD"
+  ],
+  "assetsBeat": {
+    "USD": "neutral"
+  },
+  "assetsInline": {
+    "USD": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "neutral"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Semestral · hora variable",
+  "scenarioShortBetter": "Sin señalamientos: sin impacto",
+  "scenarioShortInline": "Sin novedades: sin impacto",
+  "scenarioShortWorse": "País señalado: volatilidad en divisas",
+  "dependencies": "Contexto de relaciones comerciales y aranceles.",
+  "comments": "Hora variable; impacto normalmente nulo.",
+  "specialRules": [
+    "SOLO SI HAY SORPRESA: Casi nunca mueve el NQ."
+  ],
+  "notes": "Publicación: dos veces al año, sin hora fija."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Michigan Consumer Sentiment",
+  "aliases": ["Michigan Consumer Expectations", "University of Michigan Consumer Sentiment", "UMich Sentiment"],
+  "description": "Encuesta de la Universidad de Michigan sobre el estado de ánimo del consumidor respecto a su situación financiera y la economía en general. Incluye una parte de 'sentimiento actual' y otra de 'expectativas futuras'.",
+  "narrative": "Consumidor optimista = más gasto probable = economía fuerte. Consumidor pesimista = más ahorro/menos gasto = riesgo de desaceleración. El consumo es ~70% de la economía de EE.UU., por eso se sigue de cerca.",
+  "scenarioPositive": "Sentiment BEAT (sube más de lo esperado) → Consumidor optimista → Consumo probablemente fuerte → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Sentiment MISS (baja más de lo esperado) → Consumidor pesimista → Riesgo de menor consumo → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "Sentiment INLINE (como esperado) → Sin sorpresas.",
+  "affectedAssets": ["USD", "NASDAQ", "SPX", "XRT"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "SPX": "down", "XRT": "up" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "SPX": "neutral", "XRT": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "SPX": "up", "XRT": "down" },
+  "importance": "med",
+  "stars": 2,
+  "dependencies": "Se publica junto con las Expectativas de Inflación de Michigan (misma encuesta, distinta pregunta) — pero esa se interpreta distinto (ver ficha separada de Inflation Expectations).",
+  "comments": "Hay una lectura preliminar a mitad de mes y una final a fin de mes — la final suele moverse menos porque ya se conocía la preliminar.",
+  "specialRules": [
+    "PRELIMINAR vs FINAL: La preliminar mueve más mercado que la revisión final del mismo mes.",
+    "NO CONFUNDIR con Inflation Expectations: aunque viene de la misma encuesta, el mercado las interpreta con lógica distinta."
+  ],
+  "notes": "Publicación: Dato preliminar a mitad de mes, final a fin de mes. Termómetro de confianza del consumidor de EE.UU."
+}

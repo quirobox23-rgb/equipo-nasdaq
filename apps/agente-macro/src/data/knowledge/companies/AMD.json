@@ -1,0 +1,40 @@
+{
+  "name": "AMD (AMD)",
+  "ticker": "AMD",
+  "aliases": [
+    "AMD",
+    "Advanced Micro Devices"
+  ],
+  "stars": 3,
+  "frequency": "Trimestral",
+  "description": "Procesadores para PCs y servidores (Ryzen, EPYC) y GPUs para IA (Instinct). Compite con Intel y NVIDIA.",
+  "nqImpact": "Mueve al sector semiconductores; el mercado mira cuánto avanza en IA frente a NVIDIA.",
+  "dependencies": "NVIDIA e Intel (competencia); TSMC (fabrica sus chips).",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "AMD",
+    "SOXX"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "AMD": "up",
+    "SOXX": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "AMD": "neutral",
+    "SOXX": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "AMD": "down",
+    "SOXX": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

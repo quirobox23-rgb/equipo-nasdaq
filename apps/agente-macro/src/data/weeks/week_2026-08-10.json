@@ -1,0 +1,70 @@
+[
+  {
+    "date": "2026-08-11",
+    "time": "09:30",
+    "country": "Estados Unidos",
+    "currency": "USD",
+    "name": "Existing Home Sales",
+    "impact": "low",
+    "prev": "4.09",
+    "forecast": "4.05",
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ"
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "time": "08:30",
+    "country": "Estados Unidos",
+    "currency": "USD",
+    "name": "Core CPI m/m",
+    "impact": "high",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-13",
+    "time": "08:30",
+    "country": "Estados Unidos",
+    "currency": "USD",
+    "name": "Initial Jobless Claims",
+    "impact": "med",
+    "prev": "199",
+    "forecast": "202",
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ"
+    ]
+  },
+  {
+    "date": "2026-08-12",
+    "time": "08:30",
+    "country": "Estados Unidos",
+    "currency": "USD",
+    "name": "CPI m/m",
+    "impact": "high",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  }
+]

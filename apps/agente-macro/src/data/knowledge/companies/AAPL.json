@@ -1,0 +1,35 @@
+{
+  "name": "Apple (AAPL)",
+  "ticker": "AAPL",
+  "aliases": [
+    "Apple"
+  ],
+  "stars": 4,
+  "frequency": "Trimestral",
+  "description": "Vende iPhone, Mac, iPad y wearables, y cobra por servicios (App Store, iCloud, Apple Music). El iPhone sigue siendo la mayor parte de sus ingresos.",
+  "nqImpact": "Es una de las mayores ponderaciones del NASDAQ 100: un movimiento fuerte de Apple mueve al índice por sí solo. El mercado mira las ventas de iPhone, China y los servicios.",
+  "dependencies": "Consumo en EE.UU. y China; proveedores como TSMC y Qualcomm.",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "AAPL"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "AAPL": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "AAPL": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "AAPL": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

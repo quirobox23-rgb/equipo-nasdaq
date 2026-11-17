@@ -1,0 +1,37 @@
+{
+  "name": "Natural Gas Storage",
+  "aliases": [
+    "Natural Gas Storage",
+    "Inventarios de Gas Natural"
+  ],
+  "description": "Variación semanal de las reservas de gas natural (EIA).",
+  "narrative": "Mueve el precio del gas natural; casi no afecta al NQ.",
+  "scenarioPositive": "Inyección menor de lo esperado → gas natural alcista ↑.",
+  "scenarioNegative": "Inyección mayor de lo esperado → gas natural bajista ↓.",
+  "scenarioNeutral": "En línea → sin impacto.",
+  "affectedAssets": [
+    "NATGAS"
+  ],
+  "assetsBeat": {
+    "NATGAS": "up"
+  },
+  "assetsInline": {
+    "NATGAS": "neutral"
+  },
+  "assetsMiss": {
+    "NATGAS": "down"
+  },
+  "importance": "low",
+  "stars": 1,
+  "betterWhen": "lower",
+  "frequency": "Semanal · jueves 10:30 ET",
+  "scenarioShortBetter": "Menos reservas: gas ↑",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Más reservas: gas ↓",
+  "dependencies": "Depende del clima (frío o calor extremo).",
+  "comments": "Sin impacto en índices. Jueves 10:30 ET.",
+  "specialRules": [
+    "SOLO GAS: Relevante para quien opera gas natural."
+  ],
+  "notes": "Publicación: semanal, jueves 10:30 ET."
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Beige Book",
+  "aliases": [
+    "Fed Beige Book",
+    "Libro Beige"
+  ],
+  "description": "Informe de la Fed con la situación económica en sus 12 distritos, basado en entrevistas a empresas. Sale dos semanas antes de cada reunión del FOMC.",
+  "narrative": "Es cualitativo: describe si la actividad, el empleo y los precios suben o bajan en cada región. Sirve de contexto para la próxima decisión.",
+  "scenarioPositive": "Beige Book FUERTE (actividad y precios al alza en la mayoría de distritos) → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Beige Book DÉBIL (actividad estancada o cayendo, presión de precios a la baja) → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "Sin cambios relevantes respecto al anterior → casi no mueve mercado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "8 veces al año · 14:00 ET",
+  "scenarioShortBetter": "Economía fuerte: USD ↑, NQ ↓",
+  "scenarioShortInline": "Sin cambios: impacto bajo",
+  "scenarioShortWorse": "Economía débil: USD ↓, NQ ↑",
+  "dependencies": "Anticipa la próxima reunión del FOMC. Pesa más si coincide con datos de empleo o inflación en la misma dirección.",
+  "comments": "Normalmente impacto bajo; se publica a las 14:00 ET.",
+  "specialRules": [
+    "CUALITATIVO: No tiene previsión, se lee el tono general de los distritos."
+  ],
+  "notes": "Publicación: 8 veces al año, unas dos semanas antes de cada FOMC."
+}

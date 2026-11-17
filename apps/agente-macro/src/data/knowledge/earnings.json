@@ -1,0 +1,39 @@
+﻿{
+    "scenarioPositive":  "BEAT → USD alcista ↑",
+    "scenarioNegative":  "MISS → USD bajista ↓",
+    "importance":  "med",
+    "stars": 3,
+    "scenarioNeutral":  "INLINE → Normal",
+    "assetsInline":  {
+                         "NASDAQ":  "neutral",
+                         "GOLD":  "neutral",
+                         "USD":  "neutral"
+                     },
+    "affectedAssets":  [
+                           "USD",
+                           "NASDAQ",
+                           "GOLD"
+                       ],
+    "name":  "earnings",
+    "specialRules":  [
+
+                     ],
+    "description":  "Evento de mercado",
+    "dependencies":  "",
+    "assetsBeat":  {
+                       "NASDAQ":  "down",
+                       "GOLD":  "down",
+                       "USD":  "up"
+                   },
+    "aliases":  [
+                    "earnings"
+                ],
+    "assetsMiss":  {
+                       "NASDAQ":  "up",
+                       "GOLD":  "up",
+                       "USD":  "down"
+                   },
+    "notes":  "",
+    "comments":  "",
+    "narrative":  "Indicador económico"
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Crude Oil Inventories",
+  "aliases": ["Oil Inventories", "EIA Inventory Report", "Oil Stock Change"],
+  "description": "Cambio semanal en inventarios de petróleo crudo en USA. Indicador de demanda de energía.",
+  "narrative": "Oil Inventories ↓ = menos stock = demanda fuerte = economía fuerte. Oil Inventories ↑ = más stock = demanda débil = economía débil.",
+  "scenarioPositive": "Oil Inventories BAJAN (demanda fuerte) → Economía resiliente → CL (petróleo) alcista ↑, USD alcista ↑.",
+  "scenarioNegative": "Oil Inventories SUBEN (demanda débil) → Economía débil → CL bajista ↓, USD bajista ↓.",
+  "scenarioNeutral": "Oil Inventories sin cambios → Normal.",
+  "affectedAssets": ["CL", "USD", "GOLD", "CRB"],
+  "assetsBeat": { "CL": "up", "USD": "up", "GOLD": "down", "CRB": "up" },
+  "assetsInline": { "CL": "neutral", "USD": "neutral", "GOLD": "neutral", "CRB": "neutral" },
+  "assetsMiss": { "CL": "down", "USD": "down", "GOLD": "up", "CRB": "down" },
+  "importance": "low",
+  "stars": 1,
+  "betterWhen": "lower",
+  "dependencies": "Oil Inventories → Gasoline Prices → CPI futuro. Petróleo = 10% de CPI.",
+  "comments": "Volatilidad media. Publicado cada miércoles a las 10:30 ET por EIA (Energy Information Administration).",
+  "specialRules": [
+    "STRATEGIC RESERVE: Si gobierno suelta SPR (Strategic Petroleum Reserve) = baja artificial inventories."
+  ],
+  "notes": "Publicación: Cada miércoles 10:30 ET. Indicador de demanda de energía."
+}

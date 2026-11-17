@@ -1,0 +1,39 @@
+{
+  "name": "Qualcomm (QCOM)",
+  "ticker": "QCOM",
+  "aliases": [
+    "Qualcomm"
+  ],
+  "stars": 2,
+  "frequency": "Trimestral",
+  "description": "Chips para celulares (Snapdragon) y módems, más chips para autos y PCs.",
+  "nqImpact": "Su reporte refleja la demanda de smartphones; mueve al sector semiconductores en menor medida.",
+  "dependencies": "Apple (cliente), mercado de smartphones, TSMC (fabrica sus chips).",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "QCOM",
+    "SOXX"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "QCOM": "up",
+    "SOXX": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "QCOM": "neutral",
+    "SOXX": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "QCOM": "down",
+    "SOXX": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

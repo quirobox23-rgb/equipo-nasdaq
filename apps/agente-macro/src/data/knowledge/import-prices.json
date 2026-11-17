@@ -1,0 +1,22 @@
+{
+  "name": "Import Prices",
+  "aliases": ["Import Prices m/m", "Import Price Index"],
+  "description": "Mide cambio de precios en imports (bienes que entra a USA). Indicador de presión inflacionaria global.",
+  "narrative": "Import Prices ↑ = presión inflacionaria global → CPI subirá próximo mes → Fed subirá tasas.",
+  "scenarioPositive": "Import Prices BEAT (suben más que esperado) → Presión inflacionaria global → CPI futuro sube → Fed hawkish → USD alcista ↑.",
+  "scenarioNegative": "Import Prices MISS (bajan) → Presión inflacionaria baja → CPI futuro baja → Fed dovish → USD bajista ↓.",
+  "scenarioNeutral": "Import Prices INLINE (como esperado) → Sin sorpresas.",
+  "affectedAssets": ["USD", "TLT", "GOLD", "CRB"],
+  "assetsBeat": { "USD": "up", "TLT": "down", "GOLD": "down", "CRB": "up" },
+  "assetsInline": { "USD": "neutral", "TLT": "neutral", "GOLD": "neutral", "CRB": "neutral" },
+  "assetsMiss": { "USD": "down", "TLT": "up", "GOLD": "up", "CRB": "down" },
+  "importance": "low",
+  "stars": 1,
+  "dependencies": "Import Prices → CPI (1-2 meses después). Leading indicator de inflación importada.",
+  "comments": "Bajo impacto comparado a CPI/PPI. Publicado segunda semana del mes.",
+  "specialRules": [
+    "COMMODITIES: Movimientos en commodities (oil, metals) predicen Import Prices.",
+    "USD STRENGTH: Dólar fuerte = imports baratos (baja Import Prices). Dólar débil = imports caros."
+  ],
+  "notes": "Publicación: Segunda semana del mes. Leading indicator de CPI global."
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Housing Starts & Building Permits",
+  "aliases": [
+    "Housing Starts",
+    "Building Permits",
+    "Inicios de Vivienda",
+    "Permisos de Construcción"
+  ],
+  "description": "Viviendas nuevas que empiezan a construirse (Housing Starts) y permisos concedidos para construir (Building Permits) en el mes.",
+  "narrative": "Construcción de viviendas = sector muy sensible a tipos. Permisos anticipan la actividad de los próximos meses.",
+  "scenarioPositive": "Dato mejor de lo esperado → vivienda resistente pese a tipos → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Dato peor de lo esperado → vivienda frenada por tipos altos → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · mitad de mes · 08:30 ET",
+  "scenarioShortBetter": "Vivienda fuerte: USD ↑",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Vivienda débil: USD ↓",
+  "dependencies": "Sector que más rápido refleja la política de la Fed. Se lee junto a NAHB y ventas de viviendas.",
+  "comments": "Impacto bajo, 08:30 ET.",
+  "specialRules": [
+    "PERMISOS > INICIOS: Los permisos son el indicador adelantado; los inicios son muy volátiles."
+  ],
+  "notes": "Publicación: mensual, hacia mitad de mes, 08:30 ET."
+}

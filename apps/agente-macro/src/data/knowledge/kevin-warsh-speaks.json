@@ -1,0 +1,57 @@
+{
+  "name": "Fed Chair Warsh Speaks",
+  "aliases": [
+    "Kevin Warsh Speaks",
+    "Warsh Speaks",
+    "Fed Chair Warsh Testifies",
+    "Kevin Warsh",
+    "Conferencia de Kevin Warsh"
+  ],
+  "description": "Discurso o comparecencia de Kevin Warsh, presidente (Chair) de la Reserva Federal. Incluye discursos, entrevistas y testimonios ante el Congreso.",
+  "narrative": "Warsh es el Chair de la Fed: lo que dice marca la guía de política monetaria por encima de cualquier otro miembro del FOMC. Tiene fama de tono más hawkish (duro contra la inflación) y crítico con el balance grande de la Fed, así que el mercado escucha cada matiz sobre tasas, inflación y balance.",
+  "scenarioPositive": "Warsh HAWKISH (inflación aún alta, no hay prisa por bajar tasas, reducir balance) → Mercado retrasa los recortes → USD alcista ↑, NASDAQ bajista ↓, Oro bajista ↓, bonos bajista ↓.",
+  "scenarioNegative": "Warsh DOVISH (abre la puerta a recortes, preocupación por empleo o crecimiento) → Mercado adelanta recortes → USD bajista ↓, NASDAQ alcista ↑, Oro alcista ↑, bonos alcista ↑.",
+  "scenarioNeutral": "Warsh NEUTRAL (repite el mensaje del último FOMC, 'dependemos de los datos') → Impacto limitado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT",
+    "VIX"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down",
+    "VIX": "up"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral",
+    "VIX": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up",
+    "VIX": "down"
+  },
+  "importance": "high",
+  "stars": 4,
+  "frequency": "Sin fecha fija · ruedas de prensa tras cada FOMC y testimonios semestrales",
+  "scenarioShortBetter": "Hawkish: USD ↑, NQ ↓",
+  "scenarioShortInline": "Sin novedad: impacto bajo",
+  "scenarioShortWorse": "Dovish: USD ↓, NQ ↑",
+  "dependencies": "Como Chair, su mensaje pesa más que el de cualquier otro miembro del FOMC. Se interpreta contra la última decisión de tasas, el Dot Plot y los últimos datos de inflación (CPI, PCE) y empleo (NFP).",
+  "comments": "Volatilidad alta si hay matiz nuevo sobre el ritmo de recortes o el balance. Si solo repite el mensaje del último FOMC, el movimiento se diluye rápido.",
+  "specialRules": [
+    "CHAIR = GUÍA DE LA FED: Lo que dice Warsh es la referencia; el resto de miembros se lee en relación a él.",
+    "BALANCE: Warsh pone el foco en reducir el balance de la Fed. Hablar de acelerar esa reducción se lee como hawkish aunque no toque las tasas.",
+    "TESTIMONIOS: En las comparecencias ante el Congreso, el texto preparado sale antes; el turno de preguntas suele traer los titulares que mueven el mercado."
+  ],
+  "notes": "Kevin Warsh es el actual presidente de la Reserva Federal. Fue gobernador de la Fed entre 2006 y 2011."
+}

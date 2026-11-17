@@ -1,0 +1,39 @@
+{
+  "name": "Broadcom (AVGO)",
+  "ticker": "AVGO",
+  "aliases": [
+    "Broadcom"
+  ],
+  "stars": 3,
+  "frequency": "Trimestral",
+  "description": "Chips de redes para centros de datos y chips a medida para IA (para Google, Meta y otros), más software empresarial.",
+  "nqImpact": "Es la segunda gran apuesta de IA después de NVIDIA: arrastra al sector semiconductores.",
+  "dependencies": "NVIDIA, AMD; la inversión en IA de Alphabet y Meta.",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "AVGO",
+    "SOXX"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "AVGO": "up",
+    "SOXX": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "AVGO": "neutral",
+    "SOXX": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "AVGO": "down",
+    "SOXX": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

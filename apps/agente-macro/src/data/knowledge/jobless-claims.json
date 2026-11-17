@@ -1,0 +1,25 @@
+{
+  "name": "Initial Jobless Claims",
+  "aliases": ["Jobless Claims", "Weekly Jobless Claims", "Initial Claims"],
+  "description": "Número de personas que solicitaron desempleo por primera vez la semana anterior. Indicador semanal de salud laboral.",
+  "narrative": "Jobless Claims semanal = termómetro del mercado laboral. Si suben = desempleo crece = economía débil = Fed baja tasas. Si bajan = empleo fuerte = Fed sube tasas.",
+  "scenarioPositive": "Menos solicitudes de las esperadas indica un mercado laboral fuerte, lo que refuerza una postura más dura de la Fed.",
+  "scenarioNegative": "Más solicitudes de las esperadas indica que el desempleo crece, lo que empuja a la Fed hacia una postura más suave.",
+  "scenarioNeutral": "El dato coincide con lo esperado, sin cambios relevantes en la lectura del mercado laboral.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "SPX", "VIX"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "SPX": "down", "VIX": "up" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "SPX": "neutral", "VIX": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "SPX": "up", "VIX": "down" },
+  "importance": "med",
+  "stars": 2,
+  "betterWhen": "lower",
+  "dependencies": "Jobless Claims → Non-Farm Payroll (NFP) próximo mes. Si Claims suben = NFP bajará. Predictor temprano de empleo.",
+  "comments": "Indicador semanal, por eso volatilidad media. Publicado cada jueves. Leading indicator de NFP.",
+  "specialRules": [
+    "WEEKLY DATA: Se publica cada jueves 08:30 ET. Menos importante que NFP pero tendencias son claras.",
+    "4-WEEK AVERAGE: Mercado prefiere 4-week moving average (suaviza volatilidad semanal).",
+    "TREND vs PRINT: Tendencia (subiendo o bajando 3 semanas) importa más que el número puro.",
+    "NFP PREDICTOR: Si Claims suben 3 semanas seguidas = NFP bajará el mes siguiente."
+  ],
+  "notes": "Publicación: Cada jueves 08:30 ET. Leading indicator de Non-Farm Payroll."
+}

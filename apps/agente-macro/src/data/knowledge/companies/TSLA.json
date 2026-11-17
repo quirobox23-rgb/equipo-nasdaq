@@ -1,0 +1,35 @@
+{
+  "name": "Tesla (TSLA)",
+  "ticker": "TSLA",
+  "aliases": [
+    "Tesla"
+  ],
+  "stars": 4,
+  "frequency": "Trimestral",
+  "description": "Autos eléctricos, baterías y almacenamiento de energía; apuesta a la conducción autónoma y la robótica.",
+  "nqImpact": "Una de las acciones más volátiles del NASDAQ 100. Se mueve mucho por narrativa (autonomía, márgenes, entregas), más que por el número en sí.",
+  "dependencies": "Tasas de interés (financiación de autos); entregas trimestrales, que se publican antes del reporte.",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "TSLA"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "TSLA": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "TSLA": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "TSLA": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

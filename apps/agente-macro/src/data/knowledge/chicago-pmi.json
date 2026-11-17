@@ -1,0 +1,48 @@
+{
+  "name": "Chicago PMI",
+  "aliases": [
+    "Chicago Purchasing Managers Index",
+    "ISM-Chicago"
+  ],
+  "description": "Índice de actividad empresarial de la zona de Chicago. Por encima de 50 = expansión, por debajo = contracción.",
+  "narrative": "Sale el último día hábil del mes, justo antes del ISM Manufacturing, y se usa como adelanto.",
+  "scenarioPositive": "Chicago PMI mejor de lo esperado → actividad fuerte → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Chicago PMI peor de lo esperado → actividad débil → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · último día hábil · 09:45 ET",
+  "scenarioShortBetter": "Actividad fuerte: USD ↑",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Actividad débil: USD ↓",
+  "dependencies": "Adelanto del ISM Manufacturing del mes siguiente.",
+  "comments": "Muy volátil mes a mes; impacto normalmente bajo (09:45 ET).",
+  "specialRules": [
+    "ADELANTO DEL ISM: Una sorpresa grande ajusta expectativas para el ISM."
+  ],
+  "notes": "Publicación: último día hábil del mes, 09:45 ET."
+}

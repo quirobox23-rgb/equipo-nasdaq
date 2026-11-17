@@ -1,0 +1,22 @@
+{
+  "name": "FOMC Member Speaks",
+  "aliases": ["Fed Speaks", "Fed Member Speaks", "Fed Official Speaks", "FOMC Speaks"],
+  "description": "Discurso o comparecencia de un miembro del FOMC (gobernador o presidente de un Fed regional) distinto del Chair. Ocurre con mucha frecuencia — casi cada semana habla alguno.",
+  "narrative": "Cada declaración se interpreta en la escala hawkish (duro con inflación, favorable a tasas altas) vs dovish (preocupado por empleo/crecimiento, favorable a bajar tasas). El impacto depende de si el miembro tiene voto ese año en el FOMC y de si dice algo que sorprende respecto al consenso ya conocido.",
+  "scenarioPositive": "Tono HAWKISH (defiende mantener o subir tasas, preocupación por inflación persistente) → USD alcista ↑, NASDAQ bajista ↓, Gold bajista ↓.",
+  "scenarioNegative": "Tono DOVISH (defiende bajar tasas, prioriza el empleo sobre la inflación) → USD bajista ↓, NASDAQ alcista ↑, Gold alcista ↑.",
+  "scenarioNeutral": "Tono NEUTRAL o repite mensaje ya conocido, sin novedad → Impacto limitado, mercado ya lo tenía descontado.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "TLT"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "TLT": "down" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "TLT": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "TLT": "up" },
+  "importance": "low",
+  "stars": 2,
+  "dependencies": "El impacto real depende de QUIÉN habla: un miembro votante del FOMC ese año pesa más que uno sin voto. Warsh (Chair) siempre pesa más que cualquier otro miembro individual.",
+  "comments": "Volatilidad normalmente baja — salvo que diga algo que contradiga claramente el consenso o la guía reciente de la Fed, en cuyo caso puede generar un movimiento brusco y rápido.",
+  "specialRules": [
+    "VOTANTE vs NO VOTANTE: Los miembros votantes rotan cada año entre los presidentes de Fed regionales. Un no-votante pesa menos.",
+    "SORPRESA > REPETICIÓN: Si solo repite lo dicho en el último FOMC, casi no mueve mercado. Solo importa si hay matiz nuevo."
+  ],
+  "notes": "Ficha genérica para cualquier miembro del FOMC que no sea el Chair (Kevin Warsh, que tiene ficha propia). Aplica el mismo framework hawkish/dovish a cualquier nombre."
+}

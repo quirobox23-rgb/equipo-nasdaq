@@ -1,0 +1,22 @@
+{
+  "name": "FOMC Press Conference",
+  "aliases": ["Warsh Press Conference", "Fed Press Conference", "Chair Speech"],
+  "description": "Conferencia de prensa del Chair Kevin Warsh después de Fed Rate Decision. Explicación de decisión y future guidance.",
+  "narrative": "Rueda de prensa de Warsh = interpretación de decisión Fed. Lo que Warsh dice importa más que el anuncio. Mercado escucha cada palabra.",
+  "scenarioPositive": "Warsh HAWKISH (lenguaje fuerte, tasas subirán más) → USD alcista ↑, Bonos bajista ↓, NASDAQ bajista ↓.",
+  "scenarioNegative": "Warsh DOVISH (lenguaje suave, tasas bajarán) → USD bajista ↓, Bonos alcista ↑, NASDAQ alcista ↑.",
+  "scenarioNeutral": "Warsh NEUTRAL (mensajes balanceados) → Sin sorpresas significativas.",
+  "affectedAssets": ["USD", "TLT", "NASDAQ", "GOLD", "VIX"],
+  "assetsBeat": { "USD": "up", "TLT": "down", "NASDAQ": "down", "GOLD": "down", "VIX": "up" },
+  "assetsInline": { "USD": "neutral", "TLT": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "VIX": "neutral" },
+  "assetsMiss": { "USD": "down", "TLT": "up", "NASDAQ": "up", "GOLD": "up", "VIX": "down" },
+  "importance": "high",
+  "stars": 5,
+  "dependencies": "Rueda de prensa de Warsh = confirmación/clarificación de dot plot. A veces contradice dot plot (mayor volatilidad).",
+  "comments": "Volatilidad máxima durante speech (45 min). Q&A después es crítico.",
+  "specialRules": [
+    "PALABRAS DE WARSH: Ciertos palabras clave: 'patient', 'data dependent', 'further increases' trigger volatilidad.",
+    "HAWKISH vs DOVISH: Cambio de tono respecto a reunión anterior importa mucho."
+  ],
+  "notes": "Publicación: 30 min después de Fed Rate Decision. La explicación de Fed importa más que decisión."
+}

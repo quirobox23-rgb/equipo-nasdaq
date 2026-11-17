@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.vercel/
+.env
+.env.local
+.env*
+.DS_Store
+*.swp
+tsconfig.tsbuildinfo
+
+# Análisis Semanal guardado en disco cuando no hay Redis
+src/data/weekly/

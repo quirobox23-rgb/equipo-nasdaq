@@ -1,0 +1,39 @@
+{
+  "name": "ASML (ASML)",
+  "ticker": "ASML",
+  "aliases": [
+    "ASML"
+  ],
+  "stars": 2,
+  "frequency": "Trimestral",
+  "description": "Fabrica las máquinas de litografía (EUV) con las que se hacen los chips más avanzados. Es la única empresa que las produce.",
+  "nqImpact": "Sus pedidos anticipan cuánto van a invertir los fabricantes de chips. Reporta de los primeros del trimestre.",
+  "dependencies": "TSMC, Samsung e Intel (clientes); restricciones de exportación a China.",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "ASML",
+    "SOXX"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "ASML": "up",
+    "SOXX": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "ASML": "neutral",
+    "SOXX": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "ASML": "down",
+    "SOXX": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

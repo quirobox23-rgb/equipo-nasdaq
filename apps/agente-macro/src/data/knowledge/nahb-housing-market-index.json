@@ -1,0 +1,49 @@
+{
+  "name": "NAHB Housing Market Index",
+  "aliases": [
+    "NAHB",
+    "NAHB Housing Market Index",
+    "Confianza Constructores"
+  ],
+  "description": "Confianza de los constructores de viviendas. Por encima de 50 = la mayoría ve el mercado bien.",
+  "narrative": "Primer dato del mes sobre vivienda; refleja cómo afectan los tipos hipotecarios a la construcción.",
+  "scenarioPositive": "Confianza mejor de lo esperado → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Confianza peor de lo esperado → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 10:00 ET",
+  "scenarioShortBetter": "Constructores optimistas: USD ↑",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Constructores pesimistas: USD ↓",
+  "dependencies": "Anticipa Housing Starts y Building Permits.",
+  "comments": "Impacto bajo, 10:00 ET.",
+  "specialRules": [
+    "SENTIMIENTO: Es una encuesta, no actividad real."
+  ],
+  "notes": "Publicación: mensual, hacia mitad de mes, 10:00 ET."
+}

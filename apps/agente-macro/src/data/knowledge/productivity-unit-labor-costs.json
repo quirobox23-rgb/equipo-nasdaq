@@ -1,0 +1,51 @@
+{
+  "name": "Nonfarm Productivity & Unit Labor Costs",
+  "aliases": [
+    "Nonfarm Productivity",
+    "Unit Labor Costs",
+    "Productividad",
+    "Costes Laborales Unitarios"
+  ],
+  "description": "Productividad del trabajo (producción por hora) y coste laboral por unidad producida, trimestral.",
+  "narrative": "Alta productividad permite subir salarios sin inflación. Unit Labor Costs altos = presión inflacionaria.",
+  "scenarioPositive": "Costes laborales unitarios más altos de lo esperado → presión inflacionaria → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Costes laborales unitarios más bajos (o productividad alta) → menos inflación → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Trimestral · 08:30 ET",
+  "scenarioShortBetter": "Costes al alza: USD ↑, NQ ↓",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Costes a la baja: USD ↓, NQ ↑",
+  "dependencies": "Se lee junto a ECI y Average Hourly Earnings para la presión salarial.",
+  "comments": "Impacto bajo, 08:30 ET.",
+  "specialRules": [
+    "MIRAR UNIT LABOR COSTS: Es la parte que importa para la inflación.",
+    "PRELIM vs REVISED: El dato preliminar se revisa un mes después."
+  ],
+  "notes": "Publicación: trimestral, 08:30 ET (preliminar y revisado)."
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Employment Cost Index",
+  "aliases": [
+    "ECI",
+    "Employment Cost Index q/q",
+    "Índice de Costes Laborales"
+  ],
+  "description": "Variación trimestral del coste total del trabajo para las empresas (salarios y beneficios). Es la medida de salarios que más vigila la Fed.",
+  "narrative": "Si los costes laborales suben rápido, las empresas trasladan esa subida a precios. Un ECI alto = presión inflacionaria = Fed más dura.",
+  "scenarioPositive": "ECI más alto de lo esperado → presión salarial e inflación → USD alcista ↑, NASDAQ bajista ↓, bonos bajista ↓.",
+  "scenarioNegative": "ECI más bajo de lo esperado → salarios moderándose → USD bajista ↓, NASDAQ alcista ↑, bonos alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "med",
+  "stars": 3,
+  "frequency": "Trimestral · 08:30 ET",
+  "scenarioShortBetter": "Salarios calientes: USD ↑, NQ ↓",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Salarios moderados: USD ↓, NQ ↑",
+  "dependencies": "Complementa Average Hourly Earnings (mensual). La Fed lo prefiere porque incluye beneficios y no se distorsiona por cambios de composición del empleo.",
+  "comments": "Sale a las 08:30 ET, a menudo junto a Jobless Claims o PCE, lo que puede amplificar el movimiento.",
+  "specialRules": [
+    "DATO DE LA FED: Warsh y el comité lo citan como referencia de presión salarial.",
+    "TRIMESTRAL: Al salir poco, una sorpresa pesa más."
+  ],
+  "notes": "Publicación: trimestral, a final del mes siguiente al trimestre, 08:30 ET."
+}

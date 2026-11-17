@@ -1,0 +1,42 @@
+{
+  "name": "Bank Holiday",
+  "aliases": [
+    "Bank Holiday",
+    "Holiday",
+    "Festivo",
+    "Labor Day",
+    "Thanksgiving",
+    "Independence Day",
+    "Memorial Day",
+    "Christmas"
+  ],
+  "description": "Festivo bancario en EE.UU. Bolsa cerrada o con horario reducido y poca liquidez.",
+  "narrative": "Sin datos. Días con volumen bajo: movimientos raros o sin dirección clara.",
+  "scenarioPositive": "No aplica.",
+  "scenarioNegative": "No aplica.",
+  "scenarioNeutral": "Mercado cerrado o con poco volumen.",
+  "affectedAssets": [
+    "NASDAQ"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "neutral"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "neutral"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Según calendario",
+  "scenarioShortBetter": "—",
+  "scenarioShortInline": "Mercado cerrado o lento",
+  "scenarioShortWorse": "—",
+  "dependencies": "Revisa si el CME cierra antes los futuros ese día.",
+  "comments": "Liquidez baja; mejor no operar o reducir tamaño.",
+  "specialRules": [
+    "POCA LIQUIDEZ: Evita forzar operaciones en festivos o medias sesiones."
+  ],
+  "notes": "Fechas fijas del calendario de EE.UU."
+}

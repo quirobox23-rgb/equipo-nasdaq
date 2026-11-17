@@ -1,0 +1,21 @@
+{
+  "name": "Core Retail Sales",
+  "aliases": ["Core Retail Sales m/m", "Retail Sales ex-autos", "Core Retail Sales (Aug)"],
+  "description": "Retail Sales sin autos (más volátil). Mide consumo de consumidores más estable.",
+  "narrative": "Core Retail Sales = consumo más real (ex-variabilidad de autos). Fed presta más atención a Core que Headline.",
+  "scenarioPositive": "Core Retail BEAT (sube más) → Consumo fuerte → Economía resiliente → USD alcista ↑.",
+  "scenarioNegative": "Core Retail MISS (baja) → Consumo débil → Economía débil → USD bajista ↓.",
+  "scenarioNeutral": "Core Retail INLINE → Sin sorpresas.",
+  "affectedAssets": ["USD", "NASDAQ", "SPX", "XRT"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "SPX": "down", "XRT": "up" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "SPX": "neutral", "XRT": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "SPX": "up", "XRT": "down" },
+  "importance": "med",
+  "stars": 3,
+  "dependencies": "Retail Sales Headline + Core = contexto completo. Core = lo que mira Fed.",
+  "comments": "Menos volátil que Headline Retail (que incluye autos). Publicado con Retail Sales.",
+  "specialRules": [
+    "HEADLINE vs CORE: Core es más importante para Fed. Headline volátil por autos/energía."
+  ],
+  "notes": "Publicación: Segundo viernes 08:30 ET con Retail Sales Headline. Métrica clave de consumo."
+}
