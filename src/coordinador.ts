@@ -16,8 +16,8 @@ export function semaforo(h: Hallazgo[]): Semaforo {
 
 const EMOJI: Record<Semaforo, string> = { verde: '🟢', ambar: '🟠', rojo: '🔴' }
 const NOMBRE_AGENTE: Record<Hallazgo['agente'], string> = {
-  macro: 'Macro', noticias: 'Noticias', grafico: 'Gráfico', estructura: 'Estructura', volumen: 'Volumen',
-  volatilidad: 'Volatilidad', bienestar: 'Coach', cuentas: 'Gestor de cuentas',
+  macro: 'Macro', fed: 'Fed', earnings: 'Resultados', noticias: 'Noticias', grafico: 'Rango', estructura: 'Estructura', volumen: 'Volumen',
+  volatilidad: 'Volatilidad y rango', bienestar: 'Coach', cuentas: 'Gestor de cuentas',
 }
 const TITULO: Record<TipoMensaje, string> = {
   guia: 'Guía del día', apertura: 'Antes de la apertura', aviso: 'Aviso', cierre: 'Cierre del día', semanal: 'Resumen semanal',

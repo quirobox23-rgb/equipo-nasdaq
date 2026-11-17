@@ -11,13 +11,15 @@ Un **equipo por activo** (hoy Nasdaq; Oro ya está como plantilla en `src/equipo
 |---|---|
 | **Equipo del activo** (`src/equipo/`) | |
 | · Estructura (`estructura.ts`) | Vigila los niveles de **tu estrategia** (máx/mín de Asia, Londres, ayer, noche) y avisa cuando el precio se acerca, los barre, los recupera o se queda al otro lado ("ya no parece un barrido, parece una ruptura en contra"). Añade volumen y posición respecto al VWAP. Siempre termina en "la decisión es tuya". |
-| · Gráfico (`grafico.ts`) | Máx/mín de ayer y de la noche, rango medio y precio en zona de decisión. |
-| · Volumen y volatilidad (`grafico.ts`) | Volumen relativo a la misma hora de días anteriores; saltos del VIX (o del GVZ en oro). |
+| · Volatilidad y rango (`grafico.ts`) | Cuánto se mueve el activo de media al día (ATR de 14 días, en puntos: "cuenta con movimientos de unos 300 puntos"), nivel y saltos del VIX (o del GVZ en oro), y si el día ya va más largo de lo normal. |
+| · Volumen (`grafico.ts`) | Volumen relativo a la misma hora de días anteriores. |
 | · Noticias (`noticias.ts`) | Titulares (Fed, CNBC, MarketWatch) filtrados por palabras clave del activo y valorados con Claude. |
 | · Macro (`macro.ts`) | Calendario de EE. UU. con hora exacta y ventanas de "no operes ahora" alrededor de CPI, NFP, FOMC, Warsh… |
+| · Fed (`fed.ts`) | Discursos, actas y decisiones de tipos del día, con la ficha de quien habla (cargo, tono, si vota). Las fichas están en `config/fed.json`: añade a los miembros que quieras. |
+| · Resultados (`earnings.ts`) | Solo las empresas que mueven el NQ (Nvidia, Apple, Microsoft, Amazon, Meta, Google, Tesla, Broadcom…): si presentan hoy antes de la apertura o después del cierre, qué espera el consenso y, si presentaron ayer tras el cierre, cómo salió. Nunca adivina el sentido. Necesita `FINNHUB_KEY` (gratis en finnhub.io). |
 | **Servicios personales** (`src/personal/`) | |
-| · Coach (`coach.ts`) | Te pregunta cómo estás, entiende "6h, sí, nerviosa" y calcula tu aptitud para operar. Ficha preparada para el reloj (VFC, pulso, estrés). |
-| · Gestor de cuentas (`gestor.ts`) | Reglas de cada cuenta de fondeo: pérdida diaria, drawdown trailing o estático, objetivo. "Ojo con esta" al 50% y 80% de la pérdida diaria o cerca del drawdown. |
+| · Coach (`coach.ts`) | Te pregunta cómo estás, si has comido, tus **hábitos** (los que pongas en `config/coach.json`: meditar, boxeo…), si te ves en condiciones de operar y tu **sesgo** del día. Calcula tu aptitud y, según tu sesgo y las noticias de hoy, te dice con qué tener cuidado. Al cierre compara tu sesgo con lo que hizo el mercado y el domingo te da el recuento de la semana. Ficha preparada para el reloj (VFC, pulso, estrés). |
+| · Gestor de cuentas (`gestor.ts`, `factorMetricas.ts`) | "Tienes 5 cuentas activas: 3 fondeadas y 2 en challenge." Lee tus cuentas activas y operaciones de **Factor Métricas** (solo lectura) y calcula el drawdown igual que la app. "Ojo con esta" al 50% y 80% de la pérdida diaria o cerca del drawdown. Sin Factor Métricas, usa `config/cuentas.json` y tus mensajes `pnl …`. |
 | **Coordinador** (`src/coordinador.ts`) | Junta todo, pone el semáforo de **riesgo** 🟢🟠🔴 (los avisos de tu estrategia van aparte con 📍 y no lo cambian) y redacta con Claude. Si el texto pareciera una señal ("compra", "ponte corto"…), usa la plantilla. |
 
 ## La oficina en pantalla
@@ -37,11 +39,13 @@ Se define en `config/estrategias/<equipo>.json`. La de Nasdaq viene con tu escen
 
 Para añadir otro activo: `EQUIPOS=nasdaq,gold` en `.env` y un `config/estrategias/gold.json`.
 
+Con `SOLO_TEXTO=1` los mensajes no llevan precios exactos, solo contexto (el modo pensado para clientes, sin licencia de redistribución de CME).
+
 ## Horario
 
 | Cuándo (hora de España) | Qué |
 |---|---|
-| 08:30 de lunes a viernes | Guía del día: agenda macro, niveles, cuentas y pregunta de bienestar |
+| 08:30 de lunes a viernes | Guía del día: fecha, macro y Fed, resultados, cuentas, volatilidad y rango esperado, y la pregunta del coach (hábitos, condiciones y sesgo) |
 | 15:00 (09:00 Nueva York) | Antes de la apertura: qué ha cambiado, noticias, tu aptitud y tus cuentas |
 | 08:00 a 17:30, cada 5 min | Vigilancia: avisos de tu estrategia (desde Londres) y de riesgo. Solo escribe si hay algo nuevo; los de riesgo tienen un máximo por hora |
 | 22:15 (16:15 Nueva York) | Cierre del día |
@@ -51,7 +55,7 @@ Las tareas de mercado van en hora de Nueva York, así que los cambios de hora de
 
 ## Hablarle a la oficina (Telegram o WhatsApp)
 
-- Cualquier mensaje se toma como tu check-in del día: `7h, sí, tranquila`.
+- Cualquier mensaje se toma como tu check-in del día: `7h, sí, comido bien, medité, tranquila, me veo bien, bajista`. Puedes contestar en varias veces.
 - Para actualizar una cuenta: `pnl cuenta1 -250` o `pnl cuenta1 -250 saldo 49750`.
 
 ## Puesta en marcha

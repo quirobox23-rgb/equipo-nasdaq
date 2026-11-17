@@ -169,3 +169,47 @@ export function describirNiveles(n: Niveles): string {
   partes.push(`Último: ${f(n.ultimo)}`)
   return partes.join('. ')
 }
+
+/** ATR: rango verdadero medio de las últimas `n` sesiones completas, en puntos. */
+export function atr(diarias: Vela[], ahora: Date, n = 14): number | null {
+  const hoy = claveDia(ahora, tz())
+  const cerradas = diarias.filter(v => claveDia(v.t, tz()) < hoy)
+  if (cerradas.length < 2) return null
+  const tr: number[] = []
+  for (let i = 1; i < cerradas.length; i++) {
+    const v = cerradas[i], prev = cerradas[i - 1].c
+    tr.push(Math.max(v.h - v.l, Math.abs(v.h - prev), Math.abs(v.l - prev)))
+  }
+  const ult = tr.slice(-n)
+  return ult.reduce((a, b) => a + b, 0) / ult.length
+}
+
+/** Movimiento del día en % (de la apertura regular al último precio). Para comparar con tu sesgo. */
+export function movimientoDelDia(velas: Vela[], ahora: Date): number | null {
+  const hoy = claveDia(ahora, tz())
+  const sesion = velas.filter(v => v.t <= ahora && claveDia(v.t, tz()) === hoy && sesionRegular(v))
+  if (sesion.length === 0) return null
+  return ((sesion[sesion.length - 1].c - sesion[0].o) / sesion[0].o) * 100
+}
+
+/**
+ * Agente de volatilidad y rango: cuánto se suele mover el activo y cómo está
+ * la volatilidad. Habla en puntos de movimiento y porcentajes, no en precios.
+ */
+export function rangoEsperado(diarias: Vela[], vix: Vela[], ahora: Date, eq: Pick<DefinicionEquipo, 'nombreVolatilidad' | 'id' | 'nombre'>): Hallazgo[] {
+  const a = atr(diarias, ahora)
+  if (a === null) return []
+  const vx = cambioVix(vix, ahora)
+  const redondo = a >= 100 ? Math.round(a / 10) * 10 : Math.round(a)
+  let titulo = `${eq.nombre} se mueve de media unos ${redondo.toLocaleString('es-ES')} puntos al día (ATR de 14 días): cuenta con movimientos de ese tamaño.`
+  let nivel: Hallazgo['nivel'] = 'info'
+  if (vx) {
+    const sube = vx.cambioDia !== null && vx.cambioDia >= 5
+    titulo += ` ${eq.nombreVolatilidad} en ${vx.ultimo.toFixed(1)}${vx.cambioDia !== null ? ` (${vx.cambioDia >= 0 ? '+' : ''}${vx.cambioDia.toFixed(1)}% en el día)` : ''}.`
+    if (vx.ultimo >= 22 || sube) {
+      nivel = 'atencion'
+      titulo += ' Volatilidad alta: hoy pueden ser más.'
+    }
+  }
+  return [{ agente: 'volatilidad', nivel, titulo, clave: `${eq.id}:atr:${claveDia(ahora, tz())}` }]
+}
