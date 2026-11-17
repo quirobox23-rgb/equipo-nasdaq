@@ -6,15 +6,17 @@ import { cargarCalendario, type EventoMacro } from './sources/calendario.ts'
 import { cargarVelas, type Vela } from './sources/yahoo.ts'
 import { cargarTitulares } from './sources/rss.ts'
 import { briefingSemanal } from './sources/factorMacro.ts'
-import { agendaDelDia, vigilarMacro } from './agentes/macro.ts'
-import { analizarGrafico, describirNiveles } from './agentes/grafico.ts'
-import { analizarNoticias } from './agentes/noticias.ts'
-import { evaluarBienestar, aptitud, PREGUNTA_CHECKIN, type CheckIn } from './agentes/bienestar.ts'
-import { cargarReglas, evaluarCuentas, proveedorManual } from './agentes/cuentas.ts'
-import { redactar } from './agentes/jefe.ts'
+import { agendaDelDia, vigilarMacro } from './equipo/macro.ts'
+import { analizarGrafico, calcularNiveles, describirNiveles } from './equipo/grafico.ts'
+import { analizarEstructura, cargarEstrategia, describirNivelesEstrategia, type Estrategia } from './equipo/estructura.ts'
+import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
+import { analizarNoticias } from './equipo/noticias.ts'
+import { evaluarBienestar, aptitud, PREGUNTA_CHECKIN, type CheckIn } from './personal/coach.ts'
+import { cargarReglas, evaluarCuentas, proveedorManual } from './personal/gestor.ts'
+import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
 import type { Hallazgo } from './tipos.ts'
-import { APERTURA_ET, claveDia, hora, minutosDelDia } from './tiempo.ts'
+import { claveDia, hora, minutosDelDia } from './tiempo.ts'
 
 async function intentar<T>(nombre: string, f: () => Promise<T>): Promise<T | null> {
   try {
@@ -36,92 +38,127 @@ async function cuentas(): Promise<Hallazgo[]> {
   return evaluarCuentas(await cargarReglas(), await proveedorManual.leer())
 }
 
-async function grafico(ahora: Date) {
-  const [nq, vix] = await Promise.all([
-    intentar('nq', () => cargarVelas('NQ=F', '5m', '5d')),
-    intentar('vix', () => cargarVelas('^VIX', '5m', '5d')),
+interface InformeEquipo {
+  eq: DefinicionEquipo
+  estrategia: Estrategia
+  velas: Vela[] | null
+  hallazgos: Hallazgo[]
+  contexto: string[]
+}
+
+/** Reúne a los especialistas de mercado de un equipo (gráfico, volumen, volatilidad, estructura). */
+async function equipoMercado(eq: DefinicionEquipo, ahora: Date): Promise<InformeEquipo> {
+  const estrategia = await cargarEstrategia(eq.id)
+  const [velas, vol] = await Promise.all([
+    intentar(`${eq.id}:precio`, () => cargarVelas(eq.simbolo, '5m', '5d')),
+    intentar(`${eq.id}:volatilidad`, () => cargarVelas(eq.simboloVolatilidad, '5m', '5d')),
   ])
-  if (!nq) return { niveles: null, hallazgos: [sinDatos('grafico', 'el gráfico del NQ')] }
-  return analizarGrafico(nq, vix ?? ([] as Vela[]), ahora)
+  if (!velas) return { eq, estrategia, velas: null, hallazgos: [sinDatos('grafico', `el gráfico de ${eq.nombre}`)], contexto: [] }
+  const g = analizarGrafico(velas, vol ?? [], ahora, eq)
+  const contexto = [
+    g.niveles ? `Niveles ${eq.nombre}: ${describirNiveles(g.niveles)}` : '',
+    describirNivelesEstrategia(velas, ahora, estrategia),
+  ].filter(Boolean)
+  return { eq, estrategia, velas, hallazgos: [...g.hallazgos, ...analizarEstructura(velas, ahora, estrategia, eq)], contexto }
+}
+
+async function equipos(ahora: Date): Promise<InformeEquipo[]> {
+  return Promise.all(equiposActivos().map(eq => equipoMercado(eq, ahora)))
+}
+
+/** Con más de un equipo, cada aviso lleva el nombre de su activo. */
+function etiquetar(informes: InformeEquipo[]): Hallazgo[] {
+  const varios = informes.length > 1
+  return informes.flatMap(i => i.hallazgos.map(h => (varios && h.agente !== 'estructura' ? { ...h, titulo: `${i.eq.nombre}: ${h.titulo}` } : h)))
+}
+
+const nombreEquipos = (informes: InformeEquipo[]) => informes.map(i => i.eq.nombre).join(' + ')
+
+async function noticiasEquipos(informes: InformeEquipo[], ahora: Date, ventanaMin: number): Promise<Hallazgo[]> {
+  const titulares = await intentar('noticias', () => cargarTitulares(config.noticiasFeeds))
+  if (!titulares) return []
+  const vistos = await noticiasVistas()
+  const out: Hallazgo[] = []
+  const revisados: string[] = []
+  for (const i of informes) {
+    const n = await analizarNoticias(titulares, ahora, vistos.set, ventanaMin, i.eq)
+    out.push(...(informes.length > 1 ? n.hallazgos.map(h => ({ ...h, titulo: `${i.eq.nombre}: ${h.titulo}` })) : n.hallazgos))
+    revisados.push(...n.revisados)
+  }
+  await marcarVistas(vistos, revisados)
+  return out
 }
 
 /** 08:30 hora de lola: agenda, niveles, cuentas y pregunta de bienestar. */
 export async function guiaDiaria(ahora = new Date()): Promise<string> {
   const cal = await intentar('calendario', () => cargarCalendario())
-  const g = await grafico(ahora)
+  const inf = await equipos(ahora)
   const h: Hallazgo[] = [
     ...(cal ? agendaDelDia(cal, ahora) : [sinDatos('macro', 'el calendario económico')]),
-    ...g.hallazgos,
+    ...etiquetar(inf),
     ...(await cuentas()),
   ]
-  const contexto = [
-    g.niveles ? `Niveles NQ: ${describirNiveles(g.niveles)}` : '',
-    `💬 ${PREGUNTA_CHECKIN}`,
-  ].filter(Boolean)
-  return enviar(await redactar('guia', h, contexto, ['Termina con la pregunta de bienestar (💬) tal cual.']))
+  const contexto = [...inf.flatMap(i => i.contexto), `💬 ${PREGUNTA_CHECKIN}`]
+  return enviar(await redactar('guia', h, contexto, ['Termina con la pregunta de bienestar (💬) tal cual.'], nombreEquipos(inf)))
 }
 
 /** 15:00 en España (09:00 Nueva York): qué ha cambiado y cómo llegas. */
 export async function preApertura(ahora = new Date()): Promise<string> {
-  const [cal, titulares] = await Promise.all([
-    intentar('calendario', () => cargarCalendario()),
-    intentar('noticias', () => cargarTitulares(config.noticiasFeeds)),
-  ])
-  const g = await grafico(ahora)
-  const vistos = await noticiasVistas()
-  const n = titulares ? await analizarNoticias(titulares, ahora, vistos.set, 16 * 60) : { hallazgos: [], revisados: [] }
-  await marcarVistas(vistos, n.revisados)
+  const cal = await intentar('calendario', () => cargarCalendario())
+  const inf = await equipos(ahora)
+  const noticias = await noticiasEquipos(inf, ahora, 16 * 60)
   const restantes = cal ? agendaDelDia(cal, ahora).filter(x => x.nivel !== 'info' || x.titulo.startsWith('Sin datos')) : []
   const h: Hallazgo[] = [
     ...restantes,
     ...(cal ? vigilarMacro(cal, ahora, 45) : []),
-    ...g.hallazgos,
-    ...n.hallazgos.slice(0, 4),
+    ...etiquetar(inf),
+    ...noticias.slice(0, 4),
     ...evaluarBienestar(await checkinDeHoy(ahora)),
     ...(await cuentas()),
   ]
-  const contexto = g.niveles ? [`Niveles NQ: ${describirNiveles(g.niveles)}`] : []
   await registrarClaves(h)
-  return enviar(await redactar('apertura', h, contexto))
+  return enviar(await redactar('apertura', h, inf.flatMap(i => i.contexto), [], nombreEquipos(inf)))
 }
 
 /**
- * Cada 5 minutos durante la primera parte de la sesión. Solo escribe si hay
- * algo nuevo de nivel atención o alerta, y con un máximo de avisos por hora.
+ * Cada 5 minutos dentro de la ventana de vigilancia (la de tus estrategias,
+ * y como mínimo la primera parte de la sesión de Nueva York). Solo escribe si
+ * hay algo nuevo; los avisos de riesgo tienen un tope por hora, los de tu
+ * estrategia no.
  */
 export async function vigilancia(ahora = new Date()): Promise<string | null> {
+  const estrategias = await Promise.all(equiposActivos().map(eq => cargarEstrategia(eq.id)))
+  const aMin = (hhmm: string) => { const [h, m] = hhmm.split(':').map(Number); return h * 60 + m }
+  const desde = Math.min(9 * 60 + 25, ...estrategias.map(e => aMin(e.ventana.inicio)))
+  const hasta = Math.max(11 * 60 + 30, ...estrategias.map(e => aMin(e.ventana.fin)))
   const m = minutosDelDia(ahora, config.tzMercado)
-  if (m < APERTURA_ET - 5 || m > APERTURA_ET + 120) return null
+  if (m < desde || m > hasta) return null
 
-  const [cal, titulares] = await Promise.all([
-    intentar('calendario', () => cargarCalendario()),
-    intentar('noticias', () => cargarTitulares(config.noticiasFeeds)),
-  ])
-  const g = await grafico(ahora)
-  const vistos = await noticiasVistas()
-  const n = titulares ? await analizarNoticias(titulares, ahora, vistos.set, 30) : { hallazgos: [], revisados: [] }
-  await marcarVistas(vistos, n.revisados)
-
+  const cal = await intentar('calendario', () => cargarCalendario())
+  const inf = await equipos(ahora)
   const candidatos = [
     ...(cal ? vigilarMacro(cal, ahora) : []),
-    ...g.hallazgos,
-    ...n.hallazgos,
+    ...etiquetar(inf),
+    ...(await noticiasEquipos(inf, ahora, 30)),
     ...(await cuentas()),
   ].filter(x => x.nivel !== 'info')
 
   const nuevos = await filtrarNuevos(candidatos, ahora)
   if (nuevos.length === 0) return null
   await registrarClaves(nuevos, ahora)
-  return enviar(await redactar('aviso', nuevos))
+  return enviar(await redactar('aviso', nuevos, [], [], nombreEquipos(inf)))
 }
 
 /** 16:15 Nueva York: cómo fue el día. */
 export async function cierre(ahora = new Date()): Promise<string> {
-  const g = await grafico(ahora)
+  const inf = await equipos(ahora)
   const c = await checkinDeHoy(ahora)
   const h: Hallazgo[] = [...(await cuentas())]
   const contexto = [
-    g.niveles?.maxHoy !== undefined ? `Rango de hoy en NQ: ${Math.round(g.niveles.minHoy!)} a ${Math.round(g.niveles.maxHoy)} (medio ${Math.round(g.niveles.rangoMedio ?? 0)}).` : '',
+    ...inf.map(i => {
+      const n = i.velas ? calcularNiveles(i.velas, ahora) : null
+      return n?.maxHoy !== undefined ? `Rango de hoy en ${i.eq.nombre}: ${Math.round(n.minHoy!)} a ${Math.round(n.maxHoy)} (medio ${Math.round(n.rangoMedio ?? 0)}).` : ''
+    }),
     c ? `Esta mañana su aptitud era ${aptitud(c).nota}/100.` : '',
     '💬 ¿Cómo te has sentido operando hoy? Si quieres, actualiza tus cuentas escribiendo: pnl <cuenta> <resultado>',
   ].filter(Boolean)
@@ -161,8 +198,8 @@ async function filtrarNuevos(h: Hallazgo[], ahora: Date): Promise<Hallazgo[]> {
   const ultimaHora = r.envios.filter(t => ahora.getTime() - t < 3_600_000)
   const nuevos = h.filter(x => !x.clave || !claves.has(x.clave))
   if (nuevos.length === 0) return []
-  // Al llegar al tope por hora, solo pasan las alertas.
-  if (ultimaHora.length >= config.maxAvisosPorHora) return nuevos.filter(x => x.nivel === 'alerta')
+  // Al llegar al tope por hora, solo pasan las alertas y los avisos de tu estrategia.
+  if (ultimaHora.length >= config.maxAvisosPorHora) return nuevos.filter(x => x.nivel === 'alerta' || x.estrategia)
   return nuevos
 }
 

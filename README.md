@@ -3,16 +3,35 @@
 Una oficina de agentes que te acompaña cuando operas el Nasdaq y te escribe por WhatsApp.
 **Da contexto y avisos de riesgo. Nunca da señales de entrada ni de salida.**
 
-## El equipo
+## Cómo está organizada
 
-| Agente | Qué hace |
+Un **equipo por activo** (hoy Nasdaq; Oro ya está como plantilla en `src/equipo/definiciones.ts`), más **servicios personales** comunes a todos los equipos y un **coordinador**.
+
+| Pieza | Qué hace |
 |---|---|
-| Jefe de oficina (`src/agentes/jefe.ts`) | Junta lo que dicen los demás, pone el semáforo 🟢🟠🔴 y redacta el mensaje con Claude. Si el texto pareciera una señal ("compra", "ponte corto"…), lo descarta y usa la plantilla. |
-| Macro (`macro.ts`) | Calendario económico de EE. UU. con hora exacta (el mismo feed que usa Factor Macro). Marca ventanas de "no operes ahora" alrededor de CPI, NFP, FOMC, discursos de Warsh, etc. |
-| Noticias (`noticias.ts`) | Lee titulares (Fed, CNBC, MarketWatch), filtra por palabras clave y, con Claude, valora si pueden mover el Nasdaq. |
-| Gráfico (`grafico.ts`) | NQ y VIX en velas de 5 min: máximo/mínimo de ayer y de la noche, rango medio, volumen relativo a la misma hora y saltos de volatilidad. |
-| Bienestar (`bienestar.ts`) | Te pregunta cómo estás, entiende respuestas como "6h, sí, nerviosa" y calcula una nota de aptitud para operar. La ficha ya tiene campos para el reloj (VFC, pulso en reposo, estrés). |
-| Cuentas (`cuentas.ts`) | Reglas de tus cuentas de fondeo: pérdida diaria, drawdown (trailing o estático) y objetivo. Avisa "ojo con esta" al 50% y al 80% de la pérdida diaria o cerca del drawdown. |
+| **Equipo del activo** (`src/equipo/`) | |
+| · Estructura (`estructura.ts`) | Vigila los niveles de **tu estrategia** (máx/mín de Asia, Londres, ayer, noche) y avisa cuando el precio se acerca, los barre, los recupera o se queda al otro lado ("ya no parece un barrido, parece una ruptura en contra"). Añade volumen y posición respecto al VWAP. Siempre termina en "la decisión es tuya". |
+| · Gráfico (`grafico.ts`) | Máx/mín de ayer y de la noche, rango medio y precio en zona de decisión. |
+| · Volumen y volatilidad (`grafico.ts`) | Volumen relativo a la misma hora de días anteriores; saltos del VIX (o del GVZ en oro). |
+| · Noticias (`noticias.ts`) | Titulares (Fed, CNBC, MarketWatch) filtrados por palabras clave del activo y valorados con Claude. |
+| · Macro (`macro.ts`) | Calendario de EE. UU. con hora exacta y ventanas de "no operes ahora" alrededor de CPI, NFP, FOMC, Warsh… |
+| **Servicios personales** (`src/personal/`) | |
+| · Coach (`coach.ts`) | Te pregunta cómo estás, entiende "6h, sí, nerviosa" y calcula tu aptitud para operar. Ficha preparada para el reloj (VFC, pulso, estrés). |
+| · Gestor de cuentas (`gestor.ts`) | Reglas de cada cuenta de fondeo: pérdida diaria, drawdown trailing o estático, objetivo. "Ojo con esta" al 50% y 80% de la pérdida diaria o cerca del drawdown. |
+| **Coordinador** (`src/coordinador.ts`) | Junta todo, pone el semáforo de **riesgo** 🟢🟠🔴 (los avisos de tu estrategia van aparte con 📍 y no lo cambian) y redacta con Claude. Si el texto pareciera una señal ("compra", "ponte corto"…), usa la plantilla. |
+
+## Tu estrategia
+
+Se define en `config/estrategias/<equipo>.json`. La de Nasdaq viene con tu escenario de barrido de liquidez de Asia:
+
+- `niveles`: qué niveles vigilar (`asia`, `londres`, `ayer`, `noche`).
+- `vigilar`: qué fases avisar (`aproximacion`, `barrido`, `recuperacion`, `aceptacion`).
+- `distanciaAproximacion`: a cuántos puntos cuenta como "se acerca".
+- `minutosAceptacion`: cuántos minutos cerrando al otro lado convierten un barrido en ruptura.
+- `ventana`: horas de Nueva York en las que vigilar (por defecto 02:00 a 11:30, de Londres a la primera parte de NY).
+- `sesiones`: horas de Asia y Londres en Nueva York.
+
+Para añadir otro activo: `EQUIPOS=nasdaq,gold` en `.env` y un `config/estrategias/gold.json`.
 
 ## Horario
 
@@ -20,13 +39,13 @@ Una oficina de agentes que te acompaña cuando operas el Nasdaq y te escribe por
 |---|---|
 | 08:30 de lunes a viernes | Guía del día: agenda macro, niveles, cuentas y pregunta de bienestar |
 | 15:00 (09:00 Nueva York) | Antes de la apertura: qué ha cambiado, noticias, tu aptitud y tus cuentas |
-| 15:30 a 17:30, cada 5 min | Vigilancia: solo escribe si hay algo nuevo, con un máximo de avisos por hora |
+| 08:00 a 17:30, cada 5 min | Vigilancia: avisos de tu estrategia (desde Londres) y de riesgo. Solo escribe si hay algo nuevo; los de riesgo tienen un máximo por hora |
 | 22:15 (16:15 Nueva York) | Cierre del día |
 | Domingo 19:00 | Resumen semanal: semana que viene, cómo has estado, cuentas y briefing de Factor Macro |
 
 Las tareas de mercado van en hora de Nueva York, así que los cambios de hora de EE. UU. y Europa no las descuadran.
 
-## Hablarle a la oficina por WhatsApp
+## Hablarle a la oficina (Telegram o WhatsApp)
 
 - Cualquier mensaje se toma como tu check-in del día: `7h, sí, tranquila`.
 - Para actualizar una cuenta: `pnl cuenta1 -250` o `pnl cuenta1 -250 saldo 49750`.
@@ -42,6 +61,12 @@ npm run tarea -- guia             # prueba una tarea a mano (sin WhatsApp sale p
 npm start                         # arranca horarios y webhook
 ```
 
+### Telegram (gratis, recomendado para empezar)
+
+1. En Telegram, habla con @BotFather, envía `/newbot` y copia el token en `TELEGRAM_TOKEN`.
+2. Escribe `/start` a tu bot y ejecuta `npm run tarea -- telegram-id`; copia el número en `TELEGRAM_CHAT_ID`.
+3. `npm start`: la oficina te escribe por Telegram y lee tus respuestas sin necesidad de servidor público.
+
 ### WhatsApp
 
 Hace falta la WhatsApp Cloud API de Meta (no basta la app de WhatsApp Business del móvil):
@@ -53,7 +78,7 @@ Hace falta la WhatsApp Cloud API de Meta (no basta la app de WhatsApp Business d
 
 ### Dónde alojarla
 
-Necesita estar encendida todo el día (horarios + webhook): Railway, Render o un VPS pequeño. Guarda su estado en `DATA_DIR` (por defecto `./data`), así que usa un disco persistente.
+Necesita estar encendida en horario de mercado (horarios + escucha de mensajes): Railway, Render o un VPS pequeño. Guarda su estado en `DATA_DIR` (por defecto `./data`), así que usa un disco persistente.
 
 ## Próximas fases
 

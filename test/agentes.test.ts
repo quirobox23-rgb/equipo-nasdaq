@@ -1,12 +1,12 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { parsearFF } from '../src/sources/calendario.ts'
-import { agendaDelDia, vigilarMacro } from '../src/agentes/macro.ts'
-import { analizarGrafico, calcularNiveles, volumenRelativo } from '../src/agentes/grafico.ts'
-import { interpretarRespuesta, aptitud, evaluarBienestar } from '../src/agentes/bienestar.ts'
-import { evaluarCuentas, interpretarComandoPnl, revisarCuenta, type ReglasCuenta } from '../src/agentes/cuentas.ts'
-import { candidatos, puntuar } from '../src/agentes/noticias.ts'
-import { semaforo, pareceSenal, plantilla } from '../src/agentes/jefe.ts'
+import { agendaDelDia, vigilarMacro } from '../src/equipo/macro.ts'
+import { analizarGrafico, calcularNiveles, volumenRelativo } from '../src/equipo/grafico.ts'
+import { interpretarRespuesta, aptitud, evaluarBienestar } from '../src/personal/coach.ts'
+import { evaluarCuentas, interpretarComandoPnl, revisarCuenta, type ReglasCuenta } from '../src/personal/gestor.ts'
+import { candidatos, puntuar } from '../src/equipo/noticias.ts'
+import { semaforo, pareceSenal, plantilla } from '../src/coordinador.ts'
 import type { Vela } from '../src/sources/yahoo.ts'
 
 const ff = [

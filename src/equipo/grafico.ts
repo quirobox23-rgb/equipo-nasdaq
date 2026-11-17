@@ -1,8 +1,9 @@
-// Analista de gráfico: niveles de referencia, volumen relativo y volatilidad.
+// Especialistas de gráfico, volumen y volatilidad del equipo de un activo.
 // Solo describe el contexto; no dice por dónde entrar.
 import { config } from '../config.ts'
 import type { Vela } from '../sources/yahoo.ts'
 import type { Hallazgo } from '../tipos.ts'
+import type { DefinicionEquipo } from './definiciones.ts'
 import { APERTURA_ET, CIERRE_ET, claveDia, minutosDelDia } from '../tiempo.ts'
 
 export interface Niveles {
@@ -101,28 +102,43 @@ export function cambioVix(vix: Vela[], ahora: Date, min = 30): { ultimo: number;
   }
 }
 
-const f = (n: number) => Math.round(n).toLocaleString('es-ES')
+export const f = (n: number) => (Math.abs(n) >= 1000 ? Math.round(n) : Math.round(n * 10) / 10).toLocaleString('es-ES')
 
-export function analizarGrafico(nq: Vela[], vix: Vela[], ahora: Date): { niveles: Niveles | null; hallazgos: Hallazgo[] } {
+/** VWAP de la sesión regular de hoy (desde las 9:30 de Nueva York). */
+export function vwapSesion(velas: Vela[], ahora: Date): number | null {
+  const hoy = claveDia(ahora, tz())
+  let pv = 0, v = 0
+  for (const x of velas) {
+    if (x.t > ahora || claveDia(x.t, tz()) !== hoy || !sesionRegular(x)) continue
+    pv += ((x.h + x.l + x.c) / 3) * x.v
+    v += x.v
+  }
+  return v > 0 ? pv / v : null
+}
+
+const NASDAQ_POR_DEFECTO = { nombreVolatilidad: 'VIX', id: 'nasdaq' } as Pick<DefinicionEquipo, 'nombreVolatilidad' | 'id'>
+
+export function analizarGrafico(nq: Vela[], vix: Vela[], ahora: Date, eq: Pick<DefinicionEquipo, 'nombreVolatilidad' | 'id'> = NASDAQ_POR_DEFECTO): { niveles: Niveles | null; hallazgos: Hallazgo[] } {
   const niveles = calcularNiveles(nq, ahora)
+  const VX = eq.nombreVolatilidad
   const hallazgos: Hallazgo[] = []
   const hoy = claveDia(ahora, tz())
 
   const vx = cambioVix(vix, ahora)
   if (vx) {
     if (vx.cambioReciente !== null && vx.cambioReciente >= 5) {
-      hallazgos.push({ agente: 'grafico', nivel: 'alerta', titulo: `La volatilidad se dispara: VIX +${vx.cambioReciente.toFixed(1)}% en 30 min (${vx.ultimo.toFixed(1)}).`, clave: `vix-salto:${hoy}:${Math.floor(vx.ultimo)}` })
+      hallazgos.push({ agente: 'volatilidad', nivel: 'alerta', titulo: `La volatilidad se dispara: ${VX} +${vx.cambioReciente.toFixed(1)}% en 30 min (${vx.ultimo.toFixed(1)}).`, clave: `${eq.id}:vix-salto:${hoy}:${Math.floor(vx.ultimo)}` })
     } else if (vx.cambioDia !== null && vx.cambioDia >= 8) {
-      hallazgos.push({ agente: 'grafico', nivel: 'atencion', titulo: `Volatilidad subiendo: VIX ${vx.ultimo.toFixed(1)} (+${vx.cambioDia.toFixed(1)}% en el día).`, clave: `vix-dia:${hoy}` })
+      hallazgos.push({ agente: 'volatilidad', nivel: 'atencion', titulo: `Volatilidad subiendo: ${VX} ${vx.ultimo.toFixed(1)} (+${vx.cambioDia.toFixed(1)}% en el día).`, clave: `${eq.id}:vix-dia:${hoy}` })
     }
-    if (vx.ultimo >= 25) {
-      hallazgos.push({ agente: 'grafico', nivel: 'atencion', titulo: `VIX en ${vx.ultimo.toFixed(1)}: mercado nervioso, los movimientos serán más bruscos.`, clave: `vix-alto:${hoy}` })
+    if (eq.id === 'nasdaq' && vx.ultimo >= 25) {
+      hallazgos.push({ agente: 'volatilidad', nivel: 'atencion', titulo: `${VX} en ${vx.ultimo.toFixed(1)}: mercado nervioso, los movimientos serán más bruscos.`, clave: `${eq.id}:vix-alto:${hoy}` })
     }
   }
 
   const vr = volumenRelativo(nq, ahora)
   if (vr !== null && vr >= 1.8) {
-    hallazgos.push({ agente: 'grafico', nivel: vr >= 2.5 ? 'alerta' : 'atencion', titulo: `Entra mucho volumen: ${vr.toFixed(1)} veces lo normal a esta hora.`, clave: `vol:${hoy}:${minutosDelDia(ahora, tz()) - (minutosDelDia(ahora, tz()) % 30)}` })
+    hallazgos.push({ agente: 'volumen', nivel: vr >= 2.5 ? 'alerta' : 'atencion', titulo: `Entra mucho volumen: ${vr.toFixed(1)} veces lo normal a esta hora.`, clave: `${eq.id}:vol:${hoy}:${minutosDelDia(ahora, tz()) - (minutosDelDia(ahora, tz()) % 30)}` })
   }
 
   if (niveles) {
@@ -133,13 +149,13 @@ export function analizarGrafico(nq: Vela[], vix: Vela[], ahora: Date): { niveles
     ]
     for (const [nombre, valor] of refs) {
       if (valor !== undefined && Math.abs(niveles.ultimo - valor) <= cerca) {
-        hallazgos.push({ agente: 'grafico', nivel: 'atencion', titulo: `El precio está en el ${nombre} (${f(valor)}). Zona de decisión: puede haber movimientos rápidos.`, clave: `nivel:${hoy}:${nombre}` })
+        hallazgos.push({ agente: 'grafico', nivel: 'atencion', titulo: `El precio está en el ${nombre} (${f(valor)}). Zona de decisión: puede haber movimientos rápidos.`, clave: `${eq.id}:nivel:${hoy}:${nombre}` })
       }
     }
     if (niveles.rangoMedio && niveles.maxHoy !== undefined && niveles.minHoy !== undefined) {
       const rangoHoy = niveles.maxHoy - niveles.minHoy
       if (rangoHoy >= niveles.rangoMedio * 1.2) {
-        hallazgos.push({ agente: 'grafico', nivel: 'atencion', titulo: `Hoy ya recorrió ${f(rangoHoy)} puntos, más de lo habitual (${f(niveles.rangoMedio)}).`, clave: `rango:${hoy}` })
+        hallazgos.push({ agente: 'grafico', nivel: 'atencion', titulo: `Hoy ya recorrió ${f(rangoHoy)} puntos, más de lo habitual (${f(niveles.rangoMedio)}).`, clave: `${eq.id}:rango:${hoy}` })
       }
     }
   }

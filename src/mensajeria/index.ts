@@ -48,8 +48,29 @@ export function whatsapp(): Mensajero {
   }
 }
 
+/** Telegram: gratis y sin plantillas. Acepta el mismo *negrita* y _cursiva_ que WhatsApp. */
+export function telegram(): Mensajero {
+  const t = config.telegram
+  return {
+    async enviar(texto) {
+      const enviar = (parseMode?: string) => fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chat_id: t.chatId, text: texto.slice(0, 4096), disable_web_page_preview: true, ...(parseMode ? { parse_mode: parseMode } : {}) }),
+        signal: AbortSignal.timeout(15000),
+      })
+      let r = await enviar('Markdown')
+      // Si el formato falla (por ejemplo, un "_" suelto en un enlace), se manda sin formato.
+      if (r.status === 400) r = await enviar()
+      if (!r.ok) throw new Error(`Telegram falló: ${r.status} ${await r.text().catch(() => '')}`)
+    },
+  }
+}
+
 export function mensajero(): Mensajero {
+  if (config.dryRun) return consola
+  if (config.telegram.token && config.telegram.chatId) return telegram()
   const w = config.whatsapp
-  if (config.dryRun || !w.token || !w.phoneNumberId || !w.destino) return consola
-  return whatsapp()
+  if (w.token && w.phoneNumberId && w.destino) return whatsapp()
+  return consola
 }

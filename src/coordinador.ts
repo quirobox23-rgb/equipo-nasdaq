@@ -1,20 +1,23 @@
 // Jefe de oficina: junta lo que dicen los agentes, pone el semáforo y
 // escribe el mensaje de WhatsApp. Nunca da señales de entrada.
 import Anthropic from '@anthropic-ai/sdk'
-import { config } from '../config.ts'
-import type { Hallazgo, Semaforo } from '../tipos.ts'
+import { config } from './config.ts'
+import type { Hallazgo, Semaforo } from './tipos.ts'
 
 export type TipoMensaje = 'guia' | 'apertura' | 'aviso' | 'cierre' | 'semanal'
 
+/** El semáforo mide RIESGO: los avisos de tu estrategia no lo cambian. */
 export function semaforo(h: Hallazgo[]): Semaforo {
-  if (h.some(x => x.nivel === 'alerta')) return 'rojo'
-  if (h.some(x => x.nivel === 'atencion')) return 'ambar'
+  const riesgo = h.filter(x => !x.estrategia)
+  if (riesgo.some(x => x.nivel === 'alerta')) return 'rojo'
+  if (riesgo.some(x => x.nivel === 'atencion')) return 'ambar'
   return 'verde'
 }
 
 const EMOJI: Record<Semaforo, string> = { verde: '🟢', ambar: '🟠', rojo: '🔴' }
 const NOMBRE_AGENTE: Record<Hallazgo['agente'], string> = {
-  macro: 'Macro', noticias: 'Noticias', grafico: 'Gráfico', bienestar: 'Tú', cuentas: 'Cuentas',
+  macro: 'Macro', noticias: 'Noticias', grafico: 'Gráfico', estructura: 'Estructura', volumen: 'Volumen',
+  volatilidad: 'Volatilidad', bienestar: 'Coach', cuentas: 'Gestor de cuentas',
 }
 const TITULO: Record<TipoMensaje, string> = {
   guia: 'Guía del día', apertura: 'Antes de la apertura', aviso: 'Aviso', cierre: 'Cierre del día', semanal: 'Resumen semanal',
@@ -27,11 +30,15 @@ export function pareceSenal(texto: string): boolean {
   return SENALES.test(texto)
 }
 
-export function plantilla(tipo: TipoMensaje, h: Hallazgo[], extra: string[] = []): string {
+export function plantilla(tipo: TipoMensaje, h: Hallazgo[], extra: string[] = [], equipo?: string): string {
   const s = semaforo(h)
-  const lineas = [`${EMOJI[s]} *${TITULO[tipo]}*`]
+  const lineas = [`${EMOJI[s]} *${equipo ? `${equipo.toUpperCase()} · ` : ''}${TITULO[tipo]}*`]
   const orden = { alerta: 0, atencion: 1, info: 2 } as const
-  for (const x of [...h].sort((a, b) => orden[a.nivel] - orden[b.nivel])) {
+  const estrategia = h.filter(x => x.estrategia)
+  for (const x of estrategia) {
+    lineas.push(`📍 _Tu estrategia_: ${x.titulo}${x.detalle ? ` ${x.detalle}` : ''}`)
+  }
+  for (const x of h.filter(x => !x.estrategia).sort((a, b) => orden[a.nivel] - orden[b.nivel])) {
     const marca = x.nivel === 'alerta' ? '⚠️' : x.nivel === 'atencion' ? '👀' : '•'
     lineas.push(`${marca} _${NOMBRE_AGENTE[x.agente]}_: ${x.titulo}${x.detalle && x.agente !== 'noticias' ? ` ${x.detalle}` : ''}`)
   }
@@ -39,26 +46,28 @@ export function plantilla(tipo: TipoMensaje, h: Hallazgo[], extra: string[] = []
   return lineas.join('\n')
 }
 
-const SISTEMA = `Eres la jefa de una oficina de agentes que acompaña a lola, trader de futuros del Nasdaq (NQ/MNQ) con cuentas de fondeo.
+const SISTEMA = `Eres la coordinadora de un equipo de agentes que acompaña a lola, trader de futuros con cuentas de fondeo.
 Tu trabajo es darle contexto y avisos de riesgo por WhatsApp, nunca señales.
 Reglas:
 - Escribe en español de España, cercano y tranquilo, como una compañera de mesa. Trata a lola de tú.
 - NUNCA digas que compre, venda, entre en largo o corto, ni des precios de entrada, stop u objetivo.
 - Sí puedes decir "no operes ahora", "espera a que pase el dato", "reduce tamaño" o "hoy mejor no operar".
+- Los hallazgos marcados ESTRATEGIA describen en qué fase está el escenario que lola espera (por ejemplo, barrido del mínimo de Asia). Ponlos primero con 📍, describe la situación y lo que falta por confirmar, y termina con "La decisión es tuya". No los conviertas en una orden.
+- El semáforo mide riesgo de mercado y de lola, no oportunidades.
 - Usa solo los datos que te paso. No inventes cifras, horas ni noticias.
 - Formato WhatsApp: *negrita* y saltos de línea, sin títulos de Markdown. Empieza con el emoji del semáforo que te paso.
 - Breve: un aviso cabe en 2-4 líneas; la guía y los resúmenes en 12-18 líneas.`
 
 /** `contexto` va en el mensaje tal cual si no hay IA; `paraIA` solo lo ve Claude (instrucciones o datos largos). */
-export async function redactar(tipo: TipoMensaje, h: Hallazgo[], contexto: string[] = [], paraIA: string[] = []): Promise<string> {
-  const base = plantilla(tipo, h, contexto)
+export async function redactar(tipo: TipoMensaje, h: Hallazgo[], contexto: string[] = [], paraIA: string[] = [], equipo?: string): Promise<string> {
+  const base = plantilla(tipo, h, contexto, equipo)
   if (!config.anthropicKey) return base
   const s = semaforo(h)
   const datos = [
-    `Tipo de mensaje: ${TITULO[tipo]}`,
+    `Tipo de mensaje: ${TITULO[tipo]}${equipo ? ` del equipo ${equipo}` : ''}`,
     `Semáforo: ${EMOJI[s]} ${s}`,
     'Hallazgos de los agentes:',
-    ...h.map(x => `- [${x.agente}/${x.nivel}] ${x.titulo}${x.detalle ? ` (${x.detalle})` : ''}`),
+    ...h.map(x => `- [${x.estrategia ? 'ESTRATEGIA ' : ''}${x.agente}/${x.nivel}] ${x.titulo}${x.detalle ? ` (${x.detalle})` : ''}`),
     ...(contexto.length ? ['Contexto adicional:', ...contexto] : []),
     ...(paraIA.length ? ['Indicaciones:', ...paraIA] : []),
   ].join('\n')

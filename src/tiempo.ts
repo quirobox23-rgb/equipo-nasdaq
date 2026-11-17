@@ -41,3 +41,25 @@ export function hora(fecha: Date, tz: string): string {
 
 export const APERTURA_ET = 9 * 60 + 30
 export const CIERRE_ET = 16 * 60
+
+/** El instante en que en `tz` son las `hhmm` del día `dia` (YYYY-MM-DD). */
+export function instante(dia: string, hhmm: string, tz: string): Date {
+  const [a, m, d] = dia.split('-').map(Number)
+  const [h, min] = hhmm.split(':').map(Number)
+  const supuesto = Date.UTC(a, m - 1, d, h, min)
+  // Diferencia entre lo que marca el reloj en `tz` y UTC en ese momento.
+  const p = partes(new Date(supuesto), tz)
+  const visto = Date.UTC(p.anio, p.mes - 1, p.dia, p.hora, p.minuto)
+  const ajustado = supuesto - (visto - supuesto)
+  // Segunda pasada por si el ajuste cruza un cambio de hora.
+  const p2 = partes(new Date(ajustado), tz)
+  const visto2 = Date.UTC(p2.anio, p2.mes - 1, p2.dia, p2.hora, p2.minuto)
+  return new Date(ajustado - (visto2 - supuesto))
+}
+
+/** Día anterior a `dia` (YYYY-MM-DD), por calendario. */
+export function diaAnterior(dia: string): string {
+  const d = new Date(`${dia}T12:00:00Z`)
+  d.setUTCDate(d.getUTCDate() - 1)
+  return d.toISOString().slice(0, 10)
+}

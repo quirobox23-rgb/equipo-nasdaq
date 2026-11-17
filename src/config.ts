@@ -29,6 +29,12 @@ export const config = {
     graphVersion: process.env.WHATSAPP_GRAPH_VERSION ?? 'v21.0',
   },
 
+  telegram: {
+    token: process.env.TELEGRAM_TOKEN,
+    /** Tu chat con el bot. Escribe /start al bot y ejecuta `npm run tarea -- telegram-id` para verlo. */
+    chatId: process.env.TELEGRAM_CHAT_ID,
+  },
+
   factorMacro: {
     url: process.env.FACTOR_MACRO_URL ?? 'https://factormacro.santostrader.com',
     /** Clave de equipo de Factor Macro, para leer el briefing semanal de Nova. Opcional. */
