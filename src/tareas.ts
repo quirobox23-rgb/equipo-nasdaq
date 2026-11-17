@@ -16,6 +16,7 @@ import { cargarReglas, evaluarCuentas, proveedorManual } from './personal/gestor
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
 import type { Hallazgo } from './tipos.ts'
+import { registrarEstado } from './estadoOficina.ts'
 import { claveDia, hora, minutosDelDia } from './tiempo.ts'
 
 async function intentar<T>(nombre: string, f: () => Promise<T>): Promise<T | null> {
@@ -99,6 +100,7 @@ export async function guiaDiaria(ahora = new Date()): Promise<string> {
     ...(await cuentas()),
   ]
   const contexto = [...inf.flatMap(i => i.contexto), `💬 ${PREGUNTA_CHECKIN}`]
+  await registrarEstado(h, inf.map(i => i.eq.nombre), ahora, true)
   return enviar(await redactar('guia', h, contexto, ['Termina con la pregunta de bienestar (💬) tal cual.'], nombreEquipos(inf)))
 }
 
@@ -117,6 +119,7 @@ export async function preApertura(ahora = new Date()): Promise<string> {
     ...(await cuentas()),
   ]
   await registrarClaves(h)
+  await registrarEstado(h, inf.map(i => i.eq.nombre), ahora, true)
   return enviar(await redactar('apertura', h, inf.flatMap(i => i.contexto), [], nombreEquipos(inf)))
 }
 
@@ -144,6 +147,7 @@ export async function vigilancia(ahora = new Date()): Promise<string | null> {
   ].filter(x => x.nivel !== 'info')
 
   const nuevos = await filtrarNuevos(candidatos, ahora)
+  await registrarEstado(candidatos, inf.map(i => i.eq.nombre), ahora, nuevos.length > 0)
   if (nuevos.length === 0) return null
   await registrarClaves(nuevos, ahora)
   return enviar(await redactar('aviso', nuevos, [], [], nombreEquipos(inf)))

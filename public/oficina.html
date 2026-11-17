@@ -1,0 +1,546 @@
+<title>Oficina Equipo Nasdaq</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Nunito:wght@400;600;800&display=swap">
+<style>
+/* Vista de la oficina: el plano animado ocupa el ancho; el parte del equipo va al lado (o debajo en el móvil).
+   Un solo mundo visual: tarde cálida sobre un fondo azul noche. */
+:root {
+  --noche: #16213a;
+  --panel: #1f2c4a;
+  --panel-2: #26365a;
+  --texto: #eef2fb;
+  --suave: #a9b6d3;
+  --linea: #344670;
+  --acento: #ffc65c;
+  --verde: #4fd18b;
+  --ambar: #ffb547;
+  --rojo: #ff6b6b;
+  --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --texto-f: "Nunito", "Segoe UI", system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--noche); color: var(--texto); }
+body { font-family: var(--texto-f); font-size: 15px; line-height: 1.45; }
+.envoltura {
+  max-width: 1320px; margin: 0 auto;
+  padding-block: 20px 28px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 18px;
+}
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; }
+h1 { font-family: var(--display); font-weight: 800; font-size: clamp(1.6rem, 3.6vw, 2.4rem); margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+h1 span { color: var(--acento); }
+.sub { color: var(--suave); margin: 0; }
+.contenido { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 18px; align-items: start; }
+@media (max-width: 960px) { .contenido { grid-template-columns: minmax(0, 1fr); } }
+.escena { position: relative; border-radius: 18px; overflow: hidden; background: #2b3a5e; border: 1px solid var(--linea); }
+canvas { display: block; width: 100%; height: auto; cursor: pointer; touch-action: manipulation; }
+.leyenda { position: absolute; left: 12px; bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap; pointer-events: none; }
+.leyenda span { background: rgba(22, 33, 58, .78); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--texto); }
+aside { background: var(--panel); border: 1px solid var(--linea); border-radius: 18px; padding: 16px; display: grid; gap: 14px; min-width: 0; }
+.estado-general { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.estado-general h2 { font-family: var(--display); font-weight: 600; font-size: 1.1rem; margin: 0; }
+.pill { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-weight: 800; font-size: 12px; letter-spacing: .04em; text-transform: uppercase; }
+.pill::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+.pill.verde { color: var(--verde); background: rgba(79, 209, 139, .14); }
+.pill.ambar { color: var(--ambar); background: rgba(255, 181, 71, .14); }
+.pill.rojo { color: var(--rojo); background: rgba(255, 107, 107, .14); }
+.meta { color: var(--suave); font-size: 13px; margin: 0; }
+.aviso-demo { background: rgba(255, 198, 92, .12); color: var(--acento); border-radius: 10px; padding: 8px 10px; font-size: 13px; margin: 0; }
+ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+li button {
+  width: 100%; text-align: left; background: var(--panel-2); border: 1px solid transparent; border-radius: 12px;
+  color: var(--texto); font: inherit; padding: 9px 10px; display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 4px 10px; align-items: center; cursor: pointer;
+}
+li button:hover { border-color: var(--linea); }
+li button:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+li button[aria-pressed="true"] { border-color: var(--acento); }
+.punto { width: 14px; height: 14px; border-radius: 50%; }
+.nombre { font-weight: 800; }
+.rol { color: var(--suave); font-size: 12px; }
+.chip { font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; border-radius: 999px; padding: 2px 8px; }
+.chip.alerta { background: rgba(255, 107, 107, .18); color: var(--rojo); }
+.chip.trabajando { background: rgba(255, 181, 71, .16); color: var(--ambar); }
+.chip.descanso { background: rgba(79, 209, 139, .14); color: var(--verde); }
+.mensaje { grid-column: 2 / 4; color: var(--suave); font-size: 13px; overflow-wrap: anywhere; }
+li button[aria-pressed="true"] .mensaje { color: var(--texto); }
+@media (prefers-reduced-motion: reduce) { canvas { cursor: default; } }
+</style>
+
+<div class="envoltura">
+  <header>
+    <h1>Oficina <span>Equipo Nasdaq</span></h1>
+    <p class="sub">Si hay un aviso, el agente está en su mesa. Si todo está tranquilo, se va a descansar.</p>
+  </header>
+  <div class="contenido">
+    <div class="escena">
+      <canvas id="mundo" width="960" height="600" aria-label="Plano de la oficina con los agentes trabajando o descansando"></canvas>
+      <div class="leyenda"><span>Oficina</span><span>Zona de descanso</span><span>Jardín y piscina</span></div>
+    </div>
+    <aside>
+      <div class="estado-general">
+        <h2 id="titulo-equipo">Equipo Nasdaq</h2>
+        <span id="semaforo" class="pill verde">Tranquilo</span>
+      </div>
+      <p class="meta" id="actualizado">Cargando…</p>
+      <p class="aviso-demo" id="aviso-demo" hidden>Ejemplo: esta vista no está conectada a la oficina, así que muestra un día inventado.</p>
+      <ul id="lista"></ul>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ── Agentes: quién es quién ──
+  const AGENTES = [
+    { id: 'coordinador', nombre: 'Coordinadora', rol: 'Junta los avisos y te escribe', camisa: '#ffc65c', piel: '#f1c7a1', pelo: '#3b2a20' },
+    { id: 'estructura', nombre: 'Estructura', rol: 'Niveles de tu estrategia', camisa: '#ff7a8a', piel: '#c98d63', pelo: '#1d1612' },
+    { id: 'grafico', nombre: 'Gráfico', rol: 'Máximos, mínimos y rango', camisa: '#6fb6ff', piel: '#f3d2b3', pelo: '#b0683a' },
+    { id: 'volumen', nombre: 'Volumen', rol: 'Volumen frente a lo normal', camisa: '#9b8cff', piel: '#8d5a3b', pelo: '#120d0a' },
+    { id: 'volatilidad', nombre: 'Volatilidad', rol: 'VIX y saltos de volatilidad', camisa: '#ff9f5a', piel: '#e8b48e', pelo: '#5a3a24' },
+    { id: 'noticias', nombre: 'Noticias', rol: 'Titulares que mueven el Nasdaq', camisa: '#4fd1c5', piel: '#f6dcc4', pelo: '#d9a441' },
+    { id: 'macro', nombre: 'Macro', rol: 'Calendario y la Fed', camisa: '#c7e86b', piel: '#b07650', pelo: '#2a1d16' },
+    { id: 'bienestar', nombre: 'Coach', rol: 'Cómo estás hoy', camisa: '#f59fd0', piel: '#f0c19c', pelo: '#7a4b2a' },
+    { id: 'cuentas', nombre: 'Gestor de cuentas', rol: 'Límites de tus cuentas', camisa: '#7ed957', piel: '#d8a27c', pelo: '#3d2b1f' },
+  ]
+
+  // ── Ejemplo para cuando la vista no está conectada a la oficina ──
+  const EJEMPLO = {
+    ejemplo: true,
+    equipos: ['Nasdaq'],
+    semaforo: 'ambar',
+    actualizado: new Date().toISOString(),
+    agentes: {
+      coordinador: { estado: 'trabajando', mensaje: 'Te ha mandado el aviso del barrido de Asia.' },
+      estructura: { estado: 'alerta', mensaje: 'Ha barrido el mínimo de Asia (21.034) a las 15:42. Todavía no ha recuperado el nivel.' },
+      volumen: { estado: 'trabajando', mensaje: 'Entra volumen: 1,9 veces lo normal a esta hora.' },
+      macro: { estado: 'trabajando', mensaje: '16:00 habla Warsh. Evita abrir posiciones desde 15 min antes.' },
+      grafico: { estado: 'descanso', mensaje: 'Ayer: máx 21.180, mín 20.960. Rango normal.' },
+      volatilidad: { estado: 'descanso', mensaje: 'VIX en 17,2, sin cambios importantes.' },
+      noticias: { estado: 'descanso', mensaje: 'Nada relevante en la última media hora.' },
+      bienestar: { estado: 'descanso', mensaje: 'Aptitud 85/100: has dormido 7 h y has entrenado.' },
+      cuentas: { estado: 'descanso', mensaje: 'cuenta1: hoy +120 $, margen hasta el drawdown 1.850 $.' },
+    },
+  }
+
+  // ── Plano (coordenadas del mundo, 960 × 600) ──
+  const W = 960, H = 600
+  const ZONAS = {
+    oficina: { x: 16, y: 16, w: 560, h: 330 },
+    descanso: { x: 16, y: 362, w: 560, h: 222 },
+    jardin: { x: 592, y: 16, w: 352, h: 568 },
+    piscina: { x: 640, y: 318, w: 250, h: 178 },
+  }
+  const MESAS = AGENTES.map((a, i) => {
+    const col = i % 3, fila = Math.floor(i / 3)
+    return { x: 70 + col * 180, y: 52 + fila * 100 }
+  })
+  // Sitios para descansar: sofá, café, mesa, tumbonas, banco, césped.
+  const SITIOS = [
+    { x: 92, y: 470, que: 'sofá' }, { x: 132, y: 470, que: 'sofá' }, { x: 172, y: 470, que: 'sofá' },
+    { x: 300, y: 405, que: 'café' }, { x: 350, y: 520, que: 'mesa' }, { x: 410, y: 520, que: 'mesa' },
+    { x: 505, y: 488, que: 'futbolín' },
+    { x: 670, y: 530, que: 'tumbona' }, { x: 730, y: 545, que: 'tumbona' }, { x: 790, y: 545, que: 'tumbona' },
+    { x: 860, y: 290, que: 'banco' }, { x: 700, y: 200, que: 'césped' }, { x: 820, y: 120, que: 'césped' },
+    { x: 905, y: 400, que: 'piscina' },
+  ]
+
+  const lienzo = document.getElementById('mundo')
+  const ctx = lienzo.getContext('2d')
+  const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  function ajustarResolucion() {
+    const r = Math.min(window.devicePixelRatio || 1, 2)
+    lienzo.width = W * r
+    lienzo.height = H * r
+    ctx.setTransform(r, 0, 0, r, 0, 0)
+  }
+  ajustarResolucion()
+
+  // ── Estado de cada personaje en la escena ──
+  const pjs = AGENTES.map((a, i) => ({
+    ...a, i,
+    x: MESAS[i].x + 40, y: MESAS[i].y + 44,
+    destino: null, espera: Math.random() * 3,
+    estado: 'descanso', mensaje: '', fase: Math.random() * 6,
+    sitio: null,
+  }))
+  const mascotas = [
+    { tipo: 'perro', x: 760, y: 240, destino: null, espera: 0, fase: 0 },
+    { tipo: 'gato', x: 120, y: 448, destino: null, espera: 6, fase: 2 },
+  ]
+  let seleccionado = null
+  let datos = EJEMPLO
+
+  const enMesa = i => ({ x: MESAS[i].x + 40, y: MESAS[i].y + 50 })
+  const sitiosLibres = yo => SITIOS.filter(s => !pjs.some(p => p !== yo && p.sitio === s))
+
+  function decidir(p) {
+    if (p.estado === 'alerta' || p.estado === 'trabajando') {
+      p.sitio = null
+      p.destino = enMesa(p.i)
+      return
+    }
+    const libres = sitiosLibres(p)
+    p.sitio = libres[Math.floor(Math.random() * libres.length)] ?? null
+    p.destino = p.sitio ? { x: p.sitio.x, y: p.sitio.y } : enMesa(p.i)
+  }
+
+  function mover(o, dt, vel) {
+    if (!o.destino) return true
+    const dx = o.destino.x - o.x, dy = o.destino.y - o.y
+    const d = Math.hypot(dx, dy)
+    if (d < 2) { o.x = o.destino.x; o.y = o.destino.y; o.destino = null; return true }
+    const paso = Math.min(d, vel * dt)
+    o.x += (dx / d) * paso
+    o.y += (dy / d) * paso
+    o.fase += dt * 10
+    return false
+  }
+
+  function actualizar(dt) {
+    for (const p of pjs) {
+      const llegado = mover(p, dt, p.estado === 'alerta' ? 140 : 70)
+      if (llegado) {
+        p.espera -= dt
+        if (p.espera <= 0) {
+          p.espera = p.estado === 'descanso' ? 6 + Math.random() * 8 : 2
+          if (p.estado === 'descanso' || !cerca(p, enMesa(p.i))) decidir(p)
+        }
+      }
+    }
+    for (const m of mascotas) {
+      if (mover(m, dt, m.tipo === 'perro' ? 60 : 35)) {
+        m.espera -= dt
+        if (m.espera <= 0) {
+          m.espera = m.tipo === 'gato' ? 8 + Math.random() * 10 : 2 + Math.random() * 4
+          const z = m.tipo === 'perro' ? (Math.random() < .75 ? ZONAS.jardin : ZONAS.oficina) : ZONAS.descanso
+          let x, y, intentos = 0
+          do {
+            x = z.x + 30 + Math.random() * (z.w - 60)
+            y = z.y + 30 + Math.random() * (z.h - 60)
+            intentos++
+          } while (dentroDe(ZONAS.piscina, x, y, 10) && intentos < 20)
+          m.destino = { x, y }
+        }
+      }
+    }
+  }
+  const cerca = (a, b) => Math.hypot(a.x - b.x, a.y - b.y) < 4
+  const dentroDe = (z, x, y, m = 0) => x > z.x - m && x < z.x + z.w + m && y > z.y - m && y < z.y + z.h + m
+
+  // ── Dibujo ──
+  function rr(x, y, w, h, r, color) {
+    ctx.fillStyle = color
+    ctx.beginPath()
+    ctx.roundRect(x, y, w, h, r)
+    ctx.fill()
+  }
+  function circulo(x, y, r, color) {
+    ctx.fillStyle = color
+    ctx.beginPath()
+    ctx.arc(x, y, r, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  function elipse(x, y, rx, ry, color) {
+    ctx.fillStyle = color
+    ctx.beginPath()
+    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  function suelo(t) {
+    // Fondo y jardín
+    ctx.fillStyle = '#2b3a5e'
+    ctx.fillRect(0, 0, W, H)
+    const j = ZONAS.jardin
+    rr(j.x, j.y, j.w, j.h, 14, '#6fbf5b')
+    for (let i = 0; i < 160; i++) {
+      const x = j.x + ((i * 97) % j.w), y = j.y + ((i * 53) % j.h)
+      ctx.fillStyle = i % 2 ? '#64b252' : '#7ccb66'
+      ctx.fillRect(x, y, 3, 6)
+    }
+    // Camino de piedras
+    for (let i = 0; i < 7; i++) elipse(600 + i * 12, 420 + Math.sin(i) * 6, 9, 6, '#d9cdb4')
+    // Oficina: parqué
+    const o = ZONAS.oficina
+    rr(o.x, o.y, o.w, o.h, 14, '#c8935a')
+    ctx.save()
+    ctx.beginPath(); ctx.roundRect(o.x, o.y, o.w, o.h, 14); ctx.clip()
+    for (let y = o.y; y < o.y + o.h; y += 22) {
+      for (let x = o.x + ((y / 22) % 2) * 40; x < o.x + o.w; x += 80) {
+        ctx.fillStyle = 'rgba(0,0,0,.06)'
+        ctx.fillRect(x, y, 78, 20)
+      }
+    }
+    ctx.restore()
+    // Zona de descanso: baldosa
+    const d = ZONAS.descanso
+    rr(d.x, d.y, d.w, d.h, 14, '#e9dfcf')
+    ctx.save()
+    ctx.beginPath(); ctx.roundRect(d.x, d.y, d.w, d.h, 14); ctx.clip()
+    for (let x = d.x; x < d.x + d.w; x += 32) for (let y = d.y; y < d.y + d.h; y += 32) {
+      if (((x - d.x) / 32 + (y - d.y) / 32) % 2 === 0) { ctx.fillStyle = '#ddd1bd'; ctx.fillRect(x, y, 32, 32) }
+    }
+    ctx.restore()
+    // Paredes bajas con puertas
+    ctx.strokeStyle = '#f5efe4'
+    ctx.lineWidth = 6
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(o.x + 4, 354); ctx.lineTo(230, 354)
+    ctx.moveTo(330, 354); ctx.lineTo(o.x + o.w - 4, 354)
+    ctx.moveTo(584, o.y + 6); ctx.lineTo(584, 150)
+    ctx.moveTo(584, 240); ctx.lineTo(584, 400)
+    ctx.moveTo(584, 470); ctx.lineTo(584, 578)
+    ctx.stroke()
+    // Piscina
+    const p = ZONAS.piscina
+    rr(p.x - 10, p.y - 10, p.w + 20, p.h + 20, 26, '#efe6d6')
+    rr(p.x, p.y, p.w, p.h, 20, '#46b3e6')
+    ctx.save()
+    ctx.beginPath(); ctx.roundRect(p.x, p.y, p.w, p.h, 20); ctx.clip()
+    ctx.strokeStyle = 'rgba(255,255,255,.35)'
+    ctx.lineWidth = 2
+    for (let k = 0; k < 7; k++) {
+      ctx.beginPath()
+      for (let x = p.x; x <= p.x + p.w; x += 10) {
+        const y = p.y + 18 + k * 24 + Math.sin(x / 22 + t * (reducido ? 0 : 1.6) + k) * 3
+        x === p.x ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+      }
+      ctx.stroke()
+    }
+    ctx.restore()
+    // Flotador
+    ctx.lineWidth = 7; ctx.strokeStyle = '#ff6b6b'
+    ctx.beginPath(); ctx.arc(780 + Math.sin(t * .5) * 20, 400 + Math.cos(t * .4) * 12, 13, 0, Math.PI * 2); ctx.stroke()
+  }
+
+  function muebles() {
+    // Mesas de trabajo
+    pjs.forEach((p, i) => {
+      const m = MESAS[i]
+      rr(m.x + 2, m.y + 4, 84, 40, 8, 'rgba(0,0,0,.15)')
+      rr(m.x, m.y, 84, 40, 8, '#f3ead9')
+      const activo = p.estado !== 'descanso'
+      rr(m.x + 22, m.y + 4, 40, 22, 4, '#2a3550')
+      rr(m.x + 25, m.y + 7, 34, 16, 2, activo ? (p.estado === 'alerta' ? '#ff8d8d' : '#9ee6ff') : '#3e4a68')
+      if (activo) {
+        ctx.strokeStyle = 'rgba(42,53,80,.6)'; ctx.lineWidth = 1.5
+        ctx.beginPath()
+        for (let k = 0; k < 3; k++) { ctx.moveTo(m.x + 28, m.y + 11 + k * 4); ctx.lineTo(m.x + 28 + 8 + ((k * 7 + Math.floor(performance.now() / 300)) % 20), m.y + 11 + k * 4) }
+        ctx.stroke()
+      }
+      rr(m.x + 32, m.y + 28, 20, 6, 2, '#c7bba6')
+      circulo(m.x + 74, m.y + 12, 5, p.camisa)            // taza con el color del agente
+      circulo(m.x + 40, m.y + 58, 11, '#5b6b8f')           // silla
+      ctx.fillStyle = '#41506f'
+      ctx.font = '700 10px Nunito, sans-serif'
+      ctx.textAlign = 'center'
+      ctx.fillText(p.nombre.toUpperCase(), m.x + 42, m.y + 84)
+    })
+    // Plantas de oficina
+    for (const [x, y] of [[40, 330], [552, 36], [552, 330]]) { circulo(x, y, 12, '#3f8f4f'); circulo(x + 5, y - 5, 8, '#56ad62') }
+
+    // Zona de descanso
+    rr(60, 448, 150, 40, 12, '#5d78c6')                    // sofá
+    rr(60, 486, 150, 16, 8, '#4d66ad')
+    rr(70, 455, 40, 24, 8, '#7b93d6'); rr(115, 455, 40, 24, 8, '#7b93d6'); rr(160, 455, 40, 24, 8, '#7b93d6')
+    rr(270, 382, 60, 28, 6, '#7a7f8c')                     // cafetera
+    circulo(290, 396, 6, '#3a2a20'); circulo(312, 396, 5, '#ffc65c')
+    rr(220, 382, 40, 46, 6, '#e6edf5')                     // nevera
+    circulo(380, 520, 32, '#b98a5a')                       // mesa redonda
+    circulo(380, 520, 10, '#ffc65c')
+    rr(470, 420, 70, 44, 8, '#2e7d4f')                     // futbolín
+    ctx.strokeStyle = '#d9d9d9'; ctx.lineWidth = 2
+    for (let k = 0; k < 4; k++) { ctx.beginPath(); ctx.moveTo(474 + k * 18, 416); ctx.lineTo(474 + k * 18, 468); ctx.stroke() }
+    circulo(40, 560, 14, '#3f8f4f'); circulo(46, 552, 9, '#56ad62')
+
+    // Jardín: árboles, flores, banco, caseta, tumbonas
+    for (const [x, y, r] of [[640, 70, 34], [900, 60, 28], [910, 210, 24], [640, 250, 22]]) {
+      elipse(x + 6, y + r * .7, r, r * .45, 'rgba(0,0,0,.15)')
+      circulo(x, y, r, '#2f8a47'); circulo(x - r * .3, y - r * .3, r * .6, '#3fa35a')
+    }
+    const flores = ['#ff8fb1', '#ffe066', '#ffffff', '#b38bff']
+    for (let k = 0; k < 26; k++) circulo(700 + ((k * 37) % 150), 150 + ((k * 23) % 60), 3, flores[k % 4])
+    rr(830, 280, 64, 16, 5, '#a0703f')                     // banco
+    rr(830, 270, 64, 6, 3, '#8a5f33')
+    rr(890, 470, 44, 36, 6, '#d86a4a')                     // caseta del perro
+    ctx.fillStyle = '#7a3a2a'; ctx.beginPath(); ctx.arc(912, 500, 9, Math.PI, 0); ctx.fill()
+    for (const x of [650, 710, 770]) { rr(x, 528, 40, 22, 6, '#ffffff'); rr(x, 528, 12, 22, 6, '#ffc65c') }
+    elipse(820, 565, 18, 6, 'rgba(0,0,0,.12)')
+    // Sombrilla
+    circulo(840, 540, 24, '#ff6b6b'); circulo(840, 540, 6, '#ffffff')
+  }
+
+  function persona(p, t) {
+    const sentado = !p.destino && (p.sitio || cerca(p, enMesa(p.i)))
+    const bote = p.destino && !reducido ? Math.abs(Math.sin(p.fase)) * 3 : 0
+    const y = p.y - bote
+    elipse(p.x, p.y + 12, 12, 5, 'rgba(0,0,0,.2)')
+    if (p.sitio?.que === 'piscina' && !p.destino) {
+      // Nadando: solo la cabeza y ondas
+      ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2
+      ctx.beginPath(); ctx.arc(p.x, p.y + 4, 14 + Math.sin(t * 3) * 2, 0, Math.PI * 2); ctx.stroke()
+      circulo(p.x, p.y, 9, p.piel); circulo(p.x, p.y - 4, 8, p.pelo)
+    } else {
+      rr(p.x - 11, y - 6 + (sentado ? 3 : 0), 22, sentado ? 16 : 20, 8, p.camisa)
+      if (!sentado) {                                       // piernas al andar
+        const s = reducido ? 0 : Math.sin(p.fase) * 3
+        rr(p.x - 8, y + 12 + s * .3, 6, 7, 3, '#34405e'); rr(p.x + 2, y + 12 - s * .3, 6, 7, 3, '#34405e')
+      }
+      circulo(p.x, y - 14, 10, p.piel)
+      ctx.fillStyle = p.pelo
+      ctx.beginPath(); ctx.arc(p.x, y - 16, 10, Math.PI * 1.05, Math.PI * 1.95); ctx.fill()
+      circulo(p.x - 3.5, y - 13, 1.4, '#1d1a2b'); circulo(p.x + 3.5, y - 13, 1.4, '#1d1a2b')
+    }
+    if (seleccionado === p.id) {
+      ctx.strokeStyle = '#ffc65c'; ctx.lineWidth = 3
+      ctx.beginPath(); ctx.ellipse(p.x, p.y + 12, 18, 8, 0, 0, Math.PI * 2); ctx.stroke()
+    }
+    // Bocadillo de estado
+    if (p.estado === 'alerta' || p.estado === 'trabajando') {
+      const alerta = p.estado === 'alerta'
+      const by = y - 42 + (reducido ? 0 : Math.sin(t * 4 + p.i) * 2)
+      rr(p.x - 12, by - 12, 24, 22, 8, alerta ? '#ff6b6b' : '#ffffff')
+      ctx.fillStyle = alerta ? '#ff6b6b' : '#ffffff'
+      ctx.beginPath(); ctx.moveTo(p.x - 4, by + 9); ctx.lineTo(p.x + 4, by + 9); ctx.lineTo(p.x, by + 15); ctx.fill()
+      ctx.fillStyle = alerta ? '#ffffff' : '#41506f'
+      ctx.font = '800 14px Nunito, sans-serif'; ctx.textAlign = 'center'
+      ctx.fillText(alerta ? '!' : '…', p.x, by + 4)
+    } else if (!p.destino && p.sitio) {
+      const icono = { 'café': '☕', 'sofá': 'z', 'tumbona': '☀', 'piscina': '' }[p.sitio.que]
+      if (icono) {
+        ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = '700 12px Nunito, sans-serif'; ctx.textAlign = 'center'
+        ctx.fillText(icono, p.x + 14, p.y - 26 - (reducido ? 0 : (t * 8 + p.i * 3) % 6))
+      }
+    }
+  }
+
+  function mascota(m, t) {
+    const paso = m.destino && !reducido ? Math.sin(m.fase) * 1.5 : 0
+    elipse(m.x, m.y + 7, 11, 4, 'rgba(0,0,0,.18)')
+    const dir = m.destino ? Math.sign(m.destino.x - m.x) || 1 : 1
+    if (m.tipo === 'perro') {
+      rr(m.x - 11, m.y - 6 + paso, 22, 12, 6, '#c98b4b')
+      circulo(m.x + 11 * dir, m.y - 7 + paso, 7, '#c98b4b')
+      elipse(m.x + 9 * dir, m.y - 12 + paso, 3, 5, '#7a4f28')
+      ctx.strokeStyle = '#c98b4b'; ctx.lineWidth = 3
+      ctx.beginPath(); ctx.moveTo(m.x - 11 * dir, m.y - 3); ctx.lineTo(m.x - 16 * dir, m.y - 9 + Math.sin(t * 12) * 3); ctx.stroke()
+      circulo(m.x + 15 * dir, m.y - 7 + paso, 1.6, '#1d1a2b')
+    } else {
+      const dormido = !m.destino
+      rr(m.x - 9, m.y - 5, 18, 10, 5, '#5a5f73')
+      circulo(m.x + 9 * dir, m.y - 5, 6, '#5a5f73')
+      ctx.fillStyle = '#5a5f73'
+      ctx.beginPath(); ctx.moveTo(m.x + 5 * dir, m.y - 9); ctx.lineTo(m.x + 7 * dir, m.y - 15); ctx.lineTo(m.x + 10 * dir, m.y - 10); ctx.fill()
+      ctx.beginPath(); ctx.moveTo(m.x + 10 * dir, m.y - 10); ctx.lineTo(m.x + 13 * dir, m.y - 15); ctx.lineTo(m.x + 14 * dir, m.y - 8); ctx.fill()
+      if (dormido) { ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.font = '700 10px Nunito, sans-serif'; ctx.fillText('z', m.x + 16, m.y - 18 - (reducido ? 0 : (t * 6) % 5)) }
+    }
+  }
+
+  function luz() {
+    // De noche en Madrid (antes de las 8 o después de las 21) la escena se oscurece un poco.
+    const h = Number(new Intl.DateTimeFormat('es-ES', { hour: 'numeric', hourCycle: 'h23', timeZone: 'Europe/Madrid' }).format(new Date()))
+    if (h >= 8 && h < 21) return
+    ctx.fillStyle = 'rgba(14, 22, 48, .35)'
+    ctx.fillRect(0, 0, W, H)
+  }
+
+  let ultimo = performance.now()
+  function bucle(ahora) {
+    const dt = Math.min(.05, (ahora - ultimo) / 1000)
+    ultimo = ahora
+    const t = ahora / 1000
+    actualizar(reducido ? dt * .5 : dt)
+    suelo(t)
+    muebles()
+    const todos = [...pjs.map(p => ({ y: p.y, dibujar: () => persona(p, t) })), ...mascotas.map(m => ({ y: m.y, dibujar: () => mascota(m, t) }))]
+    todos.sort((a, b) => a.y - b.y).forEach(o => o.dibujar())
+    luz()
+    requestAnimationFrame(bucle)
+  }
+
+  // ── Panel lateral ──
+  const lista = document.getElementById('lista')
+  const ORDEN = { alerta: 0, trabajando: 1, descanso: 2 }
+  const TEXTO_ESTADO = { alerta: 'Aviso', trabajando: 'Trabajando', descanso: 'Descansando' }
+  const SEMAFORO = { verde: 'Tranquilo', ambar: 'Atención', rojo: 'Riesgo alto' }
+
+  function pintarPanel() {
+    const s = datos.semaforo in SEMAFORO ? datos.semaforo : 'verde'
+    const pill = document.getElementById('semaforo')
+    pill.className = `pill ${s}`
+    pill.textContent = SEMAFORO[s]
+    document.getElementById('titulo-equipo').textContent = `Equipo ${(datos.equipos ?? ['Nasdaq']).join(' + ')}`
+    document.getElementById('aviso-demo').hidden = !datos.ejemplo
+    const cuando = datos.actualizado ? new Date(datos.actualizado) : null
+    document.getElementById('actualizado').textContent = cuando && !Number.isNaN(cuando.getTime())
+      ? `Actualizado a las ${cuando.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' })} (hora de España)`
+      : 'Sin datos todavía'
+    lista.replaceChildren(...[...pjs].sort((a, b) => ORDEN[a.estado] - ORDEN[b.estado]).map(p => {
+      const li = document.createElement('li')
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.id = `agente-${p.id}`
+      b.setAttribute('aria-pressed', String(seleccionado === p.id))
+      b.innerHTML = `<span class="punto"></span><span><span class="nombre"></span><br><span class="rol"></span></span><span class="chip ${p.estado}">${TEXTO_ESTADO[p.estado]}</span><span class="mensaje"></span>`
+      b.querySelector('.punto').style.background = p.camisa
+      b.querySelector('.nombre').textContent = p.nombre
+      b.querySelector('.rol').textContent = p.rol
+      b.querySelector('.mensaje').textContent = p.mensaje || 'Sin novedades.'
+      b.addEventListener('click', () => seleccionar(p.id))
+      li.append(b)
+      return li
+    }))
+  }
+
+  function seleccionar(id) {
+    seleccionado = seleccionado === id ? null : id
+    pintarPanel()
+  }
+
+  function aplicar(nuevo) {
+    datos = nuevo
+    for (const p of pjs) {
+      const a = nuevo.agentes?.[p.id] ?? { estado: 'descanso', mensaje: '' }
+      const estado = ['alerta', 'trabajando', 'descanso'].includes(a.estado) ? a.estado : 'descanso'
+      const cambia = estado !== p.estado
+      p.estado = estado
+      p.mensaje = a.mensaje ?? ''
+      if (cambia) { p.espera = 0; decidir(p) }
+    }
+    pintarPanel()
+  }
+
+  lienzo.addEventListener('click', e => {
+    const r = lienzo.getBoundingClientRect()
+    const x = (e.clientX - r.left) * (W / r.width), y = (e.clientY - r.top) * (H / r.height)
+    const p = pjs.find(p => Math.hypot(p.x - x, p.y - 8 - y) < 20)
+    if (p) {
+      seleccionar(p.id)
+      document.getElementById(`agente-${p.id}`)?.scrollIntoView({ block: 'nearest', behavior: reducido ? 'auto' : 'smooth' })
+    }
+  })
+
+  // Servida por la oficina, lee /estado cada 30 s; si no hay oficina detrás, muestra el ejemplo.
+  async function cargar() {
+    try {
+      const r = await fetch('estado', { cache: 'no-store' })
+      if (!r.ok) throw new Error(String(r.status))
+      aplicar(await r.json())
+    } catch {
+      if (!datos || datos === EJEMPLO) aplicar(EJEMPLO)
+    }
+  }
+  // Posiciones iniciales repartidas: cada uno en su sitio.
+  aplicar(EJEMPLO)
+  for (const p of pjs) { decidir(p); if (p.destino) { p.x = p.destino.x; p.y = p.destino.y; p.destino = null } }
+  cargar()
+  setInterval(cargar, 30_000)
+  requestAnimationFrame(bucle)
+})()
+</script>

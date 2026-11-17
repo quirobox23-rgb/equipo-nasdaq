@@ -26,4 +26,5 @@ programar('cierre', '15 16 * * 1-5', M, () => cierre())                   // 22:
 programar('resumen semanal', '0 19 * * 0', U, () => resumenSemanal())
 
 if (config.telegram.token) void escucharTelegram()
-if (config.whatsapp.token) arrancarServidor()
+// La vista de la oficina (y el webhook de WhatsApp, si lo usas) van en el mismo servidor.
+arrancarServidor()

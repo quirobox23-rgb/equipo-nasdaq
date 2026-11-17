@@ -20,6 +20,10 @@ Un **equipo por activo** (hoy Nasdaq; Oro ya está como plantilla en `src/equipo
 | · Gestor de cuentas (`gestor.ts`) | Reglas de cada cuenta de fondeo: pérdida diaria, drawdown trailing o estático, objetivo. "Ojo con esta" al 50% y 80% de la pérdida diaria o cerca del drawdown. |
 | **Coordinador** (`src/coordinador.ts`) | Junta todo, pone el semáforo de **riesgo** 🟢🟠🔴 (los avisos de tu estrategia van aparte con 📍 y no lo cambian) y redacta con Claude. Si el texto pareciera una señal ("compra", "ponte corto"…), usa la plantilla. |
 
+## La oficina en pantalla
+
+Con `npm start`, abre `http://localhost:3000/oficina`: un plano de la oficina con cada agente en su mesa, la zona de descanso, el jardín, la piscina y las mascotas. Cuando un agente tiene un aviso se sienta a trabajar (con un bocadillo rojo si es una alerta); cuando no hay nada, se va a descansar. A la derecha, el semáforo y lo último que ha dicho cada uno. Se actualiza sola cada 30 segundos con lo que guarda la oficina en `data/estado-oficina.json`.
+
 ## Tu estrategia
 
 Se define en `config/estrategias/<equipo>.json`. La de Nasdaq viene con tu escenario de barrido de liquidez de Asia:
