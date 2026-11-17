@@ -8,6 +8,12 @@ import { interpretarRespuesta, evaluarBienestar, type CheckIn } from './personal
 import { interpretarComandoPnl, type EstadoCuenta } from './personal/gestor.ts'
 import { mensajero } from './mensajeria/index.ts'
 import { claveDia } from './tiempo.ts'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { leerEstado } from './estadoOficina.ts'
+
+const PAGINA_OFICINA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'oficina.html')
 
 export async function procesarMensaje(texto: string, ahora = new Date()): Promise<string> {
   const pnl = interpretarComandoPnl(texto)
@@ -48,6 +54,18 @@ interface WebhookWA {
 export function arrancarServidor() {
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost')
+    if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/oficina')) {
+      const cuerpo = await fs.readFile(PAGINA_OFICINA, 'utf-8')
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
+      res.end(`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"></head><body>${cuerpo}</body></html>`)
+      return
+    }
+    if (req.method === 'GET' && url.pathname === '/estado') {
+      const estado = await leerEstado()
+      res.writeHead(estado ? 200 : 404, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
+      res.end(JSON.stringify(estado ?? { error: 'La oficina aún no ha trabajado hoy.' }))
+      return
+    }
     if (req.method === 'GET' && url.pathname === '/salud') {
       res.writeHead(200).end('ok')
       return
@@ -80,6 +98,6 @@ export function arrancarServidor() {
     }
     res.writeHead(404).end()
   })
-  server.listen(config.puerto, () => console.log(`[oficina] Webhook escuchando en el puerto ${config.puerto}`))
+  server.listen(config.puerto, () => console.log(`[oficina] Abre http://localhost:${config.puerto}/oficina para ver la oficina`))
   return server
 }
