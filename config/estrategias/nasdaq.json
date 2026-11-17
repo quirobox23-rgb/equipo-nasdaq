@@ -1,0 +1,14 @@
+{
+  "nombre": "Barrido de liquidez de Asia",
+  "descripcion": "Espero que el precio barra el mínimo (o el máximo) de Asia, saque liquidez y se vaya en contra.",
+  "niveles": ["asia", "londres", "ayer"],
+  "vigilar": { "aproximacion": true, "barrido": true, "recuperacion": true, "aceptacion": true },
+  "vwap": true,
+  "distanciaAproximacion": 20,
+  "minutosAceptacion": 20,
+  "ventana": { "inicio": "02:00", "fin": "11:30" },
+  "sesiones": {
+    "asia": { "nombre": "Asia", "inicio": "20:00", "fin": "00:00" },
+    "londres": { "nombre": "Londres", "inicio": "02:00", "fin": "05:00" }
+  }
+}

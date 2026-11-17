@@ -1,0 +1,24 @@
+{
+  "name": "equipo-nasdaq",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Oficina de agentes que avisa por WhatsApp del contexto y el riesgo del Nasdaq. Nunca da señales de entrada.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "tarea": "tsx src/cli.ts",
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.9.0",
+    "fast-xml-parser": "^5.12.1",
+    "node-cron": "^4.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.23.15",
+    "typescript": "^5.7.2"
+  }
+}
