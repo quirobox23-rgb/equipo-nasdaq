@@ -22,7 +22,7 @@ Un **equipo por activo** (hoy Nasdaq; Oro ya está como plantilla en `src/equipo
 
 ## La oficina en pantalla
 
-Con `npm start`, abre `http://localhost:3000/oficina`: un plano de la oficina con cada agente en su mesa, la zona de descanso, el jardín, la piscina y las mascotas. Cuando un agente tiene un aviso se sienta a trabajar (con un bocadillo rojo si es una alerta); cuando no hay nada, se va a descansar. A la derecha, el semáforo y lo último que ha dicho cada uno. Se actualiza sola cada 30 segundos con lo que guarda la oficina en `data/estado-oficina.json`.
+Con `npm start`, abre `http://localhost:3000/oficina`: la oficina en 3D (sala de operaciones, despacho, sala de reuniones, zona de descanso, gimnasio y terraza con piscina, jardín y mascotas). Se puede girar, acercar y saltar a cada sala. Cuando un agente tiene un aviso camina a su mesa y se pone a trabajar (etiqueta roja si es una alerta); cuando no hay nada, se va a descansar. A la derecha, el semáforo y lo último que ha dicho cada uno. Se actualiza sola cada 30 segundos con lo que guarda la oficina en `data/estado-oficina.json`.
 
 ## Tu estrategia
 
