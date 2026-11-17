@@ -1,0 +1,42 @@
+{
+  "name": "Trade Balance",
+  "aliases": [
+    "Trade Balance",
+    "Goods Trade Balance",
+    "Balanza Comercial"
+  ],
+  "description": "Diferencia entre exportaciones e importaciones de EE.UU. Normalmente es negativa (déficit). 'Goods Trade Balance' es el adelanto solo de bienes.",
+  "narrative": "Un déficit menor del esperado suma al PIB; uno mayor resta. Importa sobre todo antes de un dato de PIB.",
+  "scenarioPositive": "Déficit MENOR de lo esperado → suma al PIB → USD alcista ↑.",
+  "scenarioNegative": "Déficit MAYOR de lo esperado → resta al PIB → USD bajista ↓.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 08:30 ET",
+  "scenarioShortBetter": "Menos déficit: USD ↑",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Más déficit: USD ↓",
+  "dependencies": "Ajusta las estimaciones de PIB del trimestre. Con aranceles en el debate puede pesar más de lo normal.",
+  "comments": "Impacto bajo, 08:30 ET.",
+  "specialRules": [
+    "SIGNO: Se publica en negativo. Un número 'más alto' (menos negativo) es mejor.",
+    "ARANCELES: En periodos de guerra comercial el mercado lo mira más."
+  ],
+  "notes": "Publicación: mensual, 08:30 ET (Goods Trade Balance sale antes como adelanto)."
+}

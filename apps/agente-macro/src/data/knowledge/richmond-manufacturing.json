@@ -1,0 +1,48 @@
+{
+  "name": "Richmond Manufacturing Index",
+  "aliases": [
+    "Richmond Fed Manufacturing",
+    "Richmond Fed"
+  ],
+  "description": "Encuesta de la Fed de Richmond a fabricantes de su distrito. Por encima de 0 = expansión, por debajo = contracción.",
+  "narrative": "Es una de las encuestas regionales (junto a Empire State y Philly Fed) que anticipan el ISM Manufacturing.",
+  "scenarioPositive": "Índice mejor de lo esperado → manufactura fuerte → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Índice peor de lo esperado → manufactura débil → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 10:00 ET",
+  "scenarioShortBetter": "Manufactura fuerte: USD ↑",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Manufactura débil: USD ↓",
+  "dependencies": "Pesa menos que Empire State y Philly Fed. Se lee junto a ellas para ver la tendencia regional.",
+  "comments": "Impacto bajo, 10:00 ET.",
+  "specialRules": [
+    "REGIONAL: Solo mueve mercado si confirma una tendencia de las otras encuestas."
+  ],
+  "notes": "Publicación: mensual, cuarto martes del mes, 10:00 ET."
+}

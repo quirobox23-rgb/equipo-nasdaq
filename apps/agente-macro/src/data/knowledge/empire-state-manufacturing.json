@@ -1,0 +1,21 @@
+{
+  "name": "Empire State Manufacturing Index",
+  "aliases": ["Empire State Index", "NY Manufacturing"],
+  "description": "Índice de actividad manufacturera en Nueva York. Regional manufacturing indicator. Publicado tercer lunes del mes.",
+  "narrative": "Empire State = termómetro de manufactura regional NY. Si sube = manufactura fuerte. Si baja = debilidad industrial.",
+  "scenarioPositive": "Empire State BEAT (sube más) → Manufactura fuerte → Economía resistente → USD alcista ↑.",
+  "scenarioNegative": "Empire State MISS (baja más) → Manufactura débil → Economía débil → USD bajista ↓.",
+  "scenarioNeutral": "Empire State INLINE → Sin cambios significativos.",
+  "affectedAssets": ["USD", "SPX", "XLI"],
+  "assetsBeat": { "USD": "up", "SPX": "down", "XLI": "down" },
+  "assetsInline": { "USD": "neutral", "SPX": "neutral", "XLI": "neutral" },
+  "assetsMiss": { "USD": "down", "SPX": "up", "XLI": "up" },
+  "importance": "low",
+  "stars": 1,
+  "dependencies": "Empire State → ISM Manufacturing (nacional). Regional predictor de nacional manufacturing.",
+  "comments": "Volatilidad baja. Regional indicator, menos importante que ISM.",
+  "specialRules": [
+    "REGIONAL: Solo NY, no es USA total. Nueva versión de Philly Fed regional."
+  ],
+  "notes": "Publicación: Tercer lunes del mes. Regional manufacturing indicator."
+}

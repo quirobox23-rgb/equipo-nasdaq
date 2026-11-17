@@ -1,0 +1,36 @@
+{
+  "name": "Alphabet (GOOGL)",
+  "ticker": "GOOGL",
+  "aliases": [
+    "Alphabet",
+    "Google"
+  ],
+  "stars": 4,
+  "frequency": "Trimestral",
+  "description": "Dueña de Google (búsqueda y publicidad), YouTube, Google Cloud y sus modelos de IA (Gemini).",
+  "nqImpact": "Gran ponderación del NASDAQ 100. La publicidad muestra la salud del gasto de las empresas y la nube, el ritmo de la IA.",
+  "dependencies": "Meta (publicidad digital); Microsoft y Amazon (nube); NVIDIA por la inversión en IA.",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "GOOGL"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "GOOGL": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "GOOGL": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "GOOGL": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

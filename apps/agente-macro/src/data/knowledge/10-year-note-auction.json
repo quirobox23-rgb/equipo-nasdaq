@@ -1,0 +1,22 @@
+{
+  "name": "10-Year Note Auction",
+  "aliases": ["10-Year Treasury Auction", "T-Note Auction"],
+  "description": "Subasta de bonos del Tesoro USA a 10 años. Determina yields de bonos a largo plazo. Publicado midweek del mes.",
+  "narrative": "Bond auction = demanda por deuda USA. Si demanda alta = yields bajos = buen signo. Si demanda baja = yields suben = riesgo de que Fed suba tasas.",
+  "scenarioPositive": "Auction Yields BAJAN (alta demanda) → Seguridad en USD → USD alcista ↑, TLT alcista ↑.",
+  "scenarioNegative": "Auction Yields SUBEN (baja demanda) → Riesgo percibido → TLT bajista ↓, USD bajista ↓.",
+  "scenarioNeutral": "Auction normal → Sin cambios en yields.",
+  "affectedAssets": ["USD", "TLT", "GOLD"],
+  "assetsBeat": { "USD": "up", "TLT": "up", "GOLD": "down" },
+  "assetsInline": { "USD": "neutral", "TLT": "neutral", "GOLD": "neutral" },
+  "assetsMiss": { "USD": "down", "TLT": "down", "GOLD": "up" },
+  "importance": "med",
+  "stars": 2,
+  "dependencies": "10Y Auction → 30Y Auction (día siguiente). Auction yields = referencia para hipotecas, bonos corporativos.",
+  "comments": "Volatilidad media. Publicado segundo miércoles del mes a las 19:00 ET.",
+  "specialRules": [
+    "BIDDING DEMAND: Si hay muchos bids = confianza en USA. Si pocos = riesgo.",
+    "YIELD INDICATION: Pre-auction yield estimate vs actual resultado = sorpresa."
+  ],
+  "notes": "Publicación: Segundo miércoles 19:00 ET. Indicador de demanda por deuda USA."
+}

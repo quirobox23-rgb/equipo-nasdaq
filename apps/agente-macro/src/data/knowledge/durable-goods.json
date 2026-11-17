@@ -1,0 +1,39 @@
+﻿{
+    "scenarioPositive":  "BEAT → USD alcista ↑",
+    "scenarioNegative":  "MISS → USD bajista ↓",
+    "importance":  "med",
+    "stars": 2,
+    "scenarioNeutral":  "INLINE → Normal",
+    "assetsInline":  {
+                         "NASDAQ":  "neutral",
+                         "GOLD":  "neutral",
+                         "USD":  "neutral"
+                     },
+    "affectedAssets":  [
+                           "USD",
+                           "NASDAQ",
+                           "GOLD"
+                       ],
+    "name":  "durable-goods",
+    "specialRules":  [
+
+                     ],
+    "description":  "Evento de mercado",
+    "dependencies":  "",
+    "assetsBeat":  {
+                       "NASDAQ":  "down",
+                       "GOLD":  "down",
+                       "USD":  "up"
+                   },
+    "aliases":  [
+                    "durable-goods"
+                ],
+    "assetsMiss":  {
+                       "NASDAQ":  "up",
+                       "GOLD":  "up",
+                       "USD":  "down"
+                   },
+    "notes":  "",
+    "comments":  "",
+    "narrative":  "Indicador económico"
+}

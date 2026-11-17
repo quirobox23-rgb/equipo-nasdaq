@@ -1,0 +1,24 @@
+{
+  "name": "GDP Growth",
+  "aliases": ["GDP", "Gross Domestic Product", "GDP q/q", "Quarterly GDP"],
+  "description": "Crecimiento del Producto Interno Bruto. Mide tamaño y crecimiento de economía USA. Publicado cada trimestre.",
+  "narrative": "GDP es medida principal de salud económica. Si sube = economía crece = Fed subirá tasas. Si baja = recesión = Fed bajará tasas.",
+  "scenarioPositive": "GDP BEAT (crece más que esperado) → Economía acelerando → Fed hawkish → USD alcista ↑, NASDAQ bajista ↓, Gold bajista ↓.",
+  "scenarioNegative": "GDP MISS (crece menos que esperado) → Economía desacelerando → Fed dovish → USD bajista ↓, NASDAQ alcista ↑, Gold alcista ↑.",
+  "scenarioNeutral": "GDP INLINE (como esperado) → Crecimiento normal → Sin sorpresas.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "SPX", "TLT"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "SPX": "down", "TLT": "down" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "SPX": "neutral", "TLT": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "SPX": "up", "TLT": "up" },
+  "importance": "high",
+  "stars": 4,
+  "dependencies": "GDP = sumatoria de Consumo (70%) + Inversión (20%) + Gasto Gobierno (10%) + Exportaciones. Si Retail/Earnings/Payroll débiles = GDP débil.",
+  "comments": "Trimestral (3 meses). Se publica 3 veces: Advance, Preliminary, Final. Cada una puede revisar anterior.",
+  "specialRules": [
+    "ADVANCE vs FINAL: Advance GDP (primera estimación) es lo que mueve mercado. Final puede revisar mucho.",
+    "COMPONENTS: Personal Consumption (PCE) es 70% de GDP. Si PCE sube = GDP subirá.",
+    "QUARTERLY REPORTS: Publicaciones: finales de mes del trimestre siguiente (Ej: Q2 GDP = fin agosto).",
+    "RECESSION: 2 trimestres negativos = definición técnica de recesión."
+  ],
+  "notes": "Publicación: Trimestral, finales de mes siguiente a trimestre. Indicador principal de salud económica."
+}

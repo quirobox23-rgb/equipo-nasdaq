@@ -1,0 +1,24 @@
+{
+  "name": "Retail Sales",
+  "aliases": ["Retail Sales m/m", "Retail Sales (MoM)", "Retail Sales (Aug)"],
+  "description": "Mide gasto de consumidores en tiendas mayoristas. Indicador de fortaleza del consumo. Publicado segundo viernes del mes a las 08:30 ET.",
+  "narrative": "Retail Sales = salud del consumidor. Si sube = consumidores gastan = economía fuerte = Fed sube tasas. Si baja = consumo débil = economía débil = Fed baja tasas.",
+  "scenarioPositive": "Retail Sales BEAT (sube más que esperado) → Consumo fuerte → Economía resiliente → Fed hawkish → USD alcista ↑, NASDAQ bajista ↓, Gold bajista ↓.",
+  "scenarioNegative": "Retail Sales MISS (baja más que esperado) → Consumo débil → Economía se ralentiza → Fed dovish → USD bajista ↓, NASDAQ alcista ↑, Gold alcista ↑.",
+  "scenarioNeutral": "Retail Sales INLINE (como esperado) → Consumo estable → Sin sorpresas.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "SPX", "XRT"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "SPX": "down", "XRT": "up" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "SPX": "neutral", "XRT": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "SPX": "up", "XRT": "down" },
+  "importance": "high",
+  "stars": 4,
+  "dependencies": "Retail Sales m/m + Core Retail Sales = contexto de gasto del consumidor. Retail sales → GDP (componente principal). Si retail sube = GDP subirá.",
+  "comments": "Indicador de consumo. Importante para Fed porque consumo = 70% de economía USA. Volatilidad alta.",
+  "specialRules": [
+    "HEADLINE vs CORE: Retail Sales headline (incluye autos) es volátil. Core Retail (ex-autos) es lo que mira Fed.",
+    "EARNINGS SEASON: Si retail sales bajan = earnings de retailers caen mes siguiente.",
+    "MARKET MOVER: Top 5 eventos por volatilidad en mercados.",
+    "TIMING: Segundo viernes del mes a 08:30 ET."
+  ],
+  "notes": "Publicación: Segundo viernes 08:30 ET. Indicador de fortaleza del consumo."
+}

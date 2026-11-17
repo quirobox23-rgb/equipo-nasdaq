@@ -1,0 +1,21 @@
+{
+  "name": "Philadelphia Fed Manufacturing Index",
+  "aliases": ["Philly Fed", "Philadelphia Manufacturing", "Philly Fed Index"],
+  "description": "Índice de actividad manufacturera en región de Philadelphia. Regional manufacturing indicator importante.",
+  "narrative": "Philly Fed = indicador regional de manufactura. Si sube = manufactura fuerte. Leading indicator de ISM Manufacturing nacional.",
+  "scenarioPositive": "Philly Fed BEAT (sube más) → Manufactura regional fuerte → Economía resiliente → USD alcista ↑, XLI alcista ↑.",
+  "scenarioNegative": "Philly Fed MISS (baja) → Manufactura regional débil → Economía débil → USD bajista ↓, XLI bajista ↓.",
+  "scenarioNeutral": "Philly Fed INLINE → Sin cambios.",
+  "affectedAssets": ["USD", "SPX", "XLI"],
+  "assetsBeat": { "USD": "up", "SPX": "down", "XLI": "down" },
+  "assetsInline": { "USD": "neutral", "SPX": "neutral", "XLI": "neutral" },
+  "assetsMiss": { "USD": "down", "SPX": "up", "XLI": "up" },
+  "importance": "med",
+  "stars": 2,
+  "dependencies": "Philly Fed → ISM Manufacturing (1 semana después). Leading indicator nacional de manufactura.",
+  "comments": "Importante para predicción de ISM. Publicado tercer jueves del mes.",
+  "specialRules": [
+    "ISM PREDICTOR: Philly Fed sale 1 semana antes de ISM. Mercado usa como predictivo."
+  ],
+  "notes": "Publicación: Tercer jueves del mes. Leading indicator de ISM Manufacturing."
+}

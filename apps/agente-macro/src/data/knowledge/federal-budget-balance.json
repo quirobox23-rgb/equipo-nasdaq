@@ -1,0 +1,37 @@
+{
+  "name": "Federal Budget Balance",
+  "aliases": [
+    "Federal Budget Balance",
+    "Treasury Statement",
+    "Saldo Presupuestario Federal"
+  ],
+  "description": "Saldo mensual del presupuesto federal (ingresos menos gastos). Casi siempre es déficit.",
+  "narrative": "Déficits grandes implican más emisión de deuda, lo que puede presionar al alza los rendimientos de los bonos.",
+  "scenarioPositive": "Déficit menor de lo esperado → ligero alivio en bonos.",
+  "scenarioNegative": "Déficit mayor de lo esperado → presión en bonos (yields ↑).",
+  "scenarioNeutral": "En línea → sin impacto.",
+  "affectedAssets": [
+    "TLT"
+  ],
+  "assetsBeat": {
+    "TLT": "up"
+  },
+  "assetsInline": {
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "TLT": "down"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 14:00 ET",
+  "scenarioShortBetter": "Menos déficit: bonos ↑",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Más déficit: bonos ↓",
+  "dependencies": "Contexto para las subastas de deuda.",
+  "comments": "Impacto casi nulo, 14:00 ET.",
+  "specialRules": [
+    "CONTEXTO FISCAL: Solo pesa si el mercado está preocupado por el déficit."
+  ],
+  "notes": "Publicación: mensual, 14:00 ET."
+}

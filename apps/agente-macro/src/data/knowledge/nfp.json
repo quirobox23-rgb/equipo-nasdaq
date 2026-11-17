@@ -1,0 +1,24 @@
+{
+  "name": "Non-Farm Payroll",
+  "aliases": ["NFP", "Employment", "Jobs Report", "Non-Farm Employment"],
+  "description": "Número de nuevos empleos creados en USA (ex-sector agrícola). Principal indicador de empleo. Publicado primer viernes del mes a las 08:30 ET.",
+  "narrative": "NFP es termómetro del mercado laboral. Si sube = empleo fuerte = Fed subirá tasas. Si baja = desempleo = Fed bajará tasas. Predictor de economía futura.",
+  "scenarioPositive": "NFP BEAT (más empleos que esperado) → Mercado laboral fuerte → Economía resistente → Fed hawkish → USD alcista ↑, NASDAQ bajista ↓, Gold bajista ↓.",
+  "scenarioNegative": "NFP MISS (menos empleos que esperado) → Empleo débil → Economía desacelerando → Fed dovish → USD bajista ↓, NASDAQ alcista ↑, Gold alcista ↑.",
+  "scenarioNeutral": "NFP INLINE (como esperado) → Mercado laboral normal → Sin sorpresas.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "SPX", "VIX"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "SPX": "down", "VIX": "up" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "SPX": "neutral", "VIX": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "SPX": "up", "VIX": "down" },
+  "importance": "high",
+  "stars": 5,
+  "dependencies": "NFP + Unemployment Rate = contexto de empleo completo. Wage Growth (salarios) es submétrica importante. NFP predice Fed decision próxima reunión.",
+  "comments": "Top 3 eventos por volatilidad. Primer viernes de cada mes. Volatilidad máxima ± 1 hora.",
+  "specialRules": [
+    "REVISIONS: El número puede ser revisado los 2 meses siguientes. Reviisions importan tanto como print original.",
+    "UNEMPLOYMENT RATE: Desempleo puede subir/bajar independientemente de NFP (ej: gente sale del workforce).",
+    "WAGE GROWTH: Average Hourly Earnings (AHE) es submétrica crítica. AHE > NFP en algunos casos.",
+    "SECTOR BREAKDOWN: Dónde se crean empleos importa: Tech vs Retail vs Manufacturing = narrativa diferente."
+  ],
+  "notes": "Publicación: Primer viernes 08:30 ET. PRINCIPAL indicador de empleo."
+}

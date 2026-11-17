@@ -1,0 +1,42 @@
+{
+  "name": "API Weekly Crude Inventories",
+  "aliases": [
+    "API Weekly Statistical Bulletin",
+    "API Crude Oil Stock",
+    "Inventarios API"
+  ],
+  "description": "Inventarios semanales de crudo según el American Petroleum Institute. Sale el martes por la tarde, un día antes del dato oficial de la EIA.",
+  "narrative": "Adelanta el Crude Oil Inventories del miércoles. Mueve sobre todo el petróleo.",
+  "scenarioPositive": "Bajada de inventarios mayor de lo esperado → petróleo alcista ↑.",
+  "scenarioNegative": "Subida de inventarios mayor de lo esperado → petróleo bajista ↓.",
+  "scenarioNeutral": "En línea → sin impacto.",
+  "affectedAssets": [
+    "OIL",
+    "USD"
+  ],
+  "assetsBeat": {
+    "OIL": "up",
+    "USD": "neutral"
+  },
+  "assetsInline": {
+    "OIL": "neutral",
+    "USD": "neutral"
+  },
+  "assetsMiss": {
+    "OIL": "down",
+    "USD": "neutral"
+  },
+  "importance": "low",
+  "stars": 1,
+  "betterWhen": "lower",
+  "frequency": "Semanal · martes 16:30 ET",
+  "scenarioShortBetter": "Menos inventarios: crudo ↑",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Más inventarios: crudo ↓",
+  "dependencies": "Adelanto del dato oficial EIA (Crude Oil Inventories) del miércoles.",
+  "comments": "Afecta al crudo; impacto en NQ casi nulo. 16:30 ET.",
+  "specialRules": [
+    "NO OFICIAL: Muchas veces no publica previsión ni dato en abierto; manda el EIA del día siguiente."
+  ],
+  "notes": "Publicación: semanal, martes 16:30 ET."
+}

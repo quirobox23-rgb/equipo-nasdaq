@@ -1,0 +1,22 @@
+{
+  "name": "S&P Global Manufacturing PMI",
+  "aliases": ["S&P Global Services PMI", "S&P Global Composite PMI", "S&P Global PMI", "Flash PMI"],
+  "description": "Índice de actividad empresarial (manufactura y/o servicios) elaborado por S&P Global mediante encuesta a empresas. Similar en concepto al ISM, pero de otra fuente y metodología — suele publicarse antes (como 'Flash PMI') que el dato de ISM del mismo mes.",
+  "narrative": "Por encima de 50 = expansión de la actividad, por debajo de 50 = contracción. Al salir antes que ISM, el mercado lo usa como primer adelanto de cómo viene el mes en manufactura y servicios.",
+  "scenarioPositive": "PMI BEAT (sube más de lo esperado, o se mantiene claramente sobre 50) → Actividad empresarial fuerte → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "PMI MISS (baja más de lo esperado, o cae bajo 50) → Actividad empresarial débil → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "PMI INLINE (como esperado) → Sin sorpresas relevantes.",
+  "affectedAssets": ["USD", "NASDAQ", "SPX", "XLI"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "SPX": "down", "XLI": "down" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "SPX": "neutral", "XLI": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "SPX": "up", "XLI": "up" },
+  "importance": "med",
+  "stars": 1,
+  "dependencies": "Adelanto de ISM Manufacturing/Services del mismo mes. Si S&P Global sorprende mucho, el mercado empieza a ajustar expectativas para el dato de ISM que sale después.",
+  "comments": "Menos seguido por el mercado que ISM en EE.UU. (al revés que en Europa, donde S&P Global es el PMI de referencia), pero relevante como primer pulso del mes.",
+  "specialRules": [
+    "MANUFACTURING vs SERVICES: Services pesa más en EE.UU. porque representa la mayor parte de la economía (~80%).",
+    "FLASH vs FINAL: Este es el dato 'flash' (preliminar), suele haber una revisión final semanas después que rara vez mueve mercado."
+  ],
+  "notes": "Publicación: Última semana del mes (dato preliminar/'flash'). Menos relevante que ISM en EE.UU. pero útil como primer indicio."
+}

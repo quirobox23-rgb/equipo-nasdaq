@@ -1,0 +1,35 @@
+{
+  "name": "Amazon (AMZN)",
+  "ticker": "AMZN",
+  "aliases": [
+    "Amazon"
+  ],
+  "stars": 4,
+  "frequency": "Trimestral",
+  "description": "Comercio electrónico, AWS (el mayor proveedor de nube) y publicidad.",
+  "nqImpact": "Gran ponderación del NASDAQ 100. AWS marca el ritmo de la nube y del gasto en IA; las ventas online, el pulso del consumo.",
+  "dependencies": "Retail Sales y consumo en EE.UU.; Microsoft y Alphabet (nube).",
+  "scenarioShortBetter": "Supera lo esperado → impulso para tech",
+  "scenarioShortInline": "Sin sorpresas: manda la guía",
+  "scenarioShortWorse": "Decepciona → presión sobre tech",
+  "affectedAssets": [
+    "NASDAQ",
+    "AMZN"
+  ],
+  "assetsBeat": {
+    "NASDAQ": "up",
+    "AMZN": "up"
+  },
+  "assetsInline": {
+    "NASDAQ": "neutral",
+    "AMZN": "neutral"
+  },
+  "assetsMiss": {
+    "NASDAQ": "down",
+    "AMZN": "down"
+  },
+  "specialRules": [
+    "GUÍA: Lo que la empresa proyecta para el próximo trimestre suele mover más que el resultado del trimestre que terminó.",
+    "HORARIO: Si reporta post-cierre, la reacción se ve en el after-hours y en la apertura del día siguiente."
+  ]
+}

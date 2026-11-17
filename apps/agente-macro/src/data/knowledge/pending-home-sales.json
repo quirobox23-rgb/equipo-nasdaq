@@ -1,0 +1,48 @@
+{
+  "name": "Pending Home Sales",
+  "aliases": [
+    "Pending Home Sales",
+    "Ventas Pendientes de Viviendas"
+  ],
+  "description": "Contratos de compraventa de viviendas usadas firmados en el mes y aún no cerrados.",
+  "narrative": "Adelanta las Existing Home Sales de uno o dos meses después.",
+  "scenarioPositive": "Dato mejor de lo esperado → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Dato peor de lo esperado → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 10:00 ET",
+  "scenarioShortBetter": "Vivienda fuerte: USD ↑",
+  "scenarioShortInline": "En línea: impacto bajo",
+  "scenarioShortWorse": "Vivienda débil: USD ↓",
+  "dependencies": "Adelanto de Existing Home Sales.",
+  "comments": "Impacto bajo, 10:00 ET.",
+  "specialRules": [
+    "ADELANTADO: Útil para anticipar ventas de viviendas usadas."
+  ],
+  "notes": "Publicación: mensual, final de mes, 10:00 ET."
+}

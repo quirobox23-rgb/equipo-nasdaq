@@ -1,0 +1,21 @@
+{
+  "name": "30-Year Bond Auction",
+  "aliases": ["30-Year Treasury Auction", "Long-Bond Auction", "T-Bond Auction"],
+  "description": "Subasta de bonos del Tesoro USA a 30 años. Determina yields de bonos a muy largo plazo.",
+  "narrative": "30Y auction = demanda por deuda muy larga. Si yields suben mucho = riesgo inflacionario = preocupación Fed.",
+  "scenarioPositive": "30Y Yields BAJAN (alta demanda) → Confianza → TLT alcista ↑, USD alcista ↑.",
+  "scenarioNegative": "30Y Yields SUBEN fuerte (baja demanda) → Riesgo inflacionario → TLT bajista ↓.",
+  "scenarioNeutral": "30Y Auction normal → Sin sorpresas.",
+  "affectedAssets": ["USD", "TLT", "GOLD"],
+  "assetsBeat": { "USD": "up", "TLT": "up", "GOLD": "down" },
+  "assetsInline": { "USD": "neutral", "TLT": "neutral", "GOLD": "neutral" },
+  "assetsMiss": { "USD": "down", "TLT": "down", "GOLD": "up" },
+  "importance": "med",
+  "stars": 2,
+  "dependencies": "10Y + 30Y auctions = yield curve. Si 30Y mucho más alto que 10Y = riesgo de inflación futura.",
+  "comments": "Volatilidad media. Publicado día después de 10Y (segundo jueves del mes a las 19:00 ET).",
+  "specialRules": [
+    "CURVE STEEPNESS: Si 30Y sube mucho vs 10Y = yield curve se empinaiza = inflación esperada."
+  ],
+  "notes": "Publicación: Segundo jueves 19:00 ET. Indicador de inflación a largo plazo esperada."
+}

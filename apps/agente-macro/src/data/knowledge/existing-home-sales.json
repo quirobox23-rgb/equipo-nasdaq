@@ -1,0 +1,23 @@
+{
+  "name": "Existing Home Sales",
+  "aliases": ["Home Sales", "Existing Home Sales (Aug)", "Housing Sales"],
+  "description": "Número de viviendas existentes vendidas. Indicador de mercado inmobiliario. Publicado tercera semana del mes.",
+  "narrative": "Home Sales = salud del sector inmobiliario. Si sube = demanda por viviendas = economía fuerte. Si baja = demanda débil = economía débil.",
+  "scenarioPositive": "Home Sales BEAT (más ventas que esperado) → Demanda inmobiliaria fuerte → Economía resiliente → USD alcista ↑, Homebuilders (XHB) alcista ↑.",
+  "scenarioNegative": "Home Sales MISS (menos ventas que esperado) → Demanda inmobiliaria débil → Economía débil → USD bajista ↓, XHB bajista ↓.",
+  "scenarioNeutral": "Home Sales INLINE (como esperado) → Mercado estable.",
+  "affectedAssets": ["USD", "XHB", "GOLD", "SPX"],
+  "assetsBeat": { "USD": "up", "XHB": "up", "GOLD": "down", "SPX": "up" },
+  "assetsInline": { "USD": "neutral", "XHB": "neutral", "GOLD": "neutral", "SPX": "neutral" },
+  "assetsMiss": { "USD": "down", "XHB": "down", "GOLD": "up", "SPX": "down" },
+  "importance": "med",
+  "stars": 1,
+  "dependencies": "Home Sales + New Home Sales (Construction) = contexto inmobiliario. Existente es más grande (80% del mercado).",
+  "comments": "Volatilidad media. Mercado residencial = 15-20% de economía. Importante para Fed.",
+  "specialRules": [
+    "MEDIAN PRICE: Precio mediano importante pero menos volátil. Absor precio vs volumen.",
+    "INVENTORY: Inventario disponible importa. Si inventory baja = falta oferta = precios suben.",
+    "MORTGAGE RATES: Tasas hipotecarias impactan demand. Si tasas suben = demanda cae."
+  ],
+  "notes": "Publicación: Tercera semana del mes. Indicador de mercado residencial."
+}

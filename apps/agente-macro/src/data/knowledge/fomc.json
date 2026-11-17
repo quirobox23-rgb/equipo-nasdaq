@@ -1,0 +1,22 @@
+{
+  "name": "FOMC Economic Projections",
+  "aliases": ["Dot Plot", "FOMC Projections", "Fed Guidance"],
+  "description": "Proyecciones económicas de miembros de FOMC. Publicadas con Fed Rate Decision. Muestra expectativas de tasas futuras (dot plot).",
+  "narrative": "Dot Plot = mapa de dónde irán tasas según Fed. Si proyectan más subidas = hawkish. Si proyectan cortes = dovish.",
+  "scenarioPositive": "Dot Plot HAWKISH (Fed proyecta más subidas) → Tasas subirán → USD alcista ↑, Bonos bajista ↓, NASDAQ bajista ↓.",
+  "scenarioNegative": "Dot Plot DOVISH (Fed proyecta cortes) → Tasas bajarán → USD bajista ↓, Bonos alcista ↑, NASDAQ alcista ↑.",
+  "scenarioNeutral": "Dot Plot NEUTRAL (sin cambios en proyecciones) → Sin sorpresas.",
+  "affectedAssets": ["USD", "TLT", "NASDAQ", "GOLD", "DXY"],
+  "assetsBeat": { "USD": "up", "TLT": "down", "NASDAQ": "down", "GOLD": "down", "DXY": "up" },
+  "assetsInline": { "USD": "neutral", "TLT": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "DXY": "neutral" },
+  "assetsMiss": { "USD": "down", "TLT": "up", "NASDAQ": "up", "GOLD": "up", "DXY": "down" },
+  "importance": "high",
+  "stars": 4,
+  "dependencies": "Dot Plot + rueda de prensa de Warsh = guía total de Fed. Dot Plot es visual, lo que dice Warsh es la narrativa.",
+  "comments": "Publicado con Fed Rate Decision. Más importante que decisión pura en muchos casos.",
+  "specialRules": [
+    "DOT PLOT SHIFT: Si dot plot sube (más tasas) = mercado reacciona fuerte.",
+    "TERMINAL RATE: Dónde Fed piensa que pararán las tasas importa más que siguiente movimiento."
+  ],
+  "notes": "Publicación: Con Fed Rate Decision cada 6 semanas. Guía de Fed sobre tasas futuras."
+}

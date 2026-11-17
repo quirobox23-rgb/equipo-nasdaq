@@ -1,0 +1,50 @@
+{
+  "name": "FOMC Meeting Minutes",
+  "aliases": [
+    "FOMC Minutes",
+    "Fed Minutes",
+    "Minutas FOMC"
+  ],
+  "description": "Actas de la última reunión del FOMC, publicadas tres semanas después de la decisión. Recogen el debate interno: cuántos miembros querían subir, bajar o mantener tasas.",
+  "narrative": "No hay dato numérico: se lee el tono. El mercado busca si el comité está más dividido o más hawkish/dovish de lo que dejó ver Warsh en la rueda de prensa.",
+  "scenarioPositive": "Minutas HAWKISH (más miembros preocupados por la inflación, se habla de no bajar o de subir) → USD alcista ↑, NASDAQ bajista ↓, Oro bajista ↓.",
+  "scenarioNegative": "Minutas DOVISH (mayoría abierta a recortes, preocupación por empleo o crecimiento) → USD bajista ↓, NASDAQ alcista ↑, Oro alcista ↑.",
+  "scenarioNeutral": "Minutas en línea con lo que dijo Warsh en la rueda de prensa → impacto limitado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "med",
+  "stars": 3,
+  "frequency": "8 reuniones al año · 3 semanas tras la decisión",
+  "scenarioShortBetter": "Hawkish: USD ↑, NQ ↓",
+  "scenarioShortInline": "Sin sorpresa: impacto bajo",
+  "scenarioShortWorse": "Dovish: USD ↓, NQ ↑",
+  "dependencies": "Se interpretan siempre contra la última decisión y la rueda de prensa de Warsh. Lo que importa es la diferencia entre lo que dijo el Chair y lo que piensa el comité.",
+  "comments": "Se publican a las 14:00 ET. Movimiento rápido en los primeros minutos; si no hay sorpresa, se diluye.",
+  "specialRules": [
+    "TONO > DATO: No hay cifra, cuenta el lenguaje ('many participants', 'some participants', 'a few').",
+    "DIVISIÓN: Si el comité aparece más dividido que lo que transmitió el Chair, el mercado reajusta expectativas de tasas."
+  ],
+  "notes": "Publicación: tres semanas después de cada reunión del FOMC, 14:00 ET."
+}

@@ -1,0 +1,22 @@
+{
+  "name": "Michigan Inflation Expectations",
+  "aliases": ["Michigan 1-Year Inflation Expectations", "Michigan 5-Year Inflation Expectations", "UMich Inflation Expectations"],
+  "description": "Parte de la misma encuesta de la Universidad de Michigan, pero centrada en cuánta inflación esperan los consumidores a 1 año y a 5 años vista. La Fed la vigila de cerca porque expectativas de inflación 'desancladas' pueden convertirse en inflación real (profecía autocumplida).",
+  "narrative": "Si los consumidores esperan que los precios sigan subiendo mucho, tienden a exigir salarios más altos y a comprar antes de que suba más — eso presiona la inflación real al alza. Por eso a la Fed le importa tanto que estas expectativas se mantengan 'ancladas' cerca de su objetivo.",
+  "scenarioPositive": "Expectativas de inflación SUBEN más de lo esperado → Riesgo de inflación desanclada → Fed hawkish (defenderá tasas altas más tiempo) → USD alcista ↑, TLT bajista ↓, Gold alcista ↑ (cobertura inflación).",
+  "scenarioNegative": "Expectativas de inflación BAJAN → Inflación bajo control percibido → Fed puede permitirse ser más dovish → USD bajista ↓, TLT alcista ↑, Gold bajista ↓.",
+  "scenarioNeutral": "Expectativas SIN CAMBIOS relevantes → Impacto limitado.",
+  "affectedAssets": ["USD", "TLT", "GOLD", "NASDAQ"],
+  "assetsBeat": { "USD": "up", "TLT": "down", "GOLD": "up", "NASDAQ": "down" },
+  "assetsInline": { "USD": "neutral", "TLT": "neutral", "GOLD": "neutral", "NASDAQ": "neutral" },
+  "assetsMiss": { "USD": "down", "TLT": "up", "GOLD": "down", "NASDAQ": "up" },
+  "importance": "med",
+  "stars": 2,
+  "dependencies": "Complementa al CPI/Core PCE — mientras esos miden inflación real, esto mide inflación esperada. La Fed usa ambos para decidir política.",
+  "comments": "Un salto grande e inesperado aquí puede mover mercado casi tanto como un CPI, aunque no ocurre a menudo.",
+  "specialRules": [
+    "GOLD ES DISTINTO AQUÍ: A diferencia de otros datos de inflación, el oro puede subir junto al USD si el mercado lo lee como cobertura ante inflación futura, no solo como reacción a tasas.",
+    "5 AÑOS > 1 AÑO para la Fed: La expectativa a largo plazo (5 años) le importa más a la Fed que la de corto plazo, que es más volátil por precios de gasolina/alimentos."
+  ],
+  "notes": "Publicación: Junto con Michigan Consumer Sentiment. Vigilada de cerca por la Fed como termómetro de si la inflación esperada sigue 'anclada'."
+}

@@ -1,0 +1,50 @@
+{
+  "name": "Challenger Job Cuts",
+  "aliases": [
+    "Challenger Job Cuts",
+    "Despidos Challenger"
+  ],
+  "description": "Despidos anunciados por empresas de EE.UU. en el mes, según la consultora Challenger.",
+  "narrative": "Despidos al alza = el mercado laboral se enfría. Se mira la semana del NFP.",
+  "scenarioPositive": "Menos despidos de lo esperado → empleo sólido → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Más despidos de lo esperado → empleo enfriándose → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "Sin cambios relevantes → sin impacto.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "betterWhen": "lower",
+  "frequency": "Mensual · semana del NFP · 07:30 ET",
+  "scenarioShortBetter": "Pocos despidos: USD ↑",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Muchos despidos: USD ↓",
+  "dependencies": "Pista previa al NFP y a Jobless Claims.",
+  "comments": "Impacto bajo, 07:30 ET.",
+  "specialRules": [
+    "MÁS ES PEOR: Un número alto de despidos es dato débil.",
+    "TECH: Despidos en tecnología se leen también por sector."
+  ],
+  "notes": "Publicación: mensual, la semana del NFP, 07:30 ET."
+}

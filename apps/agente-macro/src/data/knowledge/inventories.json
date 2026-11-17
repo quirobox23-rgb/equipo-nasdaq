@@ -1,0 +1,37 @@
+{
+  "name": "Wholesale & Business Inventories",
+  "aliases": [
+    "Wholesale Inventories",
+    "Business Inventories",
+    "Inventarios"
+  ],
+  "description": "Variación mensual de los inventarios de mayoristas (Wholesale) y del total de empresas (Business).",
+  "narrative": "Los inventarios entran en el cálculo del PIB. Sirven sobre todo para afinar las estimaciones del PIB del trimestre.",
+  "scenarioPositive": "Inventarios por encima de lo esperado → suman al PIB → ligero USD alcista ↑.",
+  "scenarioNegative": "Inventarios por debajo de lo esperado → restan al PIB → ligero USD bajista ↓.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD"
+  ],
+  "assetsBeat": {
+    "USD": "up"
+  },
+  "assetsInline": {
+    "USD": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual",
+  "scenarioShortBetter": "Suma al PIB: impacto bajo",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Resta al PIB: impacto bajo",
+  "dependencies": "Ajustan las estimaciones de PIB (GDPNow).",
+  "comments": "Impacto casi nulo.",
+  "specialRules": [
+    "DOBLE LECTURA: Inventarios altos también pueden significar ventas flojas."
+  ],
+  "notes": "Publicación: mensual; Wholesale 'Prelim' a final de mes y Business a mitad de mes."
+}

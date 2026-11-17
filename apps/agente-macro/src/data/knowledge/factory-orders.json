@@ -1,0 +1,48 @@
+{
+  "name": "Factory Orders",
+  "aliases": [
+    "Factory Orders",
+    "Pedidos de Fábrica"
+  ],
+  "description": "Variación mensual de los pedidos a fábricas (bienes duraderos y no duraderos).",
+  "narrative": "La parte de bienes duraderos ya se conoce por el Durable Goods de semanas antes, así que suele traer poca sorpresa.",
+  "scenarioPositive": "Pedidos mejores de lo esperado → USD alcista ↑, NASDAQ bajista ↓.",
+  "scenarioNegative": "Pedidos peores de lo esperado → USD bajista ↓, NASDAQ alcista ↑.",
+  "scenarioNeutral": "El dato sale en línea con lo esperado → impacto limitado, el mercado ya lo tenía descontado.",
+  "affectedAssets": [
+    "USD",
+    "NASDAQ",
+    "GOLD",
+    "TLT"
+  ],
+  "assetsBeat": {
+    "USD": "up",
+    "NASDAQ": "down",
+    "GOLD": "down",
+    "TLT": "down"
+  },
+  "assetsInline": {
+    "USD": "neutral",
+    "NASDAQ": "neutral",
+    "GOLD": "neutral",
+    "TLT": "neutral"
+  },
+  "assetsMiss": {
+    "USD": "down",
+    "NASDAQ": "up",
+    "GOLD": "up",
+    "TLT": "up"
+  },
+  "importance": "low",
+  "stars": 1,
+  "frequency": "Mensual · 10:00 ET",
+  "scenarioShortBetter": "Pedidos fuertes: USD ↑",
+  "scenarioShortInline": "En línea: sin impacto",
+  "scenarioShortWorse": "Pedidos débiles: USD ↓",
+  "dependencies": "Depende de Durable Goods Orders, que sale antes.",
+  "comments": "Impacto bajo, 10:00 ET.",
+  "specialRules": [
+    "YA CONOCIDO: Gran parte del dato ya salió con Durable Goods."
+  ],
+  "notes": "Publicación: mensual, principios de mes, 10:00 ET."
+}

@@ -1,0 +1,146 @@
+[
+  {
+    "date": "2026-08-27",
+    "time": "15:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "Non-Farm Payroll",
+    "impact": "high",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-27",
+    "time": "15:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "Unemployment Rate",
+    "impact": "high",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-24",
+    "time": "09:15",
+    "country": "USA",
+    "currency": "USD",
+    "name": "CPI (Consumer Price Index)",
+    "impact": "high",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-25",
+    "time": "10:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "PPI (Producer Price Index)",
+    "impact": "med",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-26",
+    "time": "14:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "Retail Sales",
+    "impact": "med",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-26",
+    "time": "14:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "Jobless Claims",
+    "impact": "med",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-27",
+    "time": "15:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "Consumer Sentiment",
+    "impact": "med",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  },
+  {
+    "date": "2026-08-26",
+    "time": "14:00",
+    "country": "USA",
+    "currency": "USD",
+    "name": "GDP Growth",
+    "impact": "high",
+    "prev": null,
+    "forecast": null,
+    "actual": null,
+    "type": "macro",
+    "affects": [
+      "USD",
+      "NQ",
+      "GOLD",
+      "VIX"
+    ]
+  }
+]

@@ -1,0 +1,436 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Superficies (base.*) — canales RGB espacio-separados para que Tailwind
+     pueda componer opacidad (bg-base-panel2/60). Dark es el default de
+     :root; [data-theme="light"] pisa los mismos nombres. Mismos valores
+     que la sección 2 de docs/design-system-factor-metricas.md. */
+  :root {
+    color-scheme: dark;
+    --base-bg:     22 24 28;    /* #16181c antracita */
+    --base-panel:  30 33 38;    /* #1e2126 */
+    --base-panel2: 38 42 48;    /* #262a30 */
+    --base-line:   52 57 65;    /* #343941 */
+    --base-text:   231 234 240; /* #e7eaf0 */
+    --base-muted:  136 146 160; /* #8892a0 */
+    --base-faint:  95 103 115;  /* #5f6773 — equivalente a --text3 */
+    /* brand vía variable (a diferencia de brand-deep/
+       accent, fijos en tailwind.config.ts) porque en claro pasa a
+       valer lo mismo que brand-deep — ver nota abajo. */
+    --brand: 59 130 246; /* #3B82F6 */
+  }
+
+  [data-theme='light'] {
+    color-scheme: light;
+    --base-bg:     240 243 248; /* #f0f3f8 */
+    --base-panel:  255 255 255; /* #ffffff */
+    --base-panel2: 238 241 247; /* #eef1f7 */
+    --base-line:   214 219 227; /* ~ rgba(0,0,0,.12) sobre #f0f3f8 */
+    --base-text:   15 22 35;    /* #0f1623 */
+    --base-muted:  75 85 99;    /* #4b5563 */
+    --base-faint:  156 163 175; /* #9ca3af — equivalente a --text3 */
+    /* En claro, brand pasa a valer lo mismo que brand-deep
+       (#1E40AF): el verde vivo (#3B82F6) no se lee bien en texto/íconos
+       sobre fondo blanco (mismo ajuste que Agente Métricas). Los botones
+       con gradiente (bg-gradient-to-br from-brand...) hardcodean
+       el hex real de Tailwind vía esta misma variable, así que si se
+       ven "apagados" en claro es a propósito — igual que en Métricas. */
+    --brand: 37 99 235; /* #1E40AF */
+  }
+
+  body {
+    @apply bg-base-bg text-base-text antialiased font-body;
+    font-feature-settings: "ss01", "cv01";
+  }
+
+  h1, h2, h3, h4, h5, h6 { @apply font-display; }
+
+  .tabular, code, [data-value] {
+    @apply font-mono;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+
+  /* Utilidades de tipografía numérica — igual que .mono/.up/.down/.muted
+     en Agente Métricas. up/down son semáforo (resultado), no marca. */
+  .mono  { @apply font-mono; }
+  .up    { @apply text-pos; }
+  .down  { @apply text-neg; }
+  .muted { @apply text-base-muted; }
+
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-base-line rounded-full; }
+}
+
+@layer components {
+  .card    { @apply bg-base-panel border border-base-line rounded-lg; }
+  .card-sm { @apply bg-base-panel2/60 border border-base-line/70 rounded-md; }
+
+  /* Título de card — igual que .card-title en Agente Métricas: grande,
+     en blanco (no muted), con divisor debajo. Reemplaza a los labels
+     chicos/muted que usaban las cards de este catálogo hasta ahora. */
+  .card-title { @apply font-display text-base font-black text-base-text uppercase tracking-wide mb-5 pb-3.5 border-b border-base-line; }
+
+  /* Badge genérico — .badge + variante, fondo tenue + texto de color,
+     radius 4px (no pill). Severidad (impacto/riesgo) y sesgo (alcista/
+     bajista/neutral) reutilizan el semáforo (pos/neg/neutral), no suman
+     paletas propias — antes existían .b-high/.b-med/.b-low/.b-bull/.b-bear/
+     .b-neu/.b-warn con nombres de dominio duplicando exactamente esto,
+     unificados acá. Ver sección 5 del design system: ResultBadge
+     (WIN/LOSS/BE) usa las variantes -solid, fondo sólido + texto oscuro,
+     para diferenciarse de un badge informativo. */
+  .badge { @apply inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-semibold font-mono; }
+  .badge-brand     { @apply bg-brand/10 text-brand; }
+  .badge-secondary { @apply bg-brand-deep/10 text-brand-deep; }
+  .badge-pos     { @apply bg-pos/[.12] text-pos; }
+  .badge-neg     { @apply bg-neg/10 text-neg; }
+  .badge-neutral { @apply bg-neutral/10 text-neutral; }
+  .badge-grey    { @apply bg-base-panel2 text-base-muted; }
+  .badge-win-solid  { @apply bg-pos text-base-bg; }
+  .badge-loss-solid { @apply bg-neg text-base-bg; }
+  .badge-be-solid   { @apply bg-neutral text-base-bg; }
+
+  .tag { @apply inline-flex items-center rounded px-2 py-0.5 text-[11px] font-mono bg-base-panel2 text-base-muted border border-base-line; }
+
+  /* Escenarios beat/inline/miss — mismo semáforo. */
+  .sc-beat { @apply bg-pos-dim/30 border border-pos/30 rounded-lg p-4; }
+  .sc-line { @apply bg-neutral-dim/30 border border-neutral/30 rounded-lg p-4; }
+  .sc-miss { @apply bg-neg-dim/30 border border-neg/30 rounded-lg p-4; }
+
+  .chain-token { @apply inline-block bg-base-panel2 border border-base-line rounded px-2 py-0.5 text-[11px] text-base-text/80 font-mono; }
+  .chain-arrow { @apply text-base-muted text-xs mx-1; }
+
+  .stat-cell { @apply bg-base-panel2/70 rounded-md px-3 py-2; }
+
+  /* Métrica — igual que .metric/.metric-label/.metric-value/.metric-delta
+     en Agente Métricas: unifica cómo se muestra un stat individual (label
+     chico + valor grande en mono) en vez de que cada card lo resuelva a
+     mano con clases distintas. .metric-hero es la variante grande de KPI. */
+  .metric       { @apply bg-base-panel2/60 border border-base-line rounded-xl p-5; }
+  .metric-hero  { @apply bg-base-panel border border-base-line rounded-xl p-5; }
+  .metric-label { @apply text-[13px] font-bold text-base-text mb-1.5; }
+  .metric-value { @apply font-mono text-[22px] font-bold tracking-tight text-base-text tabular; }
+  .metric-hero .metric-value { @apply text-[27px] tracking-tight mt-2; }
+  .metric-delta { @apply font-mono text-xs mt-1; }
+
+  /* Callout de IA — igual que .ai-bubble/.ai-label/.ai-text en Factor
+     Métricas: barra lateral + label en el segundo verde de marca
+     (brand-deep, el mismo tono del --accent-gradient). Antes usaba
+     accent; el lima quedó de suplente sin uso. */
+  .ai-bubble {
+    @apply relative bg-base-panel2/60 border border-base-line rounded-xl pl-6 pr-5 py-4 mb-3
+           before:content-[''] before:absolute before:left-0 before:top-4 before:bottom-4
+           before:w-[3px] before:rounded before:bg-brand-deep;
+  }
+  .ai-label { @apply flex items-center gap-1.5 text-xs font-semibold text-brand-deep uppercase tracking-wide mb-2; }
+  .ai-text  { @apply text-[13px] leading-relaxed text-base-text/90; }
+
+  /* Tabs — igual que los selectores de Agente Métricas (Chips, "Tipo de
+     cuenta"): fondo gris sin borde exterior y la opción activa con fondo de
+     panel + borde verde fino (en oscuro el fondo solo no alcanza a
+     distinguirse). La opción inactiva lleva borde transparente para que no
+     salte al activarse. Fondo: #343941 en oscuro, #eef1f7 en claro (--bg3
+     de Métricas). */
+  .tabs      { @apply inline-flex gap-1 bg-base-line rounded-[10px] p-1 w-fit; }
+  [data-theme='light'] .tabs { @apply bg-base-panel2; }
+  .tab       { @apply px-3.5 py-1.5 rounded-md border border-transparent text-xs font-medium text-base-muted transition-colors cursor-pointer select-none hover:text-base-text; }
+  .tab-active { @apply bg-base-panel text-base-text border-brand font-semibold shadow-sm; }
+
+  .divider { @apply h-px bg-base-line my-5; }
+
+  /* Header de sección de página (no de card) — igual que el "1. Consistencia"
+     de MetrixAnalytics.jsx en Agente Métricas: texto chico en verde de marca
+     + línea divisoria que ocupa el resto del ancho. Va arriba de un grupo de
+     cards, nunca dentro de una. Se usa junto con .section-title-line. */
+  .section-title      { @apply text-xs font-bold uppercase tracking-wide text-base-muted whitespace-nowrap; }
+  .section-title-line { @apply flex-1 h-px bg-base-line; }
+
+  .progress-bar  { @apply h-2.5 bg-base-line/60 border border-base-line rounded-full overflow-hidden; }
+  .progress-fill { @apply h-full rounded-full transition-[width] duration-300; }
+
+  .section-label { @apply text-xs font-medium tracking-widest text-base-muted uppercase; }
+
+  .data-row { @apply flex items-center justify-between py-2 border-b border-base-line/60 last:border-0; }
+
+  .mit-input {
+    @apply bg-base-panel2 border border-base-line rounded-md px-3 py-1.5 text-sm text-base-text font-mono
+           placeholder:text-base-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/30
+           transition-colors;
+  }
+
+  /* Tamaños, peso y radio iguales a .btn de Agente Métricas: 9px 18px,
+     14px, 600, radio 10px (--r). Antes iba un tamaño más chico (12px). */
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 px-[18px] py-[9px] rounded-[10px] text-sm font-semibold leading-tight whitespace-nowrap
+           transition-all active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  /* CTA de marca — mismo degradé/hover/sombra que .btn-primary y
+     --accent-gradient en Agente Métricas (secondary→green, oscuro → claro,
+     invertido el 26/9 en Métricas; en hover se aclara, no se invierte).
+     Antes iba green→lime; el lima quedó de suplente sin uso.
+     Hex hardcodeado (no from-brand) a propósito: en claro
+     brand pasa a valer lo mismo que brand-deep (ver :root
+     arriba) para legibilidad de texto/íconos, pero el botón con gradiente
+     debe seguir vivo en los dos temas, igual que en Métricas. */
+  .btn-primary {
+    @apply btn text-white font-semibold
+           shadow-[0_1px_2px_rgba(59,130,246,0.35),0_6px_16px_-4px_rgba(59,130,246,0.4)]
+           hover:-translate-y-px
+           hover:shadow-[0_1px_2px_rgba(59,130,246,0.4),0_10px_22px_-4px_rgba(59,130,246,0.5)];
+    background: linear-gradient(to bottom right, #1E40AF, #3B82F6);
+  }
+  .btn-primary:hover { filter: brightness(1.1); }
+  /* Tema claro: sin glow verde (en reposo ni en hover), como en Métricas */
+  [data-theme='light'] .btn-primary,
+  [data-theme='light'] .btn-primary:hover { box-shadow: none; }
+  .btn-secondary {
+    @apply btn bg-base-line text-base-text border border-base-line
+           hover:bg-base-line/70 hover:border-base-muted/40;
+  }
+  .btn-outline {
+    @apply btn bg-transparent text-base-text border border-base-text
+           hover:bg-base-panel2;
+  }
+  .btn-ghost {
+    @apply btn bg-transparent text-base-muted border border-base-line
+           hover:bg-base-panel2 hover:text-base-text;
+  }
+
+  /* .btn-sm/.btn-lg van DESPUÉS de las variantes a propósito: como cada
+     variante también trae su propio padding/font-size (heredado de .btn
+     vía @apply), si el tamaño se definiera antes en la hoja de estilos
+     la variante lo pisaría en el cascade sin importar el orden de las
+     clases en el JSX — todos los botones se veían del mismo tamaño. */
+  .btn-sm { @apply px-3.5 py-[7px] text-xs; }
+  .btn-lg { @apply px-7 py-3.5 text-base; }
+
+  /* Checkbox nativo — accent-color de marca en toda la app, nunca el azul
+     por defecto del navegador (sección 5 del design system). */
+  input[type='checkbox'] { accent-color: theme('colors.brand.DEFAULT'); }
+
+  /* Check item — selección múltiple tipo tarjeta (ver sección 5). Estado
+     activo: fondo/borde de marca, siempre verde sin importar la categoría
+     (es un toggle de selección, no un semáforo). */
+  .check-item {
+    @apply flex items-center gap-2.5 px-3.5 py-2.5 rounded-md border border-base-line cursor-pointer
+           transition-colors hover:border-base-line/70;
+  }
+  .check-item.checked { @apply border-brand bg-brand/[0.07]; }
+
+  /* Callout — banner de una fila (ícono + label + texto + CTA opcional)
+     sobre degradé tenue de un color semántico. No es card. Cada variante
+     define --callout-bg1/--callout-bg2/--callout-border/--callout-accent;
+     el label toma el accent automáticamente. Ver sección 5. */
+  .callout {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    padding: 20px 24px;
+    border: 1px solid var(--callout-border);
+    background: linear-gradient(135deg, var(--callout-bg1), var(--callout-bg2));
+  }
+  .callout-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    color: var(--callout-accent);
+  }
+  .callout-green {
+    --callout-bg1: rgba(59, 130, 246, 0.08);
+    --callout-bg2: rgba(30, 64, 175, 0.03);
+    --callout-border: rgba(59, 130, 246, 0.18);
+    --callout-accent: #3B82F6;
+  }
+  .callout-amber {
+    --callout-bg1: rgba(246, 213, 92, 0.16);
+    --callout-bg2: rgba(246, 213, 92, 0.05);
+    --callout-border: rgba(246, 213, 92, 0.32);
+    --callout-accent: #f6d55c;
+  }
+  .callout-red {
+    --callout-bg1: rgba(237, 85, 59, 0.08);
+    --callout-bg2: rgba(237, 85, 59, 0.02);
+    --callout-border: rgba(237, 85, 59, 0.18);
+    --callout-accent: #ed553b;
+  }
+
+  /* Variantes de card + banner traídas de la web de Equipo Nasdaq
+     (santos-trader-positivus/styleguide), homologadas con Factor
+     Métricas (ver design-system-factor-metricas.md secc. 4). Se
+     combinan con .card (className="card card--accent"), no la
+     reemplazan, salvo .card--image/.card--image-cover que ya traen
+     su propio padding/layout. */
+  .card--bg {
+    background: linear-gradient(135deg, rgb(var(--base-panel2)) 0%, rgb(var(--base-panel)) 55%, rgb(var(--base-bg)) 100%);
+  }
+  .card--accent {
+    background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+    transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card--accent:hover {
+    box-shadow: 0 0 0 1px #3B82F6, 0 0 28px rgba(59,130,246,0.35);
+  }
+  .card--basic {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgb(var(--base-panel2)) 0%, rgb(var(--base-panel)) 55%, rgb(var(--base-bg)) 100%);
+    cursor: pointer;
+    transition: all 320ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .card--basic::after {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.4;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.04) 55%, transparent 70%);
+  }
+  .card--basic:hover { border-color: #3B82F6; box-shadow: 0 0 24px rgba(59,130,246,0.25); }
+
+  .card--image {
+    display: flex;
+    align-items: stretch;
+    height: 200px;
+    padding: 0;
+    overflow: hidden;
+    background: rgb(var(--base-bg));
+  }
+  .card--image__content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    padding: 28px;
+  }
+  .card--image__photo {
+    flex-shrink: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  .card--image__photo img { height: 100%; width: auto; display: block; }
+
+  .card--image-cover {
+    position: relative;
+    height: 260px;
+    padding: 28px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+  .card--image-cover__content {
+    position: relative;
+    max-width: 58%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .banner {
+    position: relative;
+    border-radius: 16px;
+    border: 1px solid rgb(var(--base-line));
+    overflow: hidden;
+    padding: 48px;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    background: rgb(var(--base-bg));
+  }
+  .banner__glow {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 50%;
+    pointer-events: none;
+    background: linear-gradient(0deg, rgba(59,130,246,0.22) 0%, rgba(59,130,246,0) 100%);
+  }
+  .banner__content {
+    position: relative;
+    max-width: 560px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Nav lateral — igual que .navItem en Agente Métricas: estado activo es
+     un box gris con contorno interno sutil, sin verde de marca (reservado
+     para CTAs/logo). Clase propia (no bg-base-line inline) para poder
+     pisar el color exacto en claro sin pelear con la capa de utilities. */
+  .nav-link { color: rgb(var(--base-muted)); }
+  .nav-link:hover { background: rgb(var(--base-line) / 0.4); color: rgb(var(--base-text)); }
+  .nav-link-active {
+    background: rgb(var(--base-line));
+    color: rgb(var(--base-text));
+    box-shadow: inset 0 0 0 1px #313a48;
+  }
+
+  /* Superficies de layout (topbar/sidebar/contenido) — mismos tonos de
+     gris que Agente Métricas en claro (AppShell.module.css / index.css):
+     sidebar y topbar NO comparten el mismo blanco (sidebar var(--bg),
+     topbar #fff puro), y el contenido va en un gris aparte (#f8fafc), no
+     blanco puro. En oscuro coinciden con base-bg/base-panel de siempre,
+     así que no hace falta declararlos acá. */
+  .app-topbar { background: rgb(var(--base-bg) / 0.95); }
+  .app-sidebar { background: rgb(var(--base-panel)); }
+  .app-tabs { background: rgb(var(--base-panel) / 0.92); backdrop-filter: blur(8px); }
+  .app-content { background: rgb(var(--base-bg)); }
+}
+
+[data-theme='light'] .nav-link:hover { background: #f0f4ff; color: #111827; }
+[data-theme='light'] .nav-link-active { background: #e8ecf4; color: #0f1623; box-shadow: none; }
+[data-theme='light'] .app-topbar { background: #ffffff; }
+[data-theme='light'] .app-sidebar { background: rgb(var(--base-bg)); border-color: rgba(0,0,0,0.08); }
+[data-theme='light'] .app-tabs { background: rgb(255 255 255 / 0.92); }
+[data-theme='light'] .app-content { background: #f8fafc; }
+
+/* MarketPulseCard ("¿Cómo está el mercado hoy?") — en claro, fondo
+   blanco sólido en vez de bg-base-bg/80 (que se ve grisáceo/traslúcido
+   sobre el fondo de contenido, ya de por sí muy claro). */
+[data-theme='light'] .market-pulse-card { background: #ffffff; backdrop-filter: none; }
+
+/* Escenarios (EventDetailModal, "Tres escenarios posibles") — el
+   degradé/tinte con los colores "-dim" (pensados para fondo oscuro) se
+   ve como una mancha grisácea sobre fondo claro. En claro, mismo color
+   real pero mucho más tenue (opacidad baja, igual criterio que
+   --pos2/--neg2/--neutral2 de Agente Métricas) en vez de mezclar un
+   dim oscuro con blanco. */
+[data-theme='light'] .scenario-gradient-pos      { background-image: linear-gradient(to bottom right, rgba(90,164,105,0.12), rgb(var(--base-panel))); }
+[data-theme='light'] .scenario-gradient-neutral  { background-image: linear-gradient(to bottom right, rgba(246,213,92,0.14), rgb(var(--base-panel))); }
+[data-theme='light'] .scenario-gradient-neg      { background-image: linear-gradient(to bottom right, rgba(237,85,59,0.1), rgb(var(--base-panel))); }
+[data-theme='light'] .scenario-tint-pos      { background-color: rgba(90,164,105,0.12); }
+[data-theme='light'] .scenario-tint-neutral  { background-color: rgba(246,213,92,0.14); }
+[data-theme='light'] .scenario-tint-neg      { background-color: rgba(237,85,59,0.1); }
+
+/* Sprint 7 — Home: additive only, no existing rule touched */
+@keyframes pulse-glow {
+  0%, 100% { r: 6px; opacity: .35; }
+  50%      { r: 13px; opacity: 1; }
+}
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@keyframes breathe-node {
+  0%, 100% { r: 5px;  opacity: .30; }
+  50%      { r: 10px; opacity: .85; }
+}
+@keyframes float-particle {
+  0%, 100% { opacity: .08; r: 0.5px; }
+  50%      { opacity: .35; r: 1.3px; }
+}
+
+/* Landing — DataSphere (porteado de Hero.jsx de Agente Métricas) */
+@keyframes heroSpin    { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes heroSpinRev { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+@keyframes heroSweep   { from { transform: rotate(0deg); }   to { transform: rotate(360deg); } }
+@keyframes heroNodePulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 0.9; } }

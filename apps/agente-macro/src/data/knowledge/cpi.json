@@ -1,0 +1,24 @@
+{
+  "name": "CPI (Consumer Price Index)",
+  "aliases": ["CPI m/m", "Consumer Inflation", "CPI headline"],
+  "description": "Mide inflación de precios que pagan los consumidores. Principal indicador de inflación. Publicado segundo día hábil del mes a las 08:30 ET.",
+  "narrative": "CPI es el principal indicador de inflación. Si sube más que forecast = inflación alta = Fed subirá tasas. Si baja = deflación = Fed bajará tasas.",
+  "scenarioPositive": "CPI BEAT (sube más que forecast) → Inflación alta → Fed hawkish (subirá tasas) → USD alcista ↑, NASDAQ bajista ↓, Gold bajista ↓, TLT bajista ↓.",
+  "scenarioNegative": "CPI MISS (baja menos que forecast) → Inflación baja → Fed dovish (bajará tasas) → USD bajista ↓, NASDAQ alcista ↑, Gold alcista ↑, TLT alcista ↑.",
+  "scenarioNeutral": "CPI INLINE (como esperado) → Inflación controlada → Impacto limitado → Sin sorpresas.",
+  "affectedAssets": ["USD", "NASDAQ", "GOLD", "TLT", "VIX"],
+  "assetsBeat": { "USD": "up", "NASDAQ": "down", "GOLD": "down", "TLT": "down", "VIX": "up" },
+  "assetsInline": { "USD": "neutral", "NASDAQ": "neutral", "GOLD": "neutral", "TLT": "neutral", "VIX": "neutral" },
+  "assetsMiss": { "USD": "down", "NASDAQ": "up", "GOLD": "up", "TLT": "up", "VIX": "down" },
+  "importance": "high",
+  "stars": 5,
+  "dependencies": "CPI m/m + CPI y/y = contexto inflacionario completo. Core CPI (ex-energía/alimentos) = más importante que headline. CPI predice decisiones Fed.",
+  "comments": "Principal indicador de inflación. Mercado y Fed monitorean constantemente. Volatilidad alta.",
+  "specialRules": [
+    "HEADLINE vs CORE: CPI headline (incluye energía) es volátil. Core CPI (ex-volátiles) es lo que mira Fed.",
+    "FED REACTION: Si CPI baja 2 meses seguidos = Fed empieza a bajar tasas (dovish).",
+    "MARKET MOVER: Top 3 eventos por volatilidad en mercados. Spike de VIX garantizado.",
+    "TIMING: Segundo miércoles del mes a 08:30 ET. Volatilidad máxima en ± 2 horas."
+  ],
+  "notes": "Publicación: Segundo miércoles 08:30 ET. PRINCIPAL indicador de inflación."
+}
