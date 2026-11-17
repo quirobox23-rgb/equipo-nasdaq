@@ -17,7 +17,7 @@ Un **equipo por activo** (hoy Nasdaq; Oro ya está como plantilla en `src/equipo
 | · Macro (`macro.ts`) | Calendario de EE. UU. con hora exacta y ventanas de "no operes ahora" alrededor de CPI, NFP, FOMC, Warsh… |
 | **Servicios personales** (`src/personal/`) | |
 | · Coach (`coach.ts`) | Te pregunta cómo estás, entiende "6h, sí, nerviosa" y calcula tu aptitud para operar. Ficha preparada para el reloj (VFC, pulso, estrés). |
-| · Gestor de cuentas (`gestor.ts`) | Reglas de cada cuenta de fondeo: pérdida diaria, drawdown trailing o estático, objetivo. "Ojo con esta" al 50% y 80% de la pérdida diaria o cerca del drawdown. |
+| · Gestor de cuentas (`gestor.ts`, `factorMetricas.ts`) | Lee tus cuentas activas y operaciones de **Factor Métricas** (solo lectura) y calcula el drawdown igual que la app. "Ojo con esta" al 50% y 80% de la pérdida diaria o cerca del drawdown. Sin Factor Métricas, usa `config/cuentas.json` y tus mensajes `pnl …`. |
 | **Coordinador** (`src/coordinador.ts`) | Junta todo, pone el semáforo de **riesgo** 🟢🟠🔴 (los avisos de tu estrategia van aparte con 📍 y no lo cambian) y redacta con Claude. Si el texto pareciera una señal ("compra", "ponte corto"…), usa la plantilla. |
 
 ## La oficina en pantalla

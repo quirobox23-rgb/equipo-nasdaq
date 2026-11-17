@@ -13,6 +13,7 @@ import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
 import { evaluarBienestar, aptitud, PREGUNTA_CHECKIN, type CheckIn } from './personal/coach.ts'
 import { cargarReglas, evaluarCuentas, proveedorManual } from './personal/gestor.ts'
+import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
 import type { Hallazgo } from './tipos.ts'
@@ -35,7 +36,13 @@ export async function checkinDeHoy(ahora = new Date()): Promise<CheckIn | undefi
   return todos[claveDia(ahora, config.tzUsuaria)]
 }
 
-async function cuentas(): Promise<Hallazgo[]> {
+/** Con Factor Métricas configurado, las cuentas salen de ahí; si no, de config/cuentas.json y tus "pnl …". */
+async function cuentas(ahora = new Date()): Promise<Hallazgo[]> {
+  if (configuradoFM()) {
+    const fm = await intentar('factor-metricas', () => leerFactorMetricas(ahora))
+    if (fm) return evaluarCuentas(fm.reglas, fm.estados)
+    return [sinDatos('cuentas', 'tus cuentas en Factor Métricas')]
+  }
   return evaluarCuentas(await cargarReglas(), await proveedorManual.leer())
 }
 

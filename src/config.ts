@@ -49,6 +49,14 @@ export const config = {
     'https://feeds.content.dowjones.io/public/rss/mw_topstories',
   ].join(',')).split(',').map(s => s.trim()).filter(Boolean),
 
+  /** Tu app de métricas (Supabase). Con esto, el gestor de cuentas lee de ahí tus cuentas y límites. */
+  factorMetricas: {
+    url: process.env.FACTOR_METRICAS_URL,
+    anonKey: process.env.FACTOR_METRICAS_ANON_KEY,
+    email: process.env.FACTOR_METRICAS_EMAIL,
+    password: process.env.FACTOR_METRICAS_PASSWORD,
+  },
+
   dataDir: process.env.DATA_DIR ?? './data',
   cuentasArchivo: process.env.CUENTAS_ARCHIVO ?? './config/cuentas.json',
   puerto: num(process.env.PORT, 3000),
