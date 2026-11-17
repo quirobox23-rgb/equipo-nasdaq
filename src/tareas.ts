@@ -7,18 +7,21 @@ import { cargarVelas, type Vela } from './sources/yahoo.ts'
 import { cargarTitulares } from './sources/rss.ts'
 import { briefingSemanal } from './sources/factorMacro.ts'
 import { agendaDelDia, vigilarMacro } from './equipo/macro.ts'
-import { analizarGrafico, calcularNiveles, describirNiveles } from './equipo/grafico.ts'
+import { agendaFed, cargarMiembros, esFed } from './equipo/fed.ts'
+import { agendaResultados } from './equipo/earnings.ts'
+import { cargarResultados } from './sources/earnings.ts'
+import { analizarGrafico, calcularNiveles, describirNiveles, movimientoDelDia, rangoEsperado } from './equipo/grafico.ts'
 import { analizarEstructura, cargarEstrategia, describirNivelesEstrategia, type Estrategia } from './equipo/estructura.ts'
 import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
-import { evaluarBienestar, aptitud, PREGUNTA_CHECKIN, type CheckIn } from './personal/coach.ts'
+import { evaluarBienestar, aptitud, cargarAjustesCoach, preguntaCheckin, type CheckIn } from './personal/coach.ts'
 import { cargarReglas, evaluarCuentas, proveedorManual } from './personal/gestor.ts'
 import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
 import type { Hallazgo } from './tipos.ts'
 import { registrarEstado } from './estadoOficina.ts'
-import { claveDia, hora, minutosDelDia } from './tiempo.ts'
+import { claveDia, diaAnterior, hora, minutosDelDia } from './tiempo.ts'
 
 async function intentar<T>(nombre: string, f: () => Promise<T>): Promise<T | null> {
   try {
@@ -97,18 +100,66 @@ async function noticiasEquipos(informes: InformeEquipo[], ahora: Date, ventanaMi
   return out
 }
 
-/** 08:30 hora de lola: agenda, niveles, cuentas y pregunta de bienestar. */
+/** "jueves 20 de noviembre" en tu zona horaria. */
+export function fechaLarga(ahora: Date): string {
+  return new Intl.DateTimeFormat('es-ES', { timeZone: config.tzUsuaria, weekday: 'long', day: 'numeric', month: 'long' }).format(ahora)
+}
+
+/** Macro sin la Fed (la Fed tiene su propio agente) y la Fed. */
+async function macroYFed(cal: EventoMacro[] | null, ahora: Date): Promise<Hallazgo[]> {
+  if (!cal) return [sinDatos('macro', 'el calendario económico')]
+  const miembros = await cargarMiembros()
+  return [...agendaDelDia(cal.filter(e => !esFed(e, miembros)), ahora), ...agendaFed(cal, ahora, miembros)]
+}
+
+/** Resultados de las grandes del Nasdaq de hoy y de ayer tras el cierre. */
+async function resultados(ahora: Date): Promise<Hallazgo[]> {
+  if (!config.finnhubKey) return []
+  const hoy = claveDia(ahora, config.tzMercado)
+  const lista = await intentar('resultados', () => cargarResultados(diaAnterior(hoy), hoy))
+  return lista ? agendaResultados(lista, hoy) : [sinDatos('earnings', 'el calendario de resultados')]
+}
+
+/** Volatilidad y rango: ATR diario en puntos y el VIX. */
+async function rangos(ahora: Date): Promise<Hallazgo[]> {
+  const out: Hallazgo[] = []
+  for (const eq of equiposActivos()) {
+    const [diarias, vol] = await Promise.all([
+      intentar(`${eq.id}:diario`, () => cargarVelas(eq.simbolo, '1d', '2mo')),
+      intentar(`${eq.id}:volatilidad`, () => cargarVelas(eq.simboloVolatilidad, '5m', '5d')),
+    ])
+    if (diarias) out.push(...rangoEsperado(diarias, vol ?? [], ahora, eq))
+  }
+  return out
+}
+
+const SIN_PRECIOS = 'No escribas precios ni niveles exactos del activo: describe el contexto con palabras, porcentajes y puntos de movimiento.'
+
+/** 08:30 hora de lola: fecha, macro, Fed, resultados, cuentas, volatilidad y el check-in del coach. */
 export async function guiaDiaria(ahora = new Date()): Promise<string> {
   const cal = await intentar('calendario', () => cargarCalendario())
   const inf = await equipos(ahora)
   const h: Hallazgo[] = [
-    ...(cal ? agendaDelDia(cal, ahora) : [sinDatos('macro', 'el calendario económico')]),
+    ...(await macroYFed(cal, ahora)),
+    ...(await resultados(ahora)),
+    ...(await rangos(ahora)),
     ...etiquetar(inf),
     ...(await cuentas()),
   ]
-  const contexto = [...inf.flatMap(i => i.contexto), `💬 ${PREGUNTA_CHECKIN}`]
+  const { habitos } = await cargarAjustesCoach()
+  const contexto = [
+    `📅 Hoy es ${fechaLarga(ahora)}.`,
+    ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto)),
+    `💬 ${preguntaCheckin(habitos)}`,
+  ]
+  const paraIA = [
+    'Empieza diciendo qué día es hoy (📅) y luego cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
+    'Si hay datos o discursos importantes, explica en una frase por qué pueden mover el NQ, sin adivinar la dirección.',
+    'Termina con la pregunta del coach (💬) tal cual.',
+    ...(config.soloTexto ? [SIN_PRECIOS] : []),
+  ]
   await registrarEstado(h, inf.map(i => i.eq.nombre), ahora, true)
-  return enviar(await redactar('guia', h, contexto, ['Termina con la pregunta de bienestar (💬) tal cual.'], nombreEquipos(inf)))
+  return enviar(await redactar('guia', h, contexto, paraIA, nombreEquipos(inf)))
 }
 
 /** 15:00 en España (09:00 Nueva York): qué ha cambiado y cómo llegas. */
@@ -119,6 +170,7 @@ export async function preApertura(ahora = new Date()): Promise<string> {
   const restantes = cal ? agendaDelDia(cal, ahora).filter(x => x.nivel !== 'info' || x.titulo.startsWith('Sin datos')) : []
   const h: Hallazgo[] = [
     ...restantes,
+    ...(cal ? agendaFed(cal, ahora, await cargarMiembros()).filter(x => x.nivel === 'alerta') : []),
     ...(cal ? vigilarMacro(cal, ahora, 45) : []),
     ...etiquetar(inf),
     ...noticias.slice(0, 4),
@@ -127,7 +179,7 @@ export async function preApertura(ahora = new Date()): Promise<string> {
   ]
   await registrarClaves(h)
   await registrarEstado(h, inf.map(i => i.eq.nombre), ahora, true)
-  return enviar(await redactar('apertura', h, inf.flatMap(i => i.contexto), [], nombreEquipos(inf)))
+  return enviar(await redactar('apertura', h, config.soloTexto ? [] : inf.flatMap(i => i.contexto), config.soloTexto ? [SIN_PRECIOS] : [], nombreEquipos(inf)))
 }
 
 /**
@@ -160,7 +212,18 @@ export async function vigilancia(ahora = new Date()): Promise<string | null> {
   return enviar(await redactar('aviso', nuevos, [], [], nombreEquipos(inf)))
 }
 
-/** 16:15 Nueva York: cómo fue el día. */
+export interface RegistroSesgo { sesgo: NonNullable<CheckIn['sesgo']>; movimiento: number; coincide: boolean }
+
+/** ¿El día le dio la razón a tu sesgo? Alcista/bajista: más de ±0,2 %. Neutral: menos de ±0,5 %. */
+export function compararSesgo(sesgo: NonNullable<CheckIn['sesgo']>, movimiento: number): boolean {
+  if (sesgo === 'alcista') return movimiento > 0.2
+  if (sesgo === 'bajista') return movimiento < -0.2
+  return Math.abs(movimiento) <= 0.5
+}
+
+const pct = (x: number) => `${x >= 0 ? '+' : ''}${x.toLocaleString('es-ES', { maximumFractionDigits: 2 })} %`
+
+/** 16:15 Nueva York: cómo fue el día y si coincidió con tu sesgo. */
 export async function cierre(ahora = new Date()): Promise<string> {
   const inf = await equipos(ahora)
   const c = await checkinDeHoy(ahora)
@@ -168,12 +231,23 @@ export async function cierre(ahora = new Date()): Promise<string> {
   const contexto = [
     ...inf.map(i => {
       const n = i.velas ? calcularNiveles(i.velas, ahora) : null
-      return n?.maxHoy !== undefined ? `Rango de hoy en ${i.eq.nombre}: ${Math.round(n.minHoy!)} a ${Math.round(n.maxHoy)} (medio ${Math.round(n.rangoMedio ?? 0)}).` : ''
+      if (n?.maxHoy === undefined) return ''
+      const rango = Math.round(n.maxHoy - n.minHoy!)
+      return `Hoy ${i.eq.nombre} se ha movido ${rango} puntos de máximo a mínimo (lo normal son unos ${Math.round(n.rangoMedio ?? 0)}).`
     }),
     c ? `Esta mañana su aptitud era ${aptitud(c).nota}/100.` : '',
-    '💬 ¿Cómo te has sentido operando hoy? Si quieres, actualiza tus cuentas escribiendo: pnl <cuenta> <resultado>',
-  ].filter(Boolean)
-  return enviar(await redactar('cierre', h, contexto, ['Termina con la pregunta (💬) tal cual.']))
+  ]
+  const principal = inf[0]
+  const mov = principal?.velas ? movimientoDelDia(principal.velas, ahora) : null
+  if (c?.sesgo && mov !== null) {
+    const coincide = compararSesgo(c.sesgo, mov)
+    contexto.push(`🧭 Tu sesgo de hoy era ${c.sesgo} y ${principal.eq.nombre} ha hecho ${pct(mov)} en la sesión: ${coincide ? 'coincidió' : 'no coincidió'}.`)
+    const sesgos = await leer<Record<string, RegistroSesgo>>('sesgos', {})
+    sesgos[claveDia(ahora, config.tzUsuaria)] = { sesgo: c.sesgo, movimiento: Math.round(mov * 100) / 100, coincide }
+    await guardar('sesgos', sesgos)
+  }
+  contexto.push('💬 ¿Cómo te has sentido operando hoy? Si quieres, actualiza tus cuentas escribiendo: pnl <cuenta> <resultado>')
+  return enviar(await redactar('cierre', h, contexto.filter(Boolean), ['Incluye la línea del sesgo (🧭) si está, sin juzgar.', 'Termina con la pregunta (💬) tal cual.']))
 }
 
 /** Domingo por la tarde: la semana que viene, tus cuentas y cómo has estado. */
@@ -191,6 +265,12 @@ export async function resumenSemanal(ahora = new Date()): Promise<string> {
   if (semana.length) {
     const media = Math.round(semana.reduce((s, c) => s + aptitud(c).nota, 0) / semana.length)
     contexto.push(`Esta semana respondió ${semana.length} check-ins; aptitud media ${media}/100.`)
+  }
+  const sesgos = Object.entries(await leer<Record<string, RegistroSesgo>>('sesgos', {}))
+    .filter(([dia]) => ahora.getTime() - new Date(`${dia}T12:00:00Z`).getTime() <= 7 * 86_400_000)
+  if (sesgos.length) {
+    const aciertos = sesgos.filter(([, r]) => r.coincide).length
+    contexto.push(`🧭 Esta semana tu sesgo coincidió con el mercado ${aciertos} de ${sesgos.length} días.`)
   }
   const nova = await briefingSemanal()
   if (nova) paraIA.push(`Briefing semanal de Factor Macro (Nova), resúmelo en 3-4 líneas: ${JSON.stringify(nova).slice(0, 6000)}`)

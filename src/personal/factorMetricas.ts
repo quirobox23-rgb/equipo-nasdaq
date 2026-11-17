@@ -21,6 +21,7 @@ export interface CuentaFM {
   tipo: 'static' | 'trailing_eod'
   riesgoPorTrade: number
   activa: boolean
+  fase?: 'challenge' | 'fondeada' | 'personal'
 }
 
 const num = (v: unknown): number | undefined => {
@@ -41,6 +42,7 @@ export function leerCuenta(f: FilaCuenta): CuentaFM {
     tipo: (d.drawdownType ?? f.drawdown_type) === 'static' ? 'static' : 'trailing_eod',
     riesgoPorTrade: num(d.riskPerTrade) ?? 100,
     activa: (d.status ?? f.status ?? 'active') === 'active',
+    fase: d.type === 'Funded' ? 'fondeada' : d.type === 'Challenge' ? 'challenge' : d.type === 'Personal' ? 'personal' : undefined,
   }
 }
 
@@ -68,6 +70,7 @@ export function calcular(cuentas: CuentaFM[], trades: FilaTrade[], ahora: Date):
     reglas.push({
       nombre: c.nombre,
       firma: c.firma,
+      fase: c.fase,
       tamano: c.tamano,
       perdidaDiariaMax: c.maxDiarioPct ? (c.tamano * c.maxDiarioPct) / 100 : undefined,
       drawdownMax: (c.tamano * c.maxDrawdownPct) / 100,

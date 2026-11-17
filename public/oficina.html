@@ -129,11 +129,12 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   const AGENTES = [
     { id: 'coordinador', nombre: 'Coordinadora', rol: 'Junta los avisos y te escribe', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
     { id: 'estructura', nombre: 'Estructura', rol: 'Niveles de tu estrategia', ropa: 0x7a2e3a, piel: 0xa8714e, pelo: 0x15100c, pantalon: 0x2a2d33 },
-    { id: 'grafico', nombre: 'Gráfico', rol: 'Máximos, mínimos y rango', ropa: 0xe9e6df, piel: 0xf0cfb0, pelo: 0x8a5a33, pantalon: 0x30343c },
     { id: 'volumen', nombre: 'Volumen', rol: 'Volumen frente a lo normal', ropa: 0x3d5a4a, piel: 0x7c4f33, pelo: 0x0f0b09, pantalon: 0x26292e, largo: true },
-    { id: 'volatilidad', nombre: 'Volatilidad', rol: 'VIX y saltos de volatilidad', ropa: 0x5b6470, piel: 0xdba684, pelo: 0x4a3222, pantalon: 0x1f2227 },
+    { id: 'volatilidad', nombre: 'Volatilidad y rango', rol: 'VIX, ATR y movimiento esperado', ropa: 0x5b6470, piel: 0xdba684, pelo: 0x4a3222, pantalon: 0x1f2227 },
     { id: 'noticias', nombre: 'Noticias', rol: 'Titulares que mueven el Nasdaq', ropa: 0x9a7b4f, piel: 0xf3d6bd, pelo: 0xc89b54, pantalon: 0x2b2e35, largo: true },
-    { id: 'macro', nombre: 'Macro', rol: 'Calendario y la Fed', ropa: 0x1f2d3d, piel: 0xb98563, pelo: 0x231812, pantalon: 0x3a3f47 },
+    { id: 'macro', nombre: 'Macro', rol: 'Calendario económico', ropa: 0x1f2d3d, piel: 0xb98563, pelo: 0x231812, pantalon: 0x3a3f47 },
+    { id: 'fed', nombre: 'Fed', rol: 'Discursos, actas y tipos', ropa: 0xe9e6df, piel: 0xf0cfb0, pelo: 0x8a5a33, pantalon: 0x30343c },
+    { id: 'earnings', nombre: 'Resultados', rol: 'Nvidia, Apple, Microsoft...', ropa: 0x6b3f69, piel: 0x8d5b3c, pelo: 0x120d0a, pantalon: 0x262a30, largo: true },
     { id: 'cuentas', nombre: 'Gestor de cuentas', rol: 'Límites de tus cuentas', ropa: 0x4b4f8a, piel: 0xcf9c78, pelo: 0x2e2018, pantalon: 0x23262c },
     { id: 'bienestar', nombre: 'Coach', rol: 'Cómo estás hoy', ropa: 0x2f7a6d, piel: 0xe8bb98, pelo: 0x5c3a22, pantalon: 0x1c1f24, largo: true },
   ]
@@ -144,12 +145,13 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       coordinador: { estado: 'trabajando', mensaje: 'Te ha mandado el aviso del barrido de Asia.' },
       estructura: { estado: 'alerta', mensaje: 'Ha barrido el mínimo de Asia (21.034) a las 15:42. Todavía no ha recuperado el nivel.' },
       volumen: { estado: 'trabajando', mensaje: 'Entra volumen: 1,9 veces lo normal a esta hora.' },
-      macro: { estado: 'trabajando', mensaje: '16:00 habla Warsh. Evita abrir posiciones desde 15 min antes.' },
-      grafico: { estado: 'descanso', mensaje: 'Ayer: máx 21.180, mín 20.960. Rango normal.' },
-      volatilidad: { estado: 'descanso', mensaje: 'VIX en 17,2, sin cambios importantes.' },
+      macro: { estado: 'trabajando', mensaje: '14:30 CPI. Evita abrir posiciones desde 15 min antes.' },
+      fed: { estado: 'alerta', mensaje: 'A las 16:00 habla Kevin Warsh (presidente de la Fed).' },
+      earnings: { estado: 'trabajando', mensaje: 'Nvidia presenta resultados hoy después del cierre.' },
+      volatilidad: { estado: 'descanso', mensaje: 'El NQ se mueve de media unos 300 puntos al día. VIX en 17,2.' },
       noticias: { estado: 'descanso', mensaje: 'Nada relevante en la última media hora.' },
       bienestar: { estado: 'descanso', mensaje: 'Aptitud 85/100: has dormido 7 h y has entrenado.' },
-      cuentas: { estado: 'descanso', mensaje: 'cuenta1: hoy +120 $, margen hasta el drawdown 1.850 $.' },
+      cuentas: { estado: 'descanso', mensaje: 'Tienes 5 cuentas activas: 3 fondeadas y 2 en challenge.' },
     },
   }
 
@@ -173,7 +175,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
 
   // Puestos de trabajo
   const PUESTOS = {}
-  const ordenMesas = ['estructura', 'grafico', 'volumen', 'volatilidad', 'noticias', 'macro', 'cuentas']
+  const ordenMesas = ['estructura', 'volatilidad', 'volumen', 'noticias', 'macro', 'fed', 'earnings', 'cuentas']
   ordenMesas.forEach((id, i) => {
     const col = i % 4, fila = Math.floor(i / 4)
     PUESTOS[id] = { x: 3 + col * 4.5, z: 3 + fila * 4.6, rot: 0, sala: 'operaciones' }

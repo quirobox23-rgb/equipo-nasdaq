@@ -1,4 +1,4 @@
-export type AgenteId = 'macro' | 'noticias' | 'grafico' | 'estructura' | 'volumen' | 'volatilidad' | 'bienestar' | 'cuentas'
+export type AgenteId = 'macro' | 'noticias' | 'grafico' | 'estructura' | 'volumen' | 'volatilidad' | 'bienestar' | 'cuentas' | 'fed' | 'earnings'
 
 /** info: contexto. atencion: ve con cuidado. alerta: para y mira antes de operar. */
 export type Nivel = 'info' | 'atencion' | 'alerta'
