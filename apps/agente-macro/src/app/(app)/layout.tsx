@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Navigation } from '@/components/Navigation'
 import { Sidebar } from '@/components/Sidebar'
+import { ModuleRail } from '@/components/ModuleRail'
 import { useAuthUser } from '@/lib/studentSession'
 import { AlumnoContext, useAlumnoState, routeLevel, canSee, homeFor } from '@/lib/alumno'
 import { LockedTab } from '@/components/LockedTab'
@@ -39,11 +40,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <AlumnoContext.Provider value={alumno}>
-      <Navigation />
-      <Sidebar />
-      <main className="app-content max-w-[1440px] mx-auto px-6 py-6 min-w-0">
-        {alumno.nivel === undefined ? null : allowed ? children : required === 'admin' ? null : <LockedTab nivel={alumno.nivel} />}
-      </main>
+      <div className="entropia-shell">
+        <ModuleRail />
+        <div className="entropia-column">
+          <Navigation />
+          <Sidebar />
+          <main className="app-content max-w-[1360px] mx-auto px-6 pt-4 pb-10 min-w-0 w-full">
+            {alumno.nivel === undefined ? null : allowed ? children : required === 'admin' ? null : <LockedTab nivel={alumno.nivel} />}
+          </main>
+        </div>
+      </div>
     </AlumnoContext.Provider>
   )
 }

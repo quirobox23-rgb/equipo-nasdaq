@@ -306,33 +306,82 @@
   color: #0f1623;
 }
 
-/* ── Entropia Analytics: navegación en pestañas horizontales bajo la barra
-   superior (en lugar de barra lateral). En móvil sigue la barra inferior. ── */
+/* ── Entropia Analytics: armazón espacial ──
+   Barra de módulos fija a la izquierda, barra superior flotante y una
+   cápsula de secciones numeradas (01, 02…). Todo tiene un sitio fijo y un
+   número, para que orientarse cueste poco. En móvil sigue la barra inferior. */
+.appShellV2 { flex-direction: row; }
+.column { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+.rail {
+  width: 84px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+  padding: 16px 0 14px; gap: 6px;
+  background: rgba(22,24,28,0.72); border-right: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+}
+.railIcon { width: 36px; height: 36px; border-radius: 12px; margin-bottom: 14px; }
+.railNav { display: flex; flex-direction: column; gap: 6px; }
+.railBottom { margin-top: auto; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.railBtn {
+  width: 66px; padding: 9px 0 7px; border-radius: 14px; border: 1px solid transparent;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  background: transparent; color: var(--text2); text-decoration: none; cursor: pointer;
+  font-family: var(--font); font-size: 9.5px; font-weight: 600; letter-spacing: 0.02em;
+  transition: background 160ms, color 160ms, border-color 160ms;
+}
+.railBtn:hover { color: var(--text); background: var(--bg3); }
+.railBtnActive { color: var(--text); background: rgba(34,211,238,0.10); border-color: rgba(34,211,238,0.38); }
+.railBtnActive svg { color: var(--accent); }
+.railBtnOn { color: var(--accent); border-color: rgba(34,211,238,0.3); }
+.railBtnOff { opacity: 0.4; pointer-events: none; }
+
 @media (min-width: 769px) {
+  .topbar {
+    margin: 12px 16px 0; height: 58px; border-radius: 18px;
+    border: 1px solid var(--border); background: rgba(30,33,38,0.72);
+    backdrop-filter: blur(14px); box-shadow: 0 10px 30px -18px rgba(0,0,0,0.6);
+  }
+  .brand { width: auto; min-width: 0; padding: 0 22px; }
   .appBody { flex-direction: column; }
-  .brand { width: auto; min-width: 0; padding: 0 24px; }
   .sidebar {
-    width: auto; min-width: 0; height: 46px; flex-shrink: 0;
-    flex-direction: row; align-items: stretch;
-    padding: 0 24px; overflow-x: auto; overflow-y: hidden;
-    border-right: none; border-bottom: 1px solid var(--border);
-    box-shadow: none;
+    width: auto; min-width: 0; max-width: calc(100% - 32px); height: auto; flex-shrink: 0;
+    flex-direction: row; align-items: center; align-self: center;
+    margin: 12px 16px 4px; padding: 5px; border-radius: 999px;
+    overflow-x: auto; overflow-y: hidden; scrollbar-width: none;
+    border: 1px solid var(--border); background: rgba(30,33,38,0.72);
+    backdrop-filter: blur(14px); box-shadow: 0 10px 30px -18px rgba(0,0,0,0.6);
   }
-  .nav { display: flex; align-items: stretch; flex: none; }
-  .nav > .navSection { display: flex; align-items: stretch; padding: 0; margin: 0; }
-  .nav > .navSection + .navSection { margin-left: 12px; padding-left: 12px; border-left: 1px solid var(--border); }
-  .navSection .navSection { display: flex; align-items: stretch; padding: 0; margin: 0; }
-  .navLabel { align-self: center; padding: 0 6px 0 0; font-size: 9.5px; letter-spacing: 1.2px; }
+  .sidebar::-webkit-scrollbar { display: none; }
+  .nav { display: flex; align-items: center; flex: none; counter-reset: seccion; }
+  .nav > .navSection { display: flex; align-items: center; padding: 0; margin: 0; }
+  .nav > .navSection + .navSection { margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--border); }
+  .navSection .navSection { display: flex; align-items: center; padding: 0; margin: 0; }
+  .navLabel { align-self: center; padding: 0 6px 0 8px; font-size: 9px; letter-spacing: 1.4px; font-weight: 700; }
   .navItem, .navSection > .navLabel ~ .navItem {
-    padding: 0 14px; margin: 0; border-radius: 0; white-space: nowrap;
-    border-bottom: 2px solid transparent; font-size: 12.5px;
+    height: 34px; padding: 0 14px; margin: 0; border-radius: 999px; white-space: nowrap;
+    font-size: 12.5px; gap: 7px; counter-increment: seccion;
   }
-  .navItem:hover { background: transparent; }
+  .navItem::before, .navItem.active::before {
+    content: counter(seccion, decimal-leading-zero);
+    position: static; transform: none; width: auto; height: auto; background: none; border-radius: 0;
+    font-family: var(--mono); font-size: 10px; color: var(--text3);
+  }
+  .navItem:hover { background: var(--bg4); }
   .navItem.active, .navSection > .navLabel ~ .navItem.active {
-    background: transparent; box-shadow: none; border-bottom-color: var(--accent); color: var(--text);
+    background: rgba(59,130,246,0.16); box-shadow: inset 0 0 0 1px rgba(59,130,246,0.45); color: var(--text);
   }
-  .navItem.active::before { display: none; }
+  .navItem.active::before { color: var(--accent); }
   .navItem.active .navIcon { color: var(--accent); }
 }
-:global([data-theme="light"]) .navItem.active { background: transparent; }
-:global([data-theme="light"]) .sidebar { border-right: none; border-bottom: 1px solid rgba(0,0,0,0.08); }
+@media (max-width: 768px) {
+  .rail { display: none; }
+}
+
+:global([data-theme="light"]) .rail { background: rgba(255,255,255,0.8); border-right-color: rgba(0,0,0,0.08); }
+:global([data-theme="light"]) .topbar,
+:global([data-theme="light"]) .sidebar { background: rgba(255,255,255,0.82); border-color: rgba(0,0,0,0.08); }
+:global([data-theme="light"]) .railBtnActive { background: rgba(8,145,178,0.08); border-color: rgba(8,145,178,0.35); }
+:global([data-theme="light"]) .navItem.active { background: rgba(59,130,246,0.10); }
+@media (min-width: 769px) {
+  .sidebar { -webkit-mask-image: linear-gradient(90deg, #000 93%, transparent); mask-image: linear-gradient(90deg, #000 93%, transparent); }
+}

@@ -1017,3 +1017,46 @@ tbody tr:hover td { background: rgba(59,130,246,0.035); cursor: default; }
   font-family: var(--font-heading); font-weight: 600; text-transform: uppercase;
   letter-spacing: 0.18em; color: var(--accent); border-left: 1px solid var(--border2); padding-left: 12px;
 }
+
+/* ── Entropia: fondo espacial, tarjetas de cristal y títulos numerados ──
+   Retícula de puntos muy suave y dos halos de color; las tarjetas flotan
+   con bordes redondeados. Cada título de tarjeta lleva su número (01, 02…)
+   para poder seguir la página como una lista. Modo foco ([data-focus])
+   quita animaciones y adornos. */
+body {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% -10%, rgba(59,130,246,0.10), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(34,211,238,0.06), transparent 55%),
+    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1.2px) 0 0 / 28px 28px,
+    var(--bg);
+}
+[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% -10%, rgba(59,130,246,0.08), transparent 60%),
+    radial-gradient(circle, rgba(15,23,42,0.07) 1px, transparent 1.2px) 0 0 / 28px 28px,
+    var(--bg);
+}
+.main-content, [data-theme="light"] .main-content { background: transparent; }
+.page-inner { margin: 0 auto; counter-reset: bloque; }
+.card {
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)), rgba(30,33,38,0.78);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px -24px rgba(0,0,0,0.7);
+}
+[data-theme="light"] .card { background: rgba(255,255,255,0.86); }
+.card > .card-title:first-child { border-radius: 18px 18px 0 0; }
+.card-title { counter-increment: bloque; }
+.card-title::before {
+  content: counter(bloque, decimal-leading-zero);
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500; color: var(--accent);
+  margin-right: 10px; letter-spacing: 0.04em;
+}
+.section-title-row::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 10px rgba(34,211,238,0.7); flex-shrink: 0;
+}
+[data-focus] *, [data-focus] *::before, [data-focus] *::after { animation: none !important; transition: none !important; }
+[data-focus] body { background: var(--bg); }
+[data-focus] .card { backdrop-filter: none; box-shadow: none; }
+[data-focus] .card::before, [data-focus] .card--basic::after { display: none; }

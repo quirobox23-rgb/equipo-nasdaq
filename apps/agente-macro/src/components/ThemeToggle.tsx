@@ -19,7 +19,7 @@ function IconMoon(p: SVGProps<SVGSVGElement>) {
   )
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ rail = false }: { rail?: boolean }) {
   const [theme, setTheme] = useState(() => getStoredTheme())
 
   // El script inline de layout.tsx evita el flash inicial, pero no cubre
@@ -39,9 +39,10 @@ export function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-      className="flex items-center justify-center w-8 h-8 rounded-lg text-base-muted hover:bg-base-line/40 hover:text-base-text transition-colors duration-200"
+      className={rail ? 'rail-btn' : 'flex items-center justify-center w-8 h-8 rounded-lg text-base-muted hover:bg-base-line/40 hover:text-base-text transition-colors duration-200'}
     >
-      {theme === 'light' ? <IconMoon className="w-[15px] h-[15px]" /> : <IconSun className="w-[15px] h-[15px]" />}
+      {theme === 'light' ? <IconMoon className={rail ? 'w-[18px] h-[18px]' : 'w-[15px] h-[15px]'} /> : <IconSun className={rail ? 'w-[18px] h-[18px]' : 'w-[15px] h-[15px]'} />}
+      {rail && <span>Tema</span>}
     </button>
   )
 }

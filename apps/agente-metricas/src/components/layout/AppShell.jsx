@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home as HomeIcon, Wallet, History, Map, Brain, Tag } from 'lucide-react'
+import { Home as HomeIcon, Wallet, History, Map, Brain } from 'lucide-react'
 import styles from './AppShell.module.css'
 import LogoEntropia from './LogoEntropia'
 import { useTheme, useToggleTheme, useStore } from '@/store/useStore'
@@ -89,6 +89,81 @@ function RenderNavItems({ items }) {
   })
 }
 
+// Barra de módulos del ecosistema Entropia (igual que en Entropia Markets):
+// siempre en el mismo sitio y con los mismos tres destinos, para que
+// orientarse no cueste esfuerzo.
+const trazo = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round', strokeLinejoin: 'round' }
+const IconIntelligence = (p) => (
+  <svg viewBox="0 0 24 24" {...trazo} {...p}><circle cx="12" cy="12" r="2.4" /><circle cx="5" cy="6" r="1.6" /><circle cx="19" cy="6" r="1.6" /><circle cx="6" cy="18.5" r="1.6" /><circle cx="18" cy="18.5" r="1.6" /><path d="M6.3 7l3.9 3.4M17.7 7l-3.9 3.4M7.3 17.4l3-3.6M16.7 17.4l-3-3.6" /></svg>
+)
+const IconMarkets = (p) => (
+  <svg viewBox="0 0 24 24" {...trazo} {...p}><circle cx="12" cy="12" r="8.5" /><ellipse cx="12" cy="12" rx="8.5" ry="3.4" transform="rotate(-25 12 12)" /><circle cx="12" cy="12" r="1.6" /></svg>
+)
+const IconAnalytics = (p) => (
+  <svg viewBox="0 0 24 24" {...trazo} {...p}><path d="M4 19.5h16" /><path d="M6.5 16V11M11 16V6.5M15.5 16v-3.5M20 16V9" /></svg>
+)
+const IconFoco = (p) => (
+  <svg viewBox="0 0 24 24" {...trazo} {...p}><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.2" /></svg>
+)
+const MODULOS = [
+  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: import.meta.env.VITE_URL_INTELLIGENCE },
+  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: import.meta.env.VITE_URL_MARKETS },
+  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: '/inicio', activo: true },
+]
+const CLAVE_FOCO = 'entropia_foco'
+
+/** Modo foco: sin animaciones ni adornos, solo la información. Se recuerda en este navegador. */
+function useFoco() {
+  const [foco, setFoco] = useState(() => {
+    try { return localStorage.getItem(CLAVE_FOCO) === '1' } catch { return false }
+  })
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-focus', foco)
+    try { localStorage.setItem(CLAVE_FOCO, foco ? '1' : '0') } catch { /* sin almacenamiento */ }
+  }, [foco])
+  return [foco, setFoco]
+}
+
+function ModuleRail({ theme, toggleTheme }) {
+  const [foco, setFoco] = useFoco()
+  return (
+    <aside className={styles.rail} aria-label="Módulos de Entropia">
+      <img src="/icon-192.png" alt="" className={styles.railIcon} />
+      <nav className={styles.railNav}>
+        {MODULOS.map(({ id, nombre, Icon, href, activo }) => (
+          <a
+            key={id}
+            href={href || '#'}
+            aria-current={activo ? 'page' : undefined}
+            aria-disabled={!href}
+            className={`${styles.railBtn} ${activo ? styles.railBtnActive : ''} ${!href ? styles.railBtnOff : ''}`}
+            title={href ? nombre : `${nombre} (configura su dirección)`}
+          >
+            <Icon width={20} height={20} />
+            <span>{nombre}</span>
+          </a>
+        ))}
+      </nav>
+      <div className={styles.railBottom}>
+        <button type="button" className={`${styles.railBtn} ${foco ? styles.railBtnOn : ''}`} onClick={() => setFoco((f) => !f)} aria-pressed={foco} title="Modo foco: sin animaciones ni adornos">
+          <IconFoco width={18} height={18} />
+          <span>Foco</span>
+        </button>
+        <button
+          type="button"
+          className={styles.railBtn}
+          onClick={toggleTheme}
+          aria-label={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+          title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+        >
+          {theme === 'light' ? <IconMoon width={18} height={18} /> : <IconSun width={18} height={18} />}
+          <span>Tema</span>
+        </button>
+      </div>
+    </aside>
+  )
+}
+
 // Aviso cuando el servidor rechaza un guardado (antes solo iba a la consola)
 function SyncErrorBanner() {
   const syncError = useStore(s => s.syncError)
@@ -129,29 +204,20 @@ export default function AppShell({ children }) {
 
   return (
     <div className={styles.appShellV2}>
-      {/* Topbar — logo (misma franja del sidebar, fondo distinto) + cuenta */}
+      <ModuleRail theme={theme} toggleTheme={toggleTheme} />
+
+      <div className={styles.column}>
+      {/* Barra superior flotante — logo + cuenta */}
       <header className={styles.topbar}>
         <button className={styles.brand} onClick={() => navigate('/')} aria-label="Ir a Home">
           <LogoEntropia alto={22} />
         </button>
 
         <div className={styles.topbarRight}>
-          <button
-            className={styles.themeSwitch}
-            onClick={toggleTheme}
-            aria-label={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-            title={theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
-          >
-            {theme === 'light' ? <IconMoon width={15} height={15} /> : <IconSun width={15} height={15} />}
-          </button>
-
           {/* Botón "Planes" desactivado (2026-10-07): los planes se venden
-              en la web de venta. La ventana de
-              planes sigue accesible desde "Mi plan" en el menú de la cuenta
-              y desde las secciones bloqueadas. No se borra por si vuelve:
-          <button className={styles.topbarPlanes} onClick={() => setShowPricing(true)}>
-            <Tag size={13} /> Planes
-          </button> */}
+              en la web de venta. La ventana de planes sigue accesible desde
+              "Mi plan" en el menú de la cuenta y desde las secciones
+              bloqueadas. */}
 
           <div className={styles.accountMenu} ref={accountRef}>
             <button className={styles.accountTrigger} onClick={() => setAccountOpen((o) => !o)}>
@@ -198,6 +264,7 @@ export default function AppShell({ children }) {
         <SyncErrorBanner />
         {children}
       </main>
+      </div>
       </div>
 
       {/* Bottom nav — solo visible en móvil (ver AppShell.module.css).
