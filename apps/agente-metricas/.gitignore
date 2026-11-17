@@ -1,0 +1,10 @@
+node_modules/
+dist/
+npm
+.DS_Store
+.env.local
+.env.local.bak
+.claude/
+
+# Datos reales de trading de Marcelo (solo locales, no subir)
+docs/data-demo/

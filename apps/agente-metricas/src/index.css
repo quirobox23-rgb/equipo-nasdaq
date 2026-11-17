@@ -1,0 +1,1008 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── Dark mode (default) — Paleta 2 "Verde Santos" ──
+     Marca (--brand) y resultado (--pos/--neg/--neutral) son
+     dos sistemas de color separados a propósito: la marca no se
+     repite en cada número positivo de la app. Ver paleta-2-verde-santos.css. */
+  --bg:       #16181c;
+  --bg2:      #1e2126;
+  --bg3:      #343941;
+  --bg4:      #343941;
+  --bg5:      #343941;
+  /* Gris claro de cabeceras de bloque (PanelHeader) — entre bg2 y bg3.
+     Mismo valor que --base-panel2 de Agente Macro. */
+  --bg-panel2: #262a30;
+  --border:   #2b2f36;
+  --border2:  #343941;
+  --border3:  #3f4550;
+  --text:     #e7eaf0;
+  --text2:    #8892a0;
+  --text3:    #5f6773;
+  --shadow:   0 1px 2px rgba(0,0,0,0.22), 0 6px 16px -6px rgba(0,0,0,0.32);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.2), 0 3px 8px -2px rgba(0,0,0,0.26);
+  --shadow-lg: 0 2px 6px rgba(0,0,0,0.26), 0 14px 32px -12px rgba(0,0,0,0.4);
+  --glow-blue: 0 0 0 1px rgba(59,130,246,0.14), 0 6px 16px -6px rgba(59,130,246,0.18);
+
+  /* Marca — botones, tabs, links, foco. NO usar para P&L. */
+  --brand:    #3B82F6;
+  --brand2:   rgba(59,130,246,0.1);
+  /* Verde secundario ("verde-dólar") — acento de marca secundario,
+     en uso activo (gradiente de marca, btn-primary, etc.), traído de
+     la web de Equipo Nasdaq para consistencia entre proyectos. */
+  --brand-deep:   #1E40AF;
+  --brand-deep2:  rgba(30,64,175,0.1);
+  /* Verde lima ("verde-tertiary") — no en uso activo por ahora
+     (suplente), disponible como alternativa. Ver
+     docs/buenas-practicas-ui-design.md. */
+  --accent: #22D3EE;
+  --accent2: rgba(34,211,238,0.1);
+
+  /* Semáforo — solo P&L, balances y resultados de cálculos. */
+  --pos:      #5aa469;
+  --pos2:     rgba(90,164,105,0.12);
+  --neg:      #ed553b;
+  --neg2:     rgba(237,85,59,0.1);
+  --neutral:  #f6d55c;
+  --neutral2: rgba(246,213,92,0.1);
+
+  /* Alias legacy — se mantienen para no romper componentes existentes,
+     pero ahora apuntan al semáforo, no a la marca. */
+  --red:      var(--neg);
+  --red2:     var(--neg2);
+  --amber:    var(--neutral);
+  --amber2:   var(--neutral2);
+
+  /* Oscuro → claro (antes claro → oscuro, invertido el 2026-09-26) */
+  --accent-gradient: linear-gradient(135deg, #2563EB 0%, #22D3EE 100%);
+  /* Accent que cambia según el tema — verde primario en oscuro (buen
+     contraste sobre fondo casi negro), verde secundario en claro (el
+     primario se ve muy chillón sobre blanco). Hoy solo la usa el
+     ejemplo de "Encabezado de sección" en /styleguide.
+     2026-10-04: los encabezados de sección pasan a gris (--text2) en toda
+     la app — el verde queda para botones/gráficas (regla 6-3-1). El verde
+     sigue disponible como --section-accent-green (variante .section-title--accent). */
+  --section-accent: var(--text2);
+  --section-accent-green: var(--brand);
+  --font:     'Inter', sans-serif;
+  --font-heading: 'Space Grotesk', sans-serif;
+  --mono:     'JetBrains Mono', monospace;
+  --r:        10px;
+  --r2:       16px;
+  --r3:       22px;
+  --sidebar:  220px;
+  --transition: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Light mode ── */
+[data-theme="light"] {
+  --bg:       #f0f3f8;
+  --bg2:      #ffffff;
+  --bg3:      #eef1f7;
+  --bg-panel2: #eef1f7;
+  --bg4:      #eef1f7;
+  --bg5:      #eef1f7;
+  --border:   rgba(0,0,0,0.07);
+  --border2:  rgba(0,0,0,0.12);
+  --border3:  rgba(0,0,0,0.20);
+  --text:     #0f1623;
+  --text2:    #4b5563;
+  --text3:    #9ca3af;
+  --shadow:   0 2px 8px rgba(0,0,0,0.08);
+  /* Marca — en claro, --brand pasa a valer lo mismo que
+     --brand-deep (#1E40AF): el verde primario (#3B82F6) no se
+     lee bien en texto/íconos sobre fondo blanco (pedido explícito,
+     reemplaza la decisión anterior de "mismo hex que dark"). Los
+     botones con gradiente (hardcodean el hex, no usan esta variable)
+     no se ven afectados y siguen con el verde vivo. */
+  --brand:    #1E40AF;
+  --brand2:   rgba(59,130,246,0.1);
+  --brand-deep:   #1E40AF;
+  --brand-deep2:  rgba(30,64,175,0.1);
+  --accent: #22D3EE;
+  --accent2: rgba(34,211,238,0.1);
+  --section-accent: var(--text2);
+  --section-accent-green: var(--brand-deep);
+  /* Semáforo — mismo hex que dark, a propósito (pedido explícito). */
+  --pos:      #5aa469;
+  --pos2:     rgba(90,164,105,0.12);
+  --neg:      #ed553b;
+  --neg2:     rgba(237,85,59,0.1);
+  --neutral:  #f6d55c;
+  --neutral2: rgba(246,213,92,0.1);
+  --red:      var(--neg);
+  --red2:     var(--neg2);
+  --amber:    var(--neutral);
+  --amber2:   var(--neutral2);
+}
+
+/* ── Light mode overrides para elementos específicos ── */
+[data-theme="light"] body {
+  background: var(--bg);
+  color: var(--text);
+}
+[data-theme="light"] .card {
+  border-color: var(--border2);
+}
+[data-theme="light"] .metric {
+  border-color: var(--border2);
+}
+[data-theme="light"] tbody tr:hover td {
+  background: var(--bg3);
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb {
+  background: var(--bg5);
+}
+[data-theme="light"] input,
+[data-theme="light"] select,
+[data-theme="light"] textarea {
+  background: var(--bg2);
+  border-color: var(--border2);
+  color: var(--text);
+}
+[data-theme="light"] select option {
+  background: var(--bg2);
+  color: var(--text);
+}
+[data-theme="light"] .hero-bg {
+  --bg: #ffffff;
+}
+[data-theme="light"] .main-content {
+  background: #f8fafc;
+}
+
+html, body, #root { height: 100%; }
+body {
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(59,130,246,0.07), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 0%, rgba(30,64,175,0.05), transparent 55%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(0deg,  rgba(255,255,255,0.012) 0 1px, transparent 1px 96px),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+[data-theme="light"] body { background: var(--bg); }
+
+/* Filo técnico superior del área de contenido — línea de instrumento, no decoración pesada */
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg5); border-radius: 2px; }
+
+/* ── HEADINGS ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ── TYPOGRAPHY UTILS ── */
+.mono { font-family: var(--mono); }
+.up   { color: var(--pos); }
+.down { color: var(--neg); }
+.muted { color: var(--text2); }
+
+/* ── LAYOUT ── */
+.main-content {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+  position: relative;
+}
+.page-inner {
+  padding: 24px 48px;
+  max-width: 1440px;
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 34px;
+}
+.page-title { font-family: var(--font-heading); font-size: 23px; font-weight: 700; letter-spacing: -0.6px; color: var(--text); line-height: 1.25; }
+.page-sub   { font-size: 13px; color: var(--text3); margin-top: 6px; line-height: 1.6; }
+/* Bajada al lado del título, no debajo — ahorra el alto de una línea
+   completa en cada pantalla (pedido explícito, aplica a todas las
+   páginas vía PageHeader). .page-sub queda sin uso activo, no se borra. */
+.page-sub-inline { font-family: var(--font); font-size: 13px; font-weight: 400; color: var(--text3); letter-spacing: 0; }
+
+/* ── GRID HELPERS ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.grid-5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; }
+.grid-6 { display: grid; grid-template-columns: repeat(6,1fr); gap: 16px; }
+
+/* ── RESPONSIVE (Sprint 9) ──
+   Los grids anteriores usaban columnas fijas y no se adaptaban a
+   pantallas pequeñas. Se añaden breakpoints puramente visuales:
+   no cambian componentes, datos ni navegación, solo el número de
+   columnas según el ancho disponible. Afecta automáticamente a
+   Dashboard, Portfolio, Metrix, y cualquier página que use estas
+   clases compartidas. */
+@media (max-width: 1100px) {
+  .grid-6 { grid-template-columns: repeat(3, 1fr); }
+  .grid-5 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 720px) {
+  .grid-2, .grid-3, .grid-4, .grid-5, .grid-6 { grid-template-columns: 1fr; }
+  .page-inner { padding: 18px 16px; }
+  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+/* ── CARD ── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 26px;
+  transition: box-shadow var(--transition-slow), border-color var(--transition), transform var(--transition-slow);
+  animation: cardIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.card::before {
+  content: '';
+  position: absolute; top: 10px; left: 10px; width: 7px; height: 7px;
+  border-top: 1px solid var(--border3); border-left: 1px solid var(--border3);
+  opacity: 0.6; pointer-events: none;
+}
+.card:hover { border-color: var(--border2); }
+.card-interactive:hover { border-color: var(--border2); box-shadow: var(--shadow), var(--glow-blue); }
+
+/* ── CARD — variantes traídas de la web de Equipo Nasdaq
+   (santos-trader-positivus/src/pages/styleguide.astro) para
+   homologar el lenguaje visual entre proyectos. Se combinan con
+   .card (className="card card--accent"), no la reemplazan. */
+.card--bg {
+  background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 55%, var(--bg) 100%);
+}
+/* Tal cual la web de Equipo Nasdaq (santos-trader-positivus/
+   styleguide.astro, card "Recursos Gratis"): sin borde en reposo —
+   el gradiente va directo a var(--bg) — y en hover, anillo + glow
+   verde exactos de la fuente. */
+.card--accent {
+  background: linear-gradient(135deg, var(--brand-deep) 0%, #3B82F6 100%);
+  border: none;
+  box-shadow: none;
+  cursor: pointer;
+  transition: all var(--transition-slow);
+}
+.card--accent::before { display: none; }
+.card--accent:hover {
+  box-shadow: 0 0 0 1px #3B82F6, 0 0 28px rgba(59,130,246,0.35);
+}
+.card--basic {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 55%, var(--bg) 100%);
+  cursor: pointer;
+  transition: all var(--transition-slow);
+}
+.card--basic::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none; opacity: 0.4;
+  background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.04) 55%, transparent 70%);
+}
+.card--basic:hover { border-color: #3B82F6; box-shadow: 0 0 24px rgba(59,130,246,0.25); }
+
+/* ── CARD — flush (sin padding) ──
+   Para cards que arrancan con una PanelHeader: la cabecera va a ras del
+   borde y el contenido lleva su propio padding (.card__body). */
+.card--flush { padding: 0; }
+.card--flush::before { display: none; }
+.card__body { padding: 16px; }
+
+/* ── PANEL HEADER — cabecera de bloque (traída de Agente Macro) ──
+   Título sobrio a la izquierda (14px · 700 · DM Sans, sin mayúsculas) +
+   aclaración a la derecha (fuente, unidad o badge), sobre --bg-panel2.
+   Primer hijo de una .card.card--flush. Ver StyleGuide → Cabecera de bloque. */
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-panel2);
+  border-bottom: 1px solid var(--border2);
+  border-radius: var(--r2) var(--r2) 0 0;
+}
+.panel-header__title {
+  margin: 0;
+  font-family: var(--font); font-size: 14px; font-weight: 700; color: var(--text);
+}
+.panel-header__subtitle {
+  margin-left: 6px;
+  font-family: var(--font); font-size: 12.5px; font-weight: 400; color: var(--text3);
+}
+.panel-header__aside { flex-shrink: 0; font-size: 11.5px; color: var(--text3); }
+
+/* ── SECTION TITLE — encabezado de sección con divisor ──
+   Gris (--section-accent) por defecto en toda la app desde 2026-10-04;
+   --accent es la variante verde, para casos puntuales. (--muted queda
+   como alias del gris.) Va suelto, nunca dentro de una card. */
+.section-title-row { display: flex; align-items: center; gap: 10px; }
+.section-title {
+  margin: 0;
+  font-size: 12px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; white-space: nowrap;
+  color: var(--section-accent);
+}
+.section-title--muted { color: var(--text2); }
+.section-title--accent { color: var(--section-accent-green); }
+.section-title-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ── CARD — variantes con imagen (Equipo Nasdaq Web) ──
+   Estructura vía clase, la imagen de fondo/foto se pasa inline (cada
+   card tiene la suya) — ver StyleGuide → Cards → "Variantes con imagen". */
+.card--image {
+  display: flex;
+  align-items: stretch;
+  height: 200px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+.card--image__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  padding: 28px;
+}
+.card--image__photo {
+  flex-shrink: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.card--image__photo img { height: 100%; width: auto; display: block; }
+
+/* ── ACTION CARD — tarjeta de acción (traída de Agente Macro) ──
+   .card--image con ícono display en una columna gris a la derecha.
+   Título · descripción · botón .btn-lg (primary en la principal,
+   outline en la otra). Ver StyleGuide → Tarjetas de acción. */
+.action-card { height: auto; min-height: 200px; background: var(--bg2); cursor: pointer; text-decoration: none; }
+.action-card:hover { border-color: rgba(136,146,160,0.4); }
+.action-card .card--image__content { gap: 0; }
+.action-card__title { margin: 0 0 4px; font-family: var(--font-heading); font-size: 18px; font-weight: 800; color: var(--text); }
+.action-card__desc { margin: 0 0 14px; font-size: 13px; line-height: 1.6; color: var(--text3); }
+.action-card__icon {
+  width: 200px; height: auto;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-panel2);
+  border-left: 1px solid var(--border2);
+}
+.action-card--compact { min-height: 0; height: 150px; align-self: start; }
+.action-card--compact .card--image__content { padding: 24px; }
+.action-card--compact .action-card__icon { width: 120px; }
+
+.card--image-cover {
+  position: relative;
+  height: 260px;
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+.card--image-cover__content {
+  position: relative;
+  max-width: 58%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── BANNER — full width, imagen de fondo (Equipo Nasdaq Web) ── */
+.banner {
+  position: relative;
+  border-radius: var(--r2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  padding: 48px;
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  background: var(--bg);
+}
+.banner__glow {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 50%;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(59,130,246,0.22) 0%, rgba(59,130,246,0) 100%);
+}
+.banner__content {
+  position: relative;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.card-sm {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)), var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 16px;
+  transition: border-color var(--transition), background var(--transition);
+}
+/* Título de card con estilo PanelHeader (2026-10-04, antes 16px · 900 ·
+   Poppins · uppercase + línea abajo). Tipografía de "nombre de bloque":
+   14px · 700 · DM Sans — igual que .metric-label. Valores anteriores, por
+   si hay que volver:
+     font-family: var(--font-heading); font-size: 16px; font-weight: 900;
+     text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 20px;
+     padding-bottom: 14px; border-bottom: 1px solid var(--border); */
+.card-title {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+/* Franja gris a ras del borde — solo cuando el título es el primer hijo
+   directo de la .card (asume el padding default de 26px). Los títulos
+   anidados en headers flex (modales de Historial, Training…) quedan solo
+   con la tipografía. */
+.card > .card-title:first-child {
+  margin: -26px -26px 20px;
+  padding: 12px 26px;
+  background: var(--bg-panel2);
+  border-bottom: 1px solid var(--border2);
+  border-radius: var(--r2) var(--r2) 0 0;
+}
+.card:has(> .card-title:first-child)::before { display: none; }
+
+/* ── METRIC CARD ── */
+.metric {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 18px 20px;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+}
+.metric-label {
+  font-family: var(--font);
+  font-size: 14px; /* 15 → 14 (2026-10-04): mismo nivel que .card-title */
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.metric-value {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: var(--mono);
+  letter-spacing: -1px;
+  color: var(--text);
+}
+.metric-delta { font-size: 12px; font-family: var(--mono); margin-top: 4px; }
+
+/* ── METRIC CARD · HERO VARIANT ──
+   Usado en Dashboard para los 3-4 KPIs principales.
+   Mismo bloque .metric por debajo, solo escala tipografía/padding. */
+.metric-hero {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0)), var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 20px 22px;
+  transition: border-color var(--transition), box-shadow var(--transition-slow), transform var(--transition-slow);
+}
+.metric-hero::before {
+  content: '';
+  position: absolute; top: 8px; right: 8px; width: 6px; height: 6px;
+  border-top: 1px solid var(--border3); border-right: 1px solid var(--border3);
+  opacity: 0.55; pointer-events: none;
+}
+.metric-hero:hover { border-color: var(--border3); }
+.metric-hero .metric-label { font-family: var(--font); font-size: 14px; letter-spacing: normal; color: var(--text); text-transform: none; font-weight: 700; }
+.metric-hero .metric-value { font-size: 27px; letter-spacing: -0.6px; margin-top: 8px; }
+.metric-hero .metric-delta { font-size: 12px; margin-top: 4px; font-family: var(--font); }
+
+/* Layout de fila superior/inferior dentro de metric-hero (icono + sparkline) */
+.metric-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.metric-bottom-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 6px; min-height: 26px; }
+
+/* ── ICON CIRCLE ──
+   Círculo de color de fondo para iconos/emoji en tarjetas — da peso
+   visual sin depender solo de texto. */
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.icon-circle-primary { background: var(--bg4); color: var(--brand); }
+.icon-circle-text    { background: var(--bg4); color: var(--text); }
+.icon-circle-pos     { background: var(--pos2);  color: var(--pos); }
+.icon-circle-neg     { background: var(--neg2);  color: var(--neg); }
+.icon-circle-neutral { background: var(--neutral2);  color: var(--neutral); }
+.icon-circle-info    { background: var(--bg5); color: var(--text2); }
+.icon-circle-info-dark { background: var(--bg3); color: var(--text2); }
+
+/* Versión sin fondo — mismo set de colores, sin círculo detrás */
+.icon-primary { color: var(--brand); }
+.icon-text    { color: var(--text); }
+.icon-pos     { color: var(--pos); }
+.icon-neg     { color: var(--neg); }
+.icon-neutral { color: var(--neutral); }
+.icon-info    { color: var(--text2); }
+.trader-avatar-circle { background: var(--bg4); }
+
+/* ── SPARKLINE ── */
+.sparkline { display: block; flex-shrink: 0; }
+
+/* ── SCORE GAUGE ── */
+.score-gauge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.score-gauge-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.score-gauge-value { font-size: 22px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.score-gauge-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+/* Gauge con el número protagonista (Nivel 2) — Puntaje General */
+.score-gauge--lg .score-gauge-value { font-size: 36px; letter-spacing: -1px; }
+.score-gauge--lg .score-gauge-label { text-transform: none; letter-spacing: 0; margin-top: 0; }
+
+/* ── INSIGHT CARD (Coach IA) ──
+   Tarjeta fija de recomendaciones breves — reemplaza el chat como
+   elemento principal de IaMentor; el chat pasa a ser opcional debajo. */
+.insight-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color var(--transition);
+}
+.insight-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.insight-item {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--text2);
+  padding-left: 14px;
+  position: relative;
+}
+.insight-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 7px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+.insight-item b { color: var(--text); font-weight: 600; }
+.insight-cta {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+/* ── CALLOUT ──
+   Banner de una fila (ícono + label + texto + CTA opcional) sobre fondo
+   degradé tenue de un color semántico. NO es card (sin card-title, sin
+   fondo sólido) — para destacar un mensaje puntual arriba de una sección. */
+.callout {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  border-radius: var(--r);
+  padding: 20px 24px;
+  border: 1px solid var(--callout-border);
+  background: linear-gradient(135deg, var(--callout-bg1), var(--callout-bg2));
+}
+.callout-label {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  color: var(--callout-accent);
+}
+.callout-green {
+  --callout-bg1: rgba(59,130,246,0.08);
+  --callout-bg2: rgba(30,64,175,0.03);
+  --callout-border: rgba(59,130,246,0.18);
+  --callout-accent: var(--brand);
+}
+.callout-amber {
+  --callout-bg1: rgba(246,213,92,0.16);
+  --callout-bg2: rgba(246,213,92,0.05);
+  --callout-border: rgba(246,213,92,0.32);
+  --callout-accent: var(--amber);
+}
+.callout-red {
+  --callout-bg1: rgba(227,114,114,0.08);
+  --callout-bg2: rgba(227,114,114,0.02);
+  --callout-border: rgba(227,114,114,0.18);
+  --callout-accent: var(--neg);
+}
+
+/* ── QUICK LINK CARD ──
+   Accesos rápidos compactos (fila inferior del Dashboard). */
+.quick-link {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 15px 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition-slow), box-shadow var(--transition-slow);
+}
+.quick-link:hover { border-color: var(--border3); transform: translateY(-2px); }
+.quick-link-label { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.8px; }
+.quick-link-value { font-size: 13px; color: var(--text); margin-top: 4px; }
+
+/* ── LOCKED FEATURE (sistema de tiers Core/Pro/Elite) ──
+   Envuelve una sección entera; si el tier no la incluye, se atenúa
+   el contenido y se muestra un candado + CTA de upgrade en vez de
+   ocultarla del todo. */
+.locked-feature { position: relative; }
+.locked-feature-content {
+  filter: blur(3px);
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+}
+.locked-feature-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 16px;
+}
+.locked-feature-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: var(--amber2);
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 600;
+}
+.locked-feature-cta {
+  font-size: 12px;
+  color: var(--brand);
+  cursor: pointer;
+}
+.locked-feature-cta:hover { text-decoration: underline; }
+/* Variante inline compacta, para tarjetas pequeñas tipo quick-link */
+.quick-link.is-locked { opacity: 0.55; cursor: default; }
+.quick-link.is-locked:hover { border-color: var(--border2); }
+
+/* ── BADGE ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+.badge-green  { background: var(--brand2); color: var(--brand); }
+.badge-pos    { background: var(--pos2);   color: var(--pos); }
+.badge-red    { background: var(--red2);   color: var(--red);   }
+.badge-amber  { background: var(--amber2); color: var(--amber); }
+.badge-lime { background: var(--accent2);color: var(--accent);}
+.badge-grey   { background: var(--bg4);     color: var(--text3); }
+.badge-win-solid  { background: var(--pos);   color: var(--bg); }
+.badge-loss-solid { background: var(--red);   color: var(--bg); }
+.badge-be-solid   { background: var(--amber); color: var(--bg); }
+
+/* ── TAG ── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--mono);
+  background: var(--bg4);
+  color: var(--text2);
+  border: 1px solid var(--border);
+}
+/* Ghost: mismo color de texto, fondo negro (var(--bg)) y borde del
+   mismo tono que la fuente, en vez del fondo gris tenue por defecto. */
+.tag-ghost {
+  background: var(--bg);
+  border-color: var(--text2);
+}
+
+/* ── BUTTON ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: var(--r);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  border: none;
+  transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition), box-shadow var(--transition), filter var(--transition);
+  font-family: var(--font);
+  text-decoration: none;
+}
+.btn:active { transform: scale(0.98); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--brand-deep), var(--brand));
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(59,130,246,0.35), 0 6px 16px -4px rgba(59,130,246,0.4);
+}
+/* Hover: mismo gradiente (oscuro → claro) un 10% más brillante — antes lo invertía */
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); box-shadow: 0 1px 2px rgba(59,130,246,0.4), 0 10px 22px -4px rgba(59,130,246,0.5); }
+/* Tema claro: sin glow verde (en reposo ni en hover) */
+[data-theme="light"] .btn-primary,
+[data-theme="light"] .btn-primary:hover { box-shadow: none; }
+.btn-secondary { background: var(--bg4); color: var(--text); border: 1px solid var(--border2); }
+.btn-secondary:hover { background: var(--bg5); border-color: var(--border3); }
+.btn-sm { padding: 7px 14px; font-size: 12px; }
+.btn-lg { padding: 14px 28px; font-size: 16px; }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--bg3); color: var(--text); }
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--text); }
+.btn-outline:hover { background: var(--bg3); border-color: var(--text); }
+
+/* ── FORM ── */
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  font-size: 12px;
+  color: var(--text2);
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+input, select, textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  color: var(--text);
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+/* Flecha propia en todos los select: la nativa queda pegada al borde.
+   Va con longhands (background-image/position…) para no pisar el
+   background-color de arriba. */
+select:not([multiple]) {
+  appearance: none; -webkit-appearance: none;
+  padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238892a0' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 13px center;
+  background-size: 12px;
+  cursor: pointer;
+}
+select option { background: var(--bg3); }
+input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--brand); cursor: pointer; }
+
+/* ── FOCUS-VISIBLE — accesible y consistente con el resto de la app ── */
+.btn:focus-visible, .navItem:focus-visible, .quick-link:focus-visible, .tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.22);
+}
+
+/* ── TABLE ── */
+table { width: 100%; border-collapse: collapse; }
+th {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border2);
+  text-align: left;
+  white-space: nowrap;
+  background: transparent;
+}
+td {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+  transition: background var(--transition-slow);
+}
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(59,130,246,0.035); cursor: default; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 22px 0; }
+
+/* ── PROGRESS ── */
+.progress-bar {
+  height: 10px;
+  background: var(--bg4);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.4s ease;
+}
+
+/* ── NOTION-STYLE TABLE ──
+   Tabla compacta con hover, usada en "Tabla de operaciones" del
+   Dashboard (Fila 4). */
+.notion-table { display: flex; flex-direction: column; font-size: 11.5px; }
+.notion-table-head,
+.notion-table-row {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr 0.7fr 0.8fr 0.9fr;
+  gap: 6px;
+  align-items: center;
+  padding: 9px 6px;
+}
+.notion-table-head {
+  font-family: var(--mono);
+  color: var(--text3);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border2);
+}
+.notion-table-row {
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background var(--transition);
+}
+.notion-table-row:hover { background: var(--bg3); }
+.notion-table-row:last-child { border-bottom: none; }
+
+/* ── FLEX UTILS ── */
+.flex        { display: flex; }
+.flex-center { display: flex; align-items: center; gap: 8px; }
+.flex-between{ display: flex; align-items: center; justify-content: space-between; }
+.flex-col    { display: flex; flex-direction: column; }
+
+/* ── SPACING ── */
+.mb-1 { margin-bottom: 4px; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.mb-5 { margin-bottom: 20px; }
+.mb-6 { margin-bottom: 24px; }
+.mt-2 { margin-top: 8px; }
+.mt-3 { margin-top: 12px; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.section-gap { margin-bottom: 26px; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg3);
+  padding: 4px;
+  border-radius: var(--r);
+  width: fit-content;
+  border: 1px solid var(--border);
+}
+.tab {
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text2);
+  transition: background var(--transition), color var(--transition);
+  user-select: none;
+}
+.tab.active {
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--border2);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  font-weight: 600;
+}
+
+/* ── CHECK ITEM ── */
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: var(--r);
+  margin-bottom: 7px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  user-select: none;
+}
+.check-item:hover { border-color: var(--border2); background: var(--bg3); }
+.check-item.checked { border-color: #28B428; background: rgba(40,180,40,0.1); }
+.check-box {
+  width: 16px; height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background var(--transition), border-color var(--transition);
+}
+.check-item.checked .check-box { background: #28B428; border-color: #28B428; }
+
+/* ── AI BUBBLE ── */
+.ai-bubble {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 18px 20px 18px 24px;
+  margin-bottom: 12px;
+  position: relative;
+}
+.ai-bubble::before {
+  content: '';
+  position: absolute;
+  left: -1px; top: 16px; bottom: 16px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--brand-deep);
+}
+.ai-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand-deep);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.ai-text { font-size: 13px; line-height: 1.65; }
