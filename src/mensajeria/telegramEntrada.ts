@@ -5,10 +5,24 @@ import { leer, guardar } from '../almacen.ts'
 import { procesarMensaje } from '../servidor.ts'
 import { mensajero } from './index.ts'
 
-interface Update { update_id: number; message?: { chat: { id: number }; text?: string } }
+interface Update {
+  update_id: number
+  message?: { chat: { id: number }; text?: string }
+  /** Un botón pulsado (los de Atractor para apuntar TP o SL). */
+  callback_query?: { id: string; data?: string; message?: { chat: { id: number } } }
+}
+
+async function responderBoton(id: string, texto: string) {
+  await fetch(`https://api.telegram.org/bot${config.telegram.token}/answerCallbackQuery`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ callback_query_id: id, text: texto.slice(0, 190) }),
+    signal: AbortSignal.timeout(10000),
+  }).catch(() => undefined)
+}
 
 async function pedir(offset: number, espera: number): Promise<Update[]> {
-  const url = `https://api.telegram.org/bot${config.telegram.token}/getUpdates?offset=${offset}&timeout=${espera}`
+  const url = `https://api.telegram.org/bot${config.telegram.token}/getUpdates?offset=${offset}&timeout=${espera}&allowed_updates=${encodeURIComponent('["message","callback_query"]')}`
   const r = await fetch(url, { signal: AbortSignal.timeout((espera + 10) * 1000) })
   if (!r.ok) throw new Error(`Telegram getUpdates: ${r.status}`)
   return ((await r.json()) as { result: Update[] }).result
@@ -22,6 +36,14 @@ export async function leerTelegram(espera = 0): Promise<number> {
   let atendidos = 0
   for (const u of updates) {
     estado.offset = u.update_id + 1
+    const q = u.callback_query
+    if (q?.data && String(q.message?.chat.id) === String(config.telegram.chatId)) {
+      const respuesta = await procesarMensaje(q.data)
+      await responderBoton(q.id, respuesta.split('\n')[0])
+      await mensajero().enviar(respuesta)
+      atendidos++
+      continue
+    }
     const m = u.message
     // Solo se atiende a lola.
     if (!m?.text || String(m.chat.id) !== String(config.telegram.chatId) || m.text.startsWith('/')) continue

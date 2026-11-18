@@ -16,7 +16,8 @@ import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
 import { evaluarBienestar, aptitud, cargarAjustesCoach, preguntaCheckin, type CheckIn } from './personal/coach.ts'
 import { cargarReglas, evaluarCuentas, proveedorManual, type ReglasCuenta } from './personal/gestor.ts'
-import { avisosEnVivo, bloqueMentor, cargarPlan, revisarDia, type Operacion } from './personal/plan.ts'
+import { avisosEnVivo, bloqueMentor, cargarPlan, recordatorioPlan, revisarDia, type Operacion } from './personal/plan.ts'
+import { guardarCuentasVivo, operacionesVivo, tecladoCuentas, unirOperaciones } from './personal/enVivo.ts'
 import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
@@ -255,23 +256,48 @@ export async function vigilancia(ahora = new Date()): Promise<string | null> {
 }
 
 /**
- * Cada 5 minutos durante la sesión: Atractor mira tus operaciones de hoy en
- * Factor Métricas y te escribe en cuanto te sales del plan (primera perdedora
- * en una funded, volver a entrar con el día cerrado, SL alargado, pérdida
- * diaria de una challenge). Cada aviso sale una sola vez al día.
+ * Atractor mira tus operaciones de hoy y te escribe en cuanto te sales del
+ * plan (primera perdedora en una funded, volver a entrar con el día cerrado,
+ * SL alargado, pérdida diaria de una challenge). Cuentan las que apuntas en
+ * Telegram y, en las demás cuentas, las de Factor Métricas. Cada aviso sale
+ * una sola vez al día. Devuelve el texto (sin enviarlo) o null.
  */
-export async function atractorEnVivo(ahora = new Date()): Promise<string | null> {
-  if (!configuradoFM()) return null
-  const fm = await intentar('factor-metricas', () => leerFactorMetricas(ahora))
-  if (!fm) return null
+export async function avisosAtractor(ahora = new Date()): Promise<string | null> {
   const hoy = claveDia(ahora, config.tzUsuaria)
-  const avisos = avisosEnVivo(fm.operaciones.filter(o => o.fecha === hoy), await cargarPlan())
+  const vivo = (await operacionesVivo(ahora)).ops
+  const fm = configuradoFM() ? await intentar('factor-metricas', () => leerFactorMetricas(ahora)) : null
+  const ops = unirOperaciones(vivo, (fm?.operaciones ?? []).filter(o => o.fecha === hoy))
+  if (!ops.length) return null
+  const avisos = avisosEnVivo(ops, await cargarPlan())
   const r = await leer<{ dia: string; claves: string[] }>('atractor-vivo', { dia: hoy, claves: [] })
   const vistas = new Set(r.dia === hoy ? r.claves : [])
   const nuevos = avisos.filter(a => !vistas.has(a.clave))
   if (!nuevos.length) return null
   await guardar('atractor-vivo', { dia: hoy, claves: [...vistas, ...nuevos.map(a => a.clave)] })
-  return enviar(['*Atractor*', ...nuevos.map(a => a.texto)].join('\n'))
+  return ['*Atractor*', ...nuevos.map(a => a.texto)].join('\n')
+}
+
+/** Cada 5 minutos durante la sesión (por si entran operaciones de Factor Métricas). */
+export async function atractorEnVivo(ahora = new Date()): Promise<string | null> {
+  const t = await avisosAtractor(ahora)
+  return t ? enviar(t) : null
+}
+
+/** 15:25 en España: Atractor abre la sesión con un botón por cuenta para apuntar cada resultado. */
+export async function aperturaAtractor(ahora = new Date()): Promise<string | null> {
+  const plan = await cargarPlan()
+  const fm = configuradoFM() ? await intentar('factor-metricas', () => leerFactorMetricas(ahora)) : null
+  const reglas = fm?.reglas ?? (await cargarReglas())
+  const cuentas = reglas.filter(r => r.fase !== 'personal').map(r => ({ nombre: r.nombre, fase: r.fase }))
+  if (!cuentas.length) return null
+  await guardarCuentasVivo(cuentas, ahora)
+  const texto = [
+    '*Atractor · sesión abierta*',
+    recordatorioPlan(plan),
+    'Al cerrar cada operación, pulsa su resultado. Si no es TP ni SL, escribe por ejemplo: op F1 -300',
+  ].join('\n')
+  await mensajero().enviarConBotones(texto, tecladoCuentas(cuentas, plan))
+  return texto
 }
 
 export interface RegistroSesgo { sesgo: NonNullable<CheckIn['sesgo']>; movimiento: number; coincide: boolean }

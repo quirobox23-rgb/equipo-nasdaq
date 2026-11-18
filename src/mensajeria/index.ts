@@ -1,11 +1,19 @@
 // Envío de mensajes. WhatsApp Cloud API de Meta; sin credenciales, consola.
 import { config } from '../config.ts'
 
-export interface Mensajero { enviar(texto: string): Promise<void> }
+export interface Boton { texto: string; dato: string }
+export interface Mensajero {
+  enviar(texto: string): Promise<void>
+  /** Con botones (solo Telegram); en los demás canales se manda el texto sin ellos. */
+  enviarConBotones(texto: string, filas: Boton[][]): Promise<void>
+}
 
 export const consola: Mensajero = {
   async enviar(texto) {
     console.log(`\n──── WhatsApp (modo prueba) ────\n${texto}\n────────────────────────────────\n`)
+  },
+  async enviarConBotones(texto, filas) {
+    await consola.enviar(`${texto}\n${filas.map(f => f.map(b => `[${b.texto}]`).join(' ')).join('\n')}`)
   },
 }
 
@@ -29,7 +37,8 @@ export function whatsapp(): Mensajero {
     const json = (await res.json().catch(() => ({}))) as ErrorGraph
     return { ok: res.ok, json }
   }
-  return {
+  const m: Mensajero = {
+    async enviarConBotones(texto) { await m.enviar(texto) },
     async enviar(texto) {
       const r = await post({ messaging_product: 'whatsapp', to: w.destino, type: 'text', text: { body: texto.slice(0, 4096), preview_url: false } })
       if (r.ok) return
@@ -46,24 +55,29 @@ export function whatsapp(): Mensajero {
       throw new Error(`WhatsApp falló: ${r.json.error?.message ?? 'sin detalle'}`)
     },
   }
+  return m
 }
 
 /** Telegram: gratis y sin plantillas. Acepta el mismo *negrita* y _cursiva_ que WhatsApp. */
 export function telegram(): Mensajero {
   const t = config.telegram
+  const mandar = async (texto: string, extra: Record<string, unknown> = {}) => {
+    const enviar = (parseMode?: string) => fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: t.chatId, text: texto.slice(0, 4096), disable_web_page_preview: true, ...extra, ...(parseMode ? { parse_mode: parseMode } : {}) }),
+      signal: AbortSignal.timeout(15000),
+    })
+    let r = await enviar('Markdown')
+    // Si el formato falla (por ejemplo, un "_" suelto en un enlace), se manda sin formato.
+    if (r.status === 400) r = await enviar()
+    if (!r.ok) throw new Error(`Telegram falló: ${r.status} ${await r.text().catch(() => '')}`)
+  }
   return {
-    async enviar(texto) {
-      const enviar = (parseMode?: string) => fetch(`https://api.telegram.org/bot${t.token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: t.chatId, text: texto.slice(0, 4096), disable_web_page_preview: true, ...(parseMode ? { parse_mode: parseMode } : {}) }),
-        signal: AbortSignal.timeout(15000),
-      })
-      let r = await enviar('Markdown')
-      // Si el formato falla (por ejemplo, un "_" suelto en un enlace), se manda sin formato.
-      if (r.status === 400) r = await enviar()
-      if (!r.ok) throw new Error(`Telegram falló: ${r.status} ${await r.text().catch(() => '')}`)
-    },
+    enviar: texto => mandar(texto),
+    enviarConBotones: (texto, filas) => mandar(texto, {
+      reply_markup: { inline_keyboard: filas.map(f => f.map(b => ({ text: b.texto, callback_data: b.dato.slice(0, 64) }))) },
+    }),
   }
 }
 
