@@ -8,7 +8,7 @@ import { Badge, IconDisplay, PanelHeader, type BadgeVariant } from '@/components
 import { KeyDayBadge, OutcomeBadge, StarMark } from '@/components/calendar/parts'
 
 // Bloques de El Mercado Hoy (diseño: mockup-home-v2). Mismo esquema que el
-// Inicio de Agente Métricas: franja con lo importante + dos tarjetas de
+// Inicio de Entropia Analytics: franja con lo importante + dos tarjetas de
 // acción hacia lo principal de la app (Calendario y Volatilidad).
 
 const ARROW: Record<string, string> = { up: '↑', down: '↓' }

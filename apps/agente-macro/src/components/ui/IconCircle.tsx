@@ -6,7 +6,7 @@ import type { ReactNode } from 'react'
 // (--accent-gradient) queda reservado exclusivamente para el logo —
 // nunca para esto.
 //
-// Nombres homologados con Agente Métricas (2026-09-21): 'green' → 'primary',
+// Nombres homologados con Entropia Analytics (2026-09-21): 'green' → 'primary',
 // 'red' → 'neg', 'amber' → 'neutral', 'grey' → 'info'. 'pos' es nuevo —
 // semáforo positivo (antes 'green-tint' usaba verde de marca por error,
 // corregido a var(--pos) real). 'text' también nuevo — mismo tratamiento

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
-const TITLE = 'Agente Macro · Equipo Nasdaq'
-const DESCRIPTION = 'Agente Macro te dice cada semana qué eventos importan, qué espera el mercado y cuánto se puede mover el NQ. Menos ruido, más contexto para decidir.'
+const TITLE = 'Entropia Markets'
+const DESCRIPTION = 'Entropia Markets te dice cada semana qué eventos importan, qué espera el mercado y cuánto se puede mover el NQ. Menos ruido, más contexto para decidir.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3001'),
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 // — evita el flash dark→light al cargar si el usuario ya eligió claro.
 const themeInitScript = `
 try {
-  if (localStorage.getItem('agente_macro_theme') === 'light') {
+  if (localStorage.getItem('entropia_markets_theme') === 'light') {
     document.documentElement.setAttribute('data-theme', 'light')
   }
 } catch (e) {}

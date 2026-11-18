@@ -19,7 +19,7 @@ import { computeAccountMetrics, matchBlueprintToAccount } from '@/config/bluepri
 import { matchHibridoExpansionToAccount } from '@/config/hibridoExpansionEngine'
 
 // ─────────────────────────────────────────────
-//  BLUEPRINTS — Plantilla v2 (Agente Métricas)
+//  BLUEPRINTS — Plantilla v2 (Entropia Analytics)
 //
 //  Editor simplificado: solo los 4 bloques de configuración con
 //  utilidad estadística real (Identificación, Parámetros del Modelo,

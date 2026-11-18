@@ -130,7 +130,7 @@ export default function Hero() {
                   fontWeight: 900,
                 }}>MÉTRICAS</span>
               </div>
-              <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 2, textAlign: 'right', textTransform: 'uppercase', letterSpacing: 0.6 }}>Equipo Nasdaq</div>
+              <div style={{ fontSize: 13, color: 'var(--text3)', marginTop: 2, textAlign: 'right', textTransform: 'uppercase', letterSpacing: 0.6 }}>Entropia</div>
             </div>
           </div>
         </div>

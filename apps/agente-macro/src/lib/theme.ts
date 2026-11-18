@@ -4,7 +4,7 @@
 // patrón que studentSession.ts. Dark es el default (color-scheme: dark en
 // :root, ver globals.css); 'light' setea [data-theme="light"] en <html>.
 
-const KEY = 'agente_macro_theme'
+const KEY = 'entropia_markets_theme'
 
 export type Theme = 'dark' | 'light'
 

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { ChevronDown } from 'lucide-react'
 import { logoutStudent, useAuthUser } from '@/lib/studentSession'
 
-// Menú de cuenta del topbar — mismo diseño que el de Agente Métricas
+// Menú de cuenta del topbar — mismo diseño que el de Entropia Analytics
 // (AppShell: avatar con la inicial + email + chevron, dropdown con
 // "Cerrar sesión"). Acá no hay planes: cada alumno entra con su cuenta de
 // Firebase (email + contraseña, ver studentSession.ts). Cerrar sesión cierra

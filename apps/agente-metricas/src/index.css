@@ -13,7 +13,7 @@
   --bg4:      #343941;
   --bg5:      #343941;
   /* Gris claro de cabeceras de bloque (PanelHeader) — entre bg2 y bg3.
-     Mismo valor que --base-panel2 de Agente Macro. */
+     Mismo valor que --base-panel2 de Entropia Markets. */
   --bg-panel2: #262a30;
   --border:   #2b2f36;
   --border2:  #343941;
@@ -31,7 +31,7 @@
   --brand2:   rgba(59,130,246,0.1);
   /* Verde secundario ("verde-dólar") — acento de marca secundario,
      en uso activo (gradiente de marca, btn-primary, etc.), traído de
-     la web de Equipo Nasdaq para consistencia entre proyectos. */
+     la web de Entropia para consistencia entre proyectos. */
   --brand-deep:   #1E40AF;
   --brand-deep2:  rgba(30,64,175,0.1);
   /* Verde lima ("verde-tertiary") — no en uso activo por ahora
@@ -265,14 +265,14 @@ h1, h2, h3, h4, h5, h6 {
 .card:hover { border-color: var(--border2); }
 .card-interactive:hover { border-color: var(--border2); box-shadow: var(--shadow), var(--glow-blue); }
 
-/* ── CARD — variantes traídas de la web de Equipo Nasdaq
+/* ── CARD — variantes traídas de la web de Entropia
    (santos-trader-positivus/src/pages/styleguide.astro) para
    homologar el lenguaje visual entre proyectos. Se combinan con
    .card (className="card card--accent"), no la reemplazan. */
 .card--bg {
   background: linear-gradient(135deg, var(--bg3) 0%, var(--bg2) 55%, var(--bg) 100%);
 }
-/* Tal cual la web de Equipo Nasdaq (santos-trader-positivus/
+/* Tal cual la web de Entropia (santos-trader-positivus/
    styleguide.astro, card "Recursos Gratis"): sin borde en reposo —
    el gradiente va directo a var(--bg) — y en hover, anillo + glow
    verde exactos de la fuente. */
@@ -308,7 +308,7 @@ h1, h2, h3, h4, h5, h6 {
 .card--flush::before { display: none; }
 .card__body { padding: 16px; }
 
-/* ── PANEL HEADER — cabecera de bloque (traída de Agente Macro) ──
+/* ── PANEL HEADER — cabecera de bloque (traída de Entropia Markets) ──
    Título sobrio a la izquierda (14px · 700 · DM Sans, sin mayúsculas) +
    aclaración a la derecha (fuente, unidad o badge), sobre --bg-panel2.
    Primer hijo de una .card.card--flush. Ver StyleGuide → Cabecera de bloque. */
@@ -344,7 +344,7 @@ h1, h2, h3, h4, h5, h6 {
 .section-title--accent { color: var(--section-accent-green); }
 .section-title-line { flex: 1; height: 1px; background: var(--border); }
 
-/* ── CARD — variantes con imagen (Equipo Nasdaq Web) ──
+/* ── CARD — variantes con imagen (Entropia Web) ──
    Estructura vía clase, la imagen de fondo/foto se pasa inline (cada
    card tiene la suya) — ver StyleGuide → Cards → "Variantes con imagen". */
 .card--image {
@@ -370,7 +370,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .card--image__photo img { height: 100%; width: auto; display: block; }
 
-/* ── ACTION CARD — tarjeta de acción (traída de Agente Macro) ──
+/* ── ACTION CARD — tarjeta de acción (traída de Entropia Markets) ──
    .card--image con ícono display en una columna gris a la derecha.
    Título · descripción · botón .btn-lg (primary en la principal,
    outline en la otra). Ver StyleGuide → Tarjetas de acción. */
@@ -407,7 +407,7 @@ h1, h2, h3, h4, h5, h6 {
   gap: 12px;
 }
 
-/* ── BANNER — full width, imagen de fondo (Equipo Nasdaq Web) ── */
+/* ── BANNER — full width, imagen de fondo (Entropia Web) ── */
 .banner {
   position: relative;
   border-radius: var(--r2);
@@ -1006,3 +1006,57 @@ tbody tr:hover td { background: rgba(59,130,246,0.035); cursor: default; }
   margin-bottom: 8px;
 }
 .ai-text { font-size: 13px; line-height: 1.65; }
+
+/* ── Logo de Entropia ── */
+.logo-entropia { display: inline-flex; align-items: center; gap: 12px; }
+.logo-entropia img { width: auto; display: block; }
+.logo-entropia .logo-claro { display: none; }
+[data-theme="light"] .logo-entropia .logo-claro { display: block; }
+[data-theme="light"] .logo-entropia .logo-oscuro { display: none; }
+.logo-modulo {
+  font-family: var(--font-heading); font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.18em; color: var(--accent); border-left: 1px solid var(--border2); padding-left: 12px;
+}
+
+/* ── Entropia: fondo espacial, tarjetas de cristal y títulos numerados ──
+   Retícula de puntos muy suave y dos halos de color; las tarjetas flotan
+   con bordes redondeados. Cada título de tarjeta lleva su número (01, 02…)
+   para poder seguir la página como una lista. Modo foco ([data-focus])
+   quita animaciones y adornos. */
+body {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% -10%, rgba(59,130,246,0.10), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(34,211,238,0.06), transparent 55%),
+    radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1.2px) 0 0 / 28px 28px,
+    var(--bg);
+}
+[data-theme="light"] body {
+  background:
+    radial-gradient(ellipse 900px 600px at 10% -10%, rgba(59,130,246,0.08), transparent 60%),
+    radial-gradient(circle, rgba(15,23,42,0.07) 1px, transparent 1.2px) 0 0 / 28px 28px,
+    var(--bg);
+}
+.main-content, [data-theme="light"] .main-content { background: transparent; }
+.page-inner { margin: 0 auto; counter-reset: bloque; }
+.card {
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)), rgba(30,33,38,0.78);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 14px 34px -24px rgba(0,0,0,0.7);
+}
+[data-theme="light"] .card { background: rgba(255,255,255,0.86); }
+.card > .card-title:first-child { border-radius: 18px 18px 0 0; }
+.card-title { counter-increment: bloque; }
+.card-title::before {
+  content: counter(bloque, decimal-leading-zero);
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500; color: var(--accent);
+  margin-right: 10px; letter-spacing: 0.04em;
+}
+.section-title-row::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  box-shadow: 0 0 10px rgba(34,211,238,0.7); flex-shrink: 0;
+}
+[data-focus] *, [data-focus] *::before, [data-focus] *::after { animation: none !important; transition: none !important; }
+[data-focus] body { background: var(--bg); }
+[data-focus] .card { backdrop-filter: none; box-shadow: none; }
+[data-focus] .card::before, [data-focus] .card--basic::after { display: none; }

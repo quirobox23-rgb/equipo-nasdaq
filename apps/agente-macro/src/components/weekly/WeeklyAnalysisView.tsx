@@ -495,7 +495,7 @@ export function WeeklyAnalysisView({ a, canCopy = false, onSave, trackNovedades 
       {zoom && <Lightbox src={zoom} onClose={() => setZoom(null)} />}
 
       <p className="text-xs text-base-muted">
-        Material educativo de Equipo Nasdaq. Datos: Forex Factory, Finnhub, FRED y Yahoo Finance. No es una recomendación de inversión.
+        Material educativo de Entropia. Datos: Forex Factory, Finnhub, FRED y Yahoo Finance. No es una recomendación de inversión.
       </p>
     </article>
   )

@@ -7,7 +7,7 @@ import { authErrorMessage } from '@/lib/studentSession'
 
 // Formulario de entrada — reemplaza al botón "Entrar" por defecto de
 // <Landing> (vía el prop `cta`) en la puerta de entrada (src/app/page.tsx).
-// Igual que Agente Métricas: cada alumno entra con su email y su contraseña
+// Igual que Entropia Analytics: cada alumno entra con su email y su contraseña
 // (Firebase Authentication). Sigue siendo solo por invitación: no hay
 // registro público, las cuentas se crean desde la consola de Firebase
 // (Authentication → Users → Add user). Independiente del admin password de

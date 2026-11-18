@@ -8,6 +8,7 @@ import { interpretarRespuesta, cargarAjustesCoach, respuestaCheckin, type CheckI
 import { cargarCalendario } from './sources/calendario.ts'
 import { eventosDelDia, ventanasDeRiesgo } from './equipo/macro.ts'
 import { cargarMiembros, type MiembroFed } from './equipo/fed.ts'
+import { readinessTrasCheckin } from './tareas.ts'
 import { interpretarComandoPnl, type EstadoCuenta } from './personal/gestor.ts'
 import { mensajero } from './mensajeria/index.ts'
 import { claveDia, hora } from './tiempo.ts'
@@ -40,7 +41,9 @@ export async function procesarMensaje(texto: string, ahora = new Date()): Promis
   const c: CheckIn = { ...todos[dia], ...nuevo, habitos: { ...todos[dia]?.habitos, ...nuevo.habitos } }
   todos[dia] = c
   await guardar('checkins', todos)
-  return respuestaCheckin(c, habitos, c.sesgo ? await eventosFuertesDeHoy(ahora) : [])
+  const respuesta = respuestaCheckin(c, habitos, c.sesgo ? await eventosFuertesDeHoy(ahora) : [])
+  const readiness = await readinessTrasCheckin(c, ahora).catch(() => [])
+  return [respuesta, ...(readiness.length ? ['', ...readiness] : [])].join('\n')
 }
 
 /** Datos y discursos fuertes que quedan hoy, para el comentario del coach sobre tu sesgo. */

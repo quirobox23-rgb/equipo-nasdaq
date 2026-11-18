@@ -1,7 +1,7 @@
 import { Compass } from 'lucide-react'
 
 // ─────────────────────────────────────────────
-//  BLUEPRINTS_DATA — plantilla v2 (Agente Métricas)
+//  BLUEPRINTS_DATA — plantilla v2 (Entropia Analytics)
 //
 //  Rediseño completo según "Plantilla de Mapas v2": cada Mapa se
 //  reduce a 4 bloques con utilidad estadística real — se quitaron

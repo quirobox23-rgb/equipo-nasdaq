@@ -137,7 +137,7 @@ export default function WeeklyCard({ data }: { data: WeeklyCardData }) {
         {/* Header */}
         <div className="flex items-start justify-between mb-4 flex-wrap gap-3">
           <div>
-            <p className="text-[10px] text-brand uppercase tracking-[0.3em] mb-1">Agente Macro — Ficha Semanal</p>
+            <p className="text-[10px] text-brand uppercase tracking-[0.3em] mb-1">Entropia Markets — Ficha Semanal</p>
             <h2 className="text-xl font-semibold text-base-text">{data.semana ?? 'Semana sin calendario cargado'}</h2>
           </div>
           <div className="text-right">

@@ -114,7 +114,7 @@ function WithdrawalsTab({ list, onChange }) {
 }
 
 // Entrada / salida: mismo criterio que el panel de eventos del
-// calendario en Agente Macro (EventDrawer) — se desliza desde la
+// calendario en Entropia Markets (EventDrawer) — se desliza desde la
 // derecha en 200ms y el resto de la pantalla se oscurece un poco sin
 // bloquear clics (se puede pasar a otra cuenta con el panel abierto).
 const ANIM_MS = 200
@@ -152,7 +152,7 @@ export default function AccountEditPanel({ account, tradeCount, onSave, onDelete
   }
 
   // Cierra con Escape o con un clic en cualquier lado fuera del panel
-  // (como EventDrawer de Agente Macro). Los lápices de editar llevan
+  // (como EventDrawer de Entropia Markets). Los lápices de editar llevan
   // data-account-panel-keep: ahí no se cierra, se cambia de cuenta.
   const panelRef = useRef(null)
   useEffect(() => {

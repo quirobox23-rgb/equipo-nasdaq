@@ -98,7 +98,7 @@ function useNovedadesAnalisis(enabled: boolean): number {
 
 interface NavItem { Icon: (p: SVGProps<SVGSVGElement>) => React.ReactElement; label: string; href: string }
 
-// Tres niveles, como en Agente Métricas (ver src/lib/alumno.ts): Básico con
+// Tres niveles, como en Entropia Analytics (ver src/lib/alumno.ts): Básico con
 // el código gratis, Intermedio con el VIP y Equipo (solo nivel admin).
 // Las pestañas que el nivel del usuario no abre llevan candado.
 const GROUPS: { title: string; adminOnly?: boolean; items: NavItem[] }[] = [
@@ -128,17 +128,17 @@ const GROUPS: { title: string; adminOnly?: boolean; items: NavItem[] }[] = [
   },
 ]
 
-function NavLink({ item, active, locked = false, count = 0 }: { item: NavItem; active: boolean; locked?: boolean; count?: number }) {
+function NavLink({ item, n, active, locked = false, count = 0 }: { item: NavItem; n: number; active: boolean; locked?: boolean; count?: number }) {
   const { Icon, label, href } = item
   return (
     <Link
       href={href}
-      className={`relative flex items-center gap-2 px-3.5 h-11 text-[12.5px] whitespace-nowrap transition-colors duration-200 border-b-2 ${
-        active ? 'border-accent text-base-text font-medium' : 'border-transparent text-base-muted hover:text-base-text'
-      }`}
+      aria-current={active ? 'page' : undefined}
+      className={`pill-link ${active ? 'pill-link-active' : ''}`}
     >
-      <Icon className={`w-[15px] h-[15px] shrink-0 ${active ? 'text-accent' : 'opacity-70'}`} />
-      <span className="tracking-wide">{label}</span>
+      <span className="pill-num">{String(n).padStart(2, '0')}</span>
+      <Icon className="w-[14px] h-[14px] shrink-0 opacity-80" />
+      <span>{label}</span>
       {locked && <Lock size={11} className="opacity-60" aria-label="Necesita código VIP" />}
       {!locked && count > 0 && (
         <span
@@ -152,7 +152,7 @@ function NavLink({ item, active, locked = false, count = 0 }: { item: NavItem; a
   )
 }
 
-// Mismo estilo que el sidebar de Agente Métricas (AppShell.module.css):
+// Mismo estilo que el sidebar de Entropia Analytics (AppShell.module.css):
 // el estado activo es un box gris con contorno interno sutil — sin ícono
 // ni barra en verde de marca, la marca queda reservada para CTAs/logo.
 export function Sidebar() {
@@ -163,16 +163,17 @@ export function Sidebar() {
   const isLocked = (href: string) => nivel !== undefined && !canSee(nivel, routeLevel(href))
   const novedades = useNovedadesAnalisis(nivel !== undefined && !isLocked(ANALISIS))
 
-  // Agente Macro: navegación en pestañas horizontales bajo la barra superior,
-  // agrupadas por nivel (Básico, Intermedio, Equipo).
+  // Entropia Markets: navegación en una cápsula flotante, numerada (01, 02…)
+  // y agrupada por nivel. Siempre en el mismo orden y el mismo sitio.
+  let n = 0
   return (
-    <nav className="app-tabs sticky top-16 z-40 border-b border-base-line overflow-x-auto">
-      <div className="max-w-[1440px] mx-auto px-6 flex items-stretch">
+    <nav className="sticky top-[84px] z-40 mx-4 mt-3 flex justify-center" aria-label="Secciones">
+      <div className="floating-panel pill-bar">
         {GROUPS.filter(g => !g.adminOnly || nivel === 'admin').map((g, gi) => (
-          <div key={g.title} className={`flex items-stretch ${gi > 0 ? 'ml-3 pl-3 border-l border-base-line' : ''}`}>
-            <span className="self-center pr-1 text-[9.5px] font-bold uppercase tracking-widest text-base-faint">{g.title}</span>
+          <div key={g.title} className={`flex items-center gap-1 ${gi > 0 ? 'pl-2 ml-1 border-l border-base-line/70' : ''}`}>
+            <span className="pill-group">{g.title}</span>
             {g.items.map(item => (
-              <NavLink key={item.href} item={item} active={isActive(item.href)} locked={isLocked(item.href)}
+              <NavLink key={item.href} item={item} n={++n} active={isActive(item.href)} locked={isLocked(item.href)}
                 count={item.href === ANALISIS ? novedades : 0} />
             ))}
           </div>

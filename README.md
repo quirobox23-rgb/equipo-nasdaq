@@ -1,4 +1,6 @@
-# Equipo Nasdaq
+# Entropia · Equipo Nasdaq
+
+*The intelligent trading ecosystem.* Este repositorio es el núcleo de **Entropia**: la oficina de agentes (Entropia Intelligence), Entropia Markets (`apps/agente-macro`) y Entropia Analytics (`apps/agente-metricas`).
 
 Una oficina de agentes que te acompaña cuando operas el Nasdaq y te escribe por WhatsApp.
 **Da contexto y avisos de riesgo. Nunca da señales de entrada ni de salida.**
@@ -45,8 +47,8 @@ Con `SOLO_TEXTO=1` los mensajes no llevan precios exactos, solo contexto (el mod
 
 | Cuándo (hora de España) | Qué |
 |---|---|
-| 08:30 de lunes a viernes | Guía del día: fecha, macro y Fed, resultados, cuentas, volatilidad y rango esperado, y la pregunta del coach (hábitos, condiciones y sesgo) |
-| 15:00 (09:00 Nueva York) | Antes de la apertura: qué ha cambiado, noticias, tu aptitud y tus cuentas |
+| 08:30 de lunes a viernes | Guía del día: fecha, **Daily Trading Readiness** (nota del mercado; la tuya llega al contestar el check-in), macro y Fed, resultados, cuentas, volatilidad y rango esperado, y la pregunta del coach (hábitos, condiciones y sesgo) |
+| 15:00 (09:00 Nueva York) | Antes de la apertura: Readiness completa (mercado y tú → Ready / Caution / Not Ready), qué ha cambiado, noticias, tu aptitud y tus cuentas |
 | 08:00 a 17:30, cada 5 min | Vigilancia: avisos de tu estrategia (desde Londres) y de riesgo. Solo escribe si hay algo nuevo; los de riesgo tienen un máximo por hora |
 | 22:15 (16:15 Nueva York) | Cierre del día |
 | Domingo 19:00 | Resumen semanal: semana que viene, cómo has estado, cuentas y briefing de Factor Macro |

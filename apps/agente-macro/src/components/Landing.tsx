@@ -23,7 +23,7 @@ function IconArrowRight(p: SVGProps<SVGSVGElement>) {
 
 const FEATURES = ['Eventos en tiempo real', 'Narrativa macro clara', 'Escenarios anticipados']
 
-// Landing / puerta de entrada — igual que Hero.jsx de Agente Métricas (misma
+// Landing / puerta de entrada — igual que Hero.jsx de Entropia Analytics (misma
 // familia visual), pero sin su lógica de negocio (useTrades/computeStats):
 // el visual central es DataSphere en vez de la esfera de equity. Las
 // lecturas flotantes vienen de WeeklyMacroContext (ya calculado en

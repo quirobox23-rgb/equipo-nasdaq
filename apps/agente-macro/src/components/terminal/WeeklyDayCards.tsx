@@ -63,7 +63,7 @@ export function WeeklyDayCards({ dayLabels, dayDates, dayCounts }: Props) {
 
                 {comment && (
                   <div className="mt-auto pt-2 border-t border-base-line/60">
-                    <p className="text-[9px] text-neutral/80 uppercase tracking-widest mb-1">Comentario Agente Macro</p>
+                    <p className="text-[9px] text-neutral/80 uppercase tracking-widest mb-1">Comentario Entropia Markets</p>
                     <p className="text-[11px] text-base-muted leading-relaxed">{comment}</p>
                   </div>
                 )}

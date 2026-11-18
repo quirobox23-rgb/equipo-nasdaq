@@ -3,20 +3,20 @@ import type { Config } from 'tailwindcss'
 // Tokens de marca — mismos valores que santos-trader-design.css /
 // paleta-2-verde-santos.css (Paleta 2 — Verde Santos), llevados a Tailwind
 // porque este proyecto es Tailwind-first (a diferencia del HTML estático
-// de Agente Métricas, que consume las variables CSS directamente).
+// de Entropia Analytics, que consume las variables CSS directamente).
 //
 // Reglas (no renegociar sin motivo — ver buenas-practicas-ui-design.md):
 //   - brand/brand-deep/accent: SOLO marca — botones,
 //     CTAs, íconos de acción/navegación, links, focus rings. Nunca para
 //     mostrar un resultado. Equivalen a --brand/--brand-deep/
-//     --accent en Agente Métricas — nombre compuesto (no "green"/
+//     --accent en Entropia Analytics — nombre compuesto (no "green"/
 //     "lime" sueltos) porque esos ya existen en la paleta nativa de
 //     Tailwind (green-500, lime-400...) y colisionarían en silencio.
 //   - pos/neg/neutral (semáforo): SOLO para resultados — sesgo alcista/
 //     bajista/neutral, escenarios beat/inline/miss, regime risk-on/off.
 //     Independiente de la marca a propósito.
 //   - base.*: neutros de interfaz (fondo, paneles, bordes, texto).
-//     Equivalen a --bg/--bg2/--bg3/--text/--text2 en Agente Métricas —
+//     Equivalen a --bg/--bg2/--bg3/--text/--text2 en Entropia Analytics —
 //     mismos valores, nombre namespaced bajo "base" en vez de sueltos
 //     por legibilidad Tailwind (bg-base-bg en vez de bg-bg).
 const config: Config = {
@@ -50,7 +50,7 @@ const config: Config = {
         // sin perder el soporte de opacidad de Tailwind (bg-base-panel2/60).
         // pos/neg/neutral/brand-deep/accent quedan arriba con
         // hex fijo — mismo valor en dark y light. brand es la única
-        // excepción (ver nota arriba), igual que en Agente Métricas.
+        // excepción (ver nota arriba), igual que en Entropia Analytics.
         base: {
           bg: 'rgb(var(--base-bg) / <alpha-value>)',
           panel: 'rgb(var(--base-panel) / <alpha-value>)',
