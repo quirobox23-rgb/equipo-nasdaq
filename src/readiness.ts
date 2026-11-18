@@ -54,8 +54,27 @@ function resumir(t: string): string {
   return corto.length > 70 ? `${corto.slice(0, 67)}…` : corto
 }
 
+/** Cuántas cuentas activas tienes de cada tipo. */
+export interface Fases { fondeada: number; challenge: number; personal: number }
+
+/**
+ * Consejo de riesgo por tipo de cuenta: las fondeadas son las que más cuesta
+ * perder, así que en días flojos se protegen primero. Nunca dice qué operar.
+ */
+export function consejoCuentas(v: Veredicto, f: Fases | undefined): string | null {
+  if (!f || v === 'ready') return null
+  const { fondeada: fu, challenge: ch } = f
+  const funded = `${fu} funded`
+  if (v === 'not-ready') {
+    if (fu > 0) return `💼 Con ${funded}, hoy mejor no tocarlas. Si operas, que sea solo en ${ch ? 'las challenge' : 'la cuenta que menos te juegues'} y con tamaño mínimo.`
+    return '💼 Hoy mejor no operar ninguna cuenta, o solo con tamaño mínimo.'
+  }
+  if (fu > 0) return `💼 Tienes ${funded}${ch ? ` y ${ch} en challenge` : ''}: quizá hoy mejor no operar las funded, o con la mitad de tamaño.${ch ? ' En las challenge, espera confirmación.' : ''}`
+  return ch ? '💼 En las challenge, menos tamaño y espera confirmación antes de entrar.' : null
+}
+
 /** Bloque de texto para el mensaje. Sin check-in, el veredicto es solo del mercado y lo dice. */
-export function describirReadiness(mercado: Nota, trader: Nota | null): string[] {
+export function describirReadiness(mercado: Nota, trader: Nota | null, fases?: Fases): string[] {
   const v = veredicto(mercado, trader)
   const lineas = [
     `🧭 *Daily Trading Readiness: ${ETIQUETA[v]}*`,
@@ -65,5 +84,7 @@ export function describirReadiness(mercado: Nota, trader: Nota | null): string[]
       : 'Tú: pendiente de tu check-in, contéstame y te doy el veredicto completo.',
     EXPLICA[v],
   ]
+  const consejo = consejoCuentas(v, fases)
+  if (consejo) lineas.push(consejo)
   return lineas
 }

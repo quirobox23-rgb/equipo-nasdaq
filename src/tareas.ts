@@ -15,13 +15,13 @@ import { analizarEstructura, cargarEstrategia, describirNivelesEstrategia, type 
 import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
 import { evaluarBienestar, aptitud, cargarAjustesCoach, preguntaCheckin, type CheckIn } from './personal/coach.ts'
-import { cargarReglas, evaluarCuentas, proveedorManual } from './personal/gestor.ts'
+import { cargarReglas, evaluarCuentas, proveedorManual, type ReglasCuenta } from './personal/gestor.ts'
 import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
 import type { Hallazgo } from './tipos.ts'
 import { registrarEstado } from './estadoOficina.ts'
-import { describirReadiness, marketReadiness, traderReadiness, type Nota } from './readiness.ts'
+import { describirReadiness, marketReadiness, traderReadiness, type Nota, type Fases } from './readiness.ts'
 import { claveDia, diaAnterior, hora, minutosDelDia } from './tiempo.ts'
 
 async function intentar<T>(nombre: string, f: () => Promise<T>): Promise<T | null> {
@@ -41,13 +41,23 @@ export async function checkinDeHoy(ahora = new Date()): Promise<CheckIn | undefi
 }
 
 /** Con Factor Métricas configurado, las cuentas salen de ahí; si no, de config/cuentas.json y tus "pnl …". */
-async function cuentas(ahora = new Date()): Promise<Hallazgo[]> {
+async function cuentasYFases(ahora = new Date()): Promise<{ hallazgos: Hallazgo[]; fases?: Fases }> {
   if (configuradoFM()) {
     const fm = await intentar('factor-metricas', () => leerFactorMetricas(ahora))
-    if (fm) return evaluarCuentas(fm.reglas, fm.estados)
-    return [sinDatos('cuentas', 'tus cuentas en Factor Métricas')]
+    if (fm) return { hallazgos: evaluarCuentas(fm.reglas, fm.estados), fases: contarFases(fm.reglas) }
+    return { hallazgos: [sinDatos('cuentas', 'tus cuentas en Factor Métricas')] }
   }
-  return evaluarCuentas(await cargarReglas(), await proveedorManual.leer())
+  const reglas = await cargarReglas()
+  return { hallazgos: evaluarCuentas(reglas, await proveedorManual.leer()), fases: reglas.length ? contarFases(reglas) : undefined }
+}
+
+async function cuentas(ahora = new Date()): Promise<Hallazgo[]> {
+  return (await cuentasYFases(ahora)).hallazgos
+}
+
+function contarFases(reglas: ReglasCuenta[]): Fases {
+  const n = (f: ReglasCuenta['fase']) => reglas.filter(r => r.fase === f).length
+  return { fondeada: n('fondeada'), challenge: n('challenge'), personal: n('personal') }
 }
 
 interface InformeEquipo {
@@ -120,7 +130,8 @@ async function macroYFed(cal: EventoMacro[] | null, ahora: Date): Promise<Hallaz
 export async function readinessTrasCheckin(c: CheckIn, ahora = new Date()): Promise<string[]> {
   const r = await leer<{ dia: string; mercado: Nota } | null>('readiness', null)
   if (!r || r.dia !== claveDia(ahora, config.tzUsuaria)) return []
-  return describirReadiness(r.mercado, traderReadiness(c, await cuentas(ahora)))
+  const cu = await cuentasYFases(ahora)
+  return describirReadiness(r.mercado, traderReadiness(c, cu.hallazgos), cu.fases)
 }
 
 /** Resultados de las grandes del Nasdaq de hoy y de ayer tras el cierre. */
@@ -155,14 +166,15 @@ export async function guiaDiaria(ahora = new Date()): Promise<string> {
     ...(await resultados(ahora)),
     ...(await rangos(ahora)),
     ...etiquetar(inf),
-    ...(await cuentas()),
   ]
+  const cu = await cuentasYFases(ahora)
+  h.push(...cu.hallazgos)
   const { habitos } = await cargarAjustesCoach()
   const mercado = marketReadiness(h)
   await guardar('readiness', { dia: claveDia(ahora, config.tzUsuaria), mercado })
   const contexto = [
     `📅 Hoy es ${fechaLarga(ahora)}.`,
-    ...describirReadiness(mercado, null),
+    ...describirReadiness(mercado, null, cu.fases),
     ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto)),
     `💬 ${preguntaCheckin(habitos)}`,
   ]
@@ -190,11 +202,11 @@ export async function preApertura(ahora = new Date()): Promise<string> {
     ...noticias.slice(0, 4),
     ...evaluarBienestar(await checkinDeHoy(ahora)),
   ]
-  const cu = await cuentas()
-  h.push(...cu)
+  const cu = await cuentasYFases(ahora)
+  h.push(...cu.hallazgos)
   await registrarClaves(h)
   await registrarEstado(h, inf.map(i => i.eq.nombre), ahora, true)
-  const readiness = describirReadiness(marketReadiness(h), traderReadiness(await checkinDeHoy(ahora), cu))
+  const readiness = describirReadiness(marketReadiness(h), traderReadiness(await checkinDeHoy(ahora), cu.hallazgos), cu.fases)
   const contexto = [...readiness, ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto))]
   const paraIA = ['Pon el bloque de Daily Trading Readiness (🧭) tal cual al principio.', ...(config.soloTexto ? [SIN_PRECIOS] : [])]
   return enviar(await redactar('apertura', h, contexto, paraIA, nombreEquipos(inf)))
