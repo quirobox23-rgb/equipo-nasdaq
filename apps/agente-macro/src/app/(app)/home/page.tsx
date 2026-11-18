@@ -1,7 +1,6 @@
 'use client'
 import { conBase } from '@/lib/base'
 import { useEffect, useMemo, useState } from 'react'
-import { CalendarDays, Activity } from 'lucide-react'
 import { useWeekEvents } from '@/hooks/useWeekEvents'
 import { fetchEarnings, formatDate, type EarningsItem } from '@/lib/earnings'
 import { buildDays, earningsToEvents, keyDayOf, weekAssetImpact } from '@/lib/weekCalendar'
@@ -9,7 +8,7 @@ import { latestResult, nextUp, regimeOf } from '@/lib/marketReading'
 import { findEventTemplate } from '@/hooks/useEventTemplate'
 import { dayName } from '@/components/calendar/parts'
 import { formatPeriod, RatioChip } from '@/components/PendingMetricsCard'
-import { ReadingBlock, MetricsBlock, RegimeValue, ActionCard, EarningsBlock, type HeroMetric } from '@/components/home/HomeBlocks'
+import { ReadingBlock, MetricsBlock, RegimeValue, EarningsBlock, type HeroMetric } from '@/components/home/HomeBlocks'
 
 // El Mercado Hoy — mismo esquema que el Inicio de Entropia Analytics
 // (diseño: mockup-home-v2), en tres franjas:
@@ -163,21 +162,7 @@ export default function HomePage() {
         <EarningsBlock rows={earningsRows} loading={earnNextWeek === null} />
       </div>
 
-      {/* 3. Calendario y Volatilidad */}
-      <div className="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
-        <ActionCard
-          href="/eventos-economicos" primary icon={CalendarDays}
-          title="Calendario económico"
-          description="Los datos de la semana, qué esperar y qué significa para el NASDAQ."
-          cta="Ir al calendario"
-        />
-        <ActionCard
-          href="/mercado" icon={Activity}
-          title="Volatilidad"
-          description="Cuánto se mueve el NQ, sentimiento y el ciclo de la semana."
-          cta="Ir a volatilidad"
-        />
-      </div>
+      {/* Calendario y Volatilidad ya están en las pestañas de Pre-mercado. */}
 
       <p className="mt-6 text-xs text-base-faint">Los eventos pueden generar alta volatilidad. Planificá tu operativa y gestioná tu riesgo.</p>
     </div>
