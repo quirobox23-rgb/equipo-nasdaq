@@ -1,6 +1,8 @@
 // Webhook de WhatsApp: recibe tus respuestas (check-in de bienestar y
 // actualizaciones de cuentas) y contesta.
 import http from 'node:http'
+import { interpretarOperacion, apuntarOperacion } from './personal/enVivo.ts'
+import { cargarPlan } from './personal/plan.ts'
 import crypto from 'node:crypto'
 import { config } from './config.ts'
 import { leer, guardar } from './almacen.ts'
@@ -8,7 +10,7 @@ import { interpretarRespuesta, cargarAjustesCoach, respuestaCheckin, type CheckI
 import { cargarCalendario } from './sources/calendario.ts'
 import { eventosDelDia, ventanasDeRiesgo } from './equipo/macro.ts'
 import { cargarMiembros, type MiembroFed } from './equipo/fed.ts'
-import { readinessTrasCheckin } from './tareas.ts'
+import { avisosAtractor, readinessTrasCheckin } from './tareas.ts'
 import { interpretarComandoPnl, type EstadoCuenta } from './personal/gestor.ts'
 import { mensajero } from './mensajeria/index.ts'
 import { claveDia, hora } from './tiempo.ts'
@@ -23,6 +25,13 @@ import type { Nota } from './readiness.ts'
 const PAGINA_OFICINA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'oficina.html')
 
 export async function procesarMensaje(texto: string, ahora = new Date()): Promise<string> {
+  // Botones de Atractor (o "op F1 -300"): apunta la operación y avisa al momento si te sales del plan.
+  const op = interpretarOperacion(texto)
+  if (op) {
+    const linea = await apuntarOperacion(op.cuenta, op.que, await cargarPlan(), ahora)
+    const aviso = await avisosAtractor(ahora).catch(() => null)
+    return aviso ? `${linea}\n\n${aviso}` : linea
+  }
   const pnl = interpretarComandoPnl(texto)
   if (pnl) {
     const estados = await leer<EstadoCuenta[]>('cuentas-estado', [])
