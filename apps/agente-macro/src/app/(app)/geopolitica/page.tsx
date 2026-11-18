@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useEffect, useState } from 'react'
 import { Badge, PanelHeader, type BadgeVariant } from '@/components/ui'
 
@@ -54,7 +55,7 @@ export default function GeopoliticaPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/geopolitics')
+    fetch(conBase('/api/geopolitics'))
       .then(res => res.ok ? res.json() : null)
       .then(setData)
       .finally(() => setLoading(false))

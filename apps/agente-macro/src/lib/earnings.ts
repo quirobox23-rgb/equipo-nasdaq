@@ -1,3 +1,4 @@
+import { conBase } from '@/lib/base'
 // Cliente de earnings — Finnhub (capa gratuita). Nueva pieza, no toca ningún
 // motor existente. Los resultados reales ("actual") los introduces tú a mano
 // más adelante, tal como se habló; de momento esto solo trae fecha/hora/EPS
@@ -54,7 +55,7 @@ export function getThisWeekMonFri(): { from: string; to: string } {
 
 export async function fetchEarnings(from: string, to: string, extended = false): Promise<EarningsItem[]> {
   try {
-    const res = await fetch(`/api/earnings?from=${from}&to=${to}${extended ? '&set=extended' : ''}`)
+    const res = await fetch(conBase(`/api/earnings?from=${from}&to=${to}${extended ? '&set=extended' : ''}`))
     if (!res.ok) return []
     const data = await res.json()
     return (data.earnings ?? []) as EarningsItem[]

@@ -1,3 +1,4 @@
+import { conBase } from '@/lib/base'
 interface Props {
   /** 'lg' = tamaño Landing (hero). 'sm' = tamaño topbar/footer, igual proporción que el logo de Entropia Analytics en su sidebar. */
   size?: 'sm' | 'lg'
@@ -9,9 +10,9 @@ export function Logo({ size = 'sm' }: Props) {
   return (
     <div className="flex items-center gap-3">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/entropia-logo.png" alt="entropia" className={`${alto} w-auto logo-oscuro`} />
+      <img src={conBase("/entropia-logo.png")} alt="entropia" className={`${alto} w-auto logo-oscuro`} />
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/entropia-logo-oscuro.png" alt="entropia" className={`${alto} w-auto logo-claro`} />
+      <img src={conBase("/entropia-logo-oscuro.png")} alt="entropia" className={`${alto} w-auto logo-claro`} />
       <span className={`${size === 'lg' ? 'text-[15px]' : 'text-[10.5px]'} font-display font-semibold uppercase tracking-[0.18em] text-accent border-l border-base-line pl-3`}>Markets</span>
     </div>
   )

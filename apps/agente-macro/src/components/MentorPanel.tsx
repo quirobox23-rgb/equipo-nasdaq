@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useState, useEffect, useCallback } from 'react'
 import type { MacroEvent }                  from '@/types/macro'
 import type { MentorAnalysis, AssetImpact, ScenarioAnalysis } from '@/lib/engines/mentorEngine'
@@ -257,7 +258,7 @@ export function MentorPanel({ event, events }: Props) {
         ? { events: (events ?? []).map(e => ({ name: e.name, prev: e.prev, forecast: e.forecast, actual: e.actual, impact: e.impact, notes: e.notes, knowledge: knowledgeStore.get(e.name) })) }
         : { name: event.name, prev: event.prev, forecast: event.forecast, actual: event.actual, notes: event.notes, impact: event.impact, knowledge: knowledgeStore.get(event.name) }
 
-      const res  = await fetch('/api/analysis', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      const res  = await fetch(conBase('/api/analysis'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (!res.ok || data.error) { setError(data.error ?? 'Error desconocido'); if (data.raw) setRawDebug(data.raw) }
       else setAnalysis(data.analysis)

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { onAuthStateChanged, type User } from 'firebase/auth'
-import { getFirebaseAuth } from '@/lib/firebase/client'
+import { getFirebaseAuth, MODO_LOCAL } from '@/lib/firebase/client'
 
 // studentSession.ts — sustituye al candado de código compartido. Cada
 // alumno tiene ahora su propia cuenta real (email + contraseña) en Firebase
@@ -16,10 +16,13 @@ import { getFirebaseAuth } from '@/lib/firebase/client'
  * - null      → no hay sesión iniciada
  * - User      → alumno con sesión iniciada
  */
+const USUARIO_LOCAL = { uid: 'local', email: 'modo local', displayName: 'Modo local' } as unknown as User
+
 export function useAuthUser(): User | null | undefined {
-  const [user, setUser] = useState<User | null | undefined>(undefined)
+  const [user, setUser] = useState<User | null | undefined>(MODO_LOCAL ? USUARIO_LOCAL : undefined)
 
   useEffect(() => {
+    if (MODO_LOCAL) return
     const unsubscribe = onAuthStateChanged(getFirebaseAuth(), setUser)
     return () => unsubscribe()
   }, [])
@@ -28,6 +31,7 @@ export function useAuthUser(): User | null | undefined {
 }
 
 export async function logoutStudent() {
+  if (MODO_LOCAL) return
   await getFirebaseAuth().signOut()
 }
 

@@ -4,9 +4,12 @@
   "private": true,
   "description": "Oficina de agentes que avisa por WhatsApp del contexto y el riesgo del Nasdaq. Nunca da señales de entrada.",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "tsx src/index.ts",
+    "entropia": "tsx src/arrancarEntropia.ts",
     "tarea": "tsx src/cli.ts",
     "test": "node --import tsx --test test/*.test.ts",
     "typecheck": "tsc --noEmit"

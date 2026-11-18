@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useState, useEffect, type ReactNode } from 'react'
 import { PanelHeader } from '@/components/ui'
 
@@ -234,7 +235,7 @@ export function SentimentPanel() {
   useEffect(() => {
     let cancelled = false
     const load = () => {
-      fetch('/api/market-data', { cache: 'no-store' })
+      fetch(conBase('/api/market-data'), { cache: 'no-store' })
         .then(r => (r.ok ? r.json() : null))
         // Si un refresco falla, se mantienen los últimos datos buenos.
         .then(d => { if (!cancelled && d) setData(d) })

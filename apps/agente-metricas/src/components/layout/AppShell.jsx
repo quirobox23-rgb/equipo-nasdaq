@@ -106,9 +106,9 @@ const IconFoco = (p) => (
   <svg viewBox="0 0 24 24" {...trazo} {...p}><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.2" /></svg>
 )
 const MODULOS = [
-  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: import.meta.env.VITE_URL_INTELLIGENCE },
-  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: import.meta.env.VITE_URL_MARKETS },
-  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: '/inicio', activo: true },
+  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: import.meta.env.VITE_URL_INTELLIGENCE || '/oficina' },
+  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: import.meta.env.VITE_URL_MARKETS || '/markets/home' },
+  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: `${import.meta.env.BASE_URL}inicio`, activo: true },
 ]
 const CLAVE_FOCO = 'entropia_foco'
 
@@ -128,7 +128,7 @@ function ModuleRail({ theme, toggleTheme }) {
   const [foco, setFoco] = useFoco()
   return (
     <aside className={styles.rail} aria-label="Módulos de Entropia">
-      <img src="/icon-192.png" alt="" className={styles.railIcon} />
+      <img src={`${import.meta.env.BASE_URL}icon-192.png`} alt="" className={styles.railIcon} />
       <nav className={styles.railNav}>
         {MODULOS.map(({ id, nombre, Icon, href, activo }) => (
           <a

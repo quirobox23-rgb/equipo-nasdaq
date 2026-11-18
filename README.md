@@ -5,6 +5,21 @@
 Una oficina de agentes que te acompaña cuando operas el Nasdaq y te escribe por WhatsApp.
 **Da contexto y avisos de riesgo. Nunca da señales de entrada ni de salida.**
 
+
+## Todo Entropia en una sola dirección
+
+```
+npm run entropia
+```
+
+Arranca la oficina y sirve las dos apps dentro de ella:
+
+- http://localhost:3000/oficina: la oficina de agentes.
+- http://localhost:3000/markets: Contexto (Entropia Markets).
+- http://localhost:3000/analytics: Tú (Entropia Analytics).
+
+La primera vez instala y compila las apps, así que tarda unos minutos. Si cambias algo en las apps, usa `npm run entropia -- --rehacer`. Sin claves de Firebase o Supabase, las apps funcionan en modo local: no piden login y todo está abierto, pensado para probarlas en tu ordenador.
+
 ## Cómo está organizada
 
 Un **equipo por activo** (hoy Nasdaq; Oro ya está como plantilla en `src/equipo/definiciones.ts`), más **servicios personales** comunes a todos los equipos y un **coordinador**.

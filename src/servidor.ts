@@ -16,6 +16,7 @@ import { promises as fs } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { leerEstado } from './estadoOficina.ts'
+import { modulos, servirAnalytics, pasarAMarkets } from './entropia.ts'
 
 const PAGINA_OFICINA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'oficina.html')
 
@@ -94,7 +95,15 @@ export function arrancarServidor() {
     }
     if (req.method === 'GET' && url.pathname === '/modulos') {
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
-      res.end(JSON.stringify({ markets: config.apps.markets ?? null, analytics: config.apps.analytics ?? null }))
+      res.end(JSON.stringify(modulos()))
+      return
+    }
+    if (url.pathname === '/markets' || url.pathname.startsWith('/markets/')) {
+      pasarAMarkets(req, res)
+      return
+    }
+    if (req.method === 'GET' && (url.pathname === '/analytics' || url.pathname.startsWith('/analytics/'))) {
+      await servirAnalytics(url.pathname, res)
       return
     }
     if (req.method === 'GET' && url.pathname === '/salud') {
@@ -129,6 +138,6 @@ export function arrancarServidor() {
     }
     res.writeHead(404).end()
   })
-  server.listen(config.puerto, () => console.log(`[oficina] Abre http://localhost:${config.puerto}/oficina para ver la oficina`))
+  server.listen(config.puerto, () => console.log(`[oficina] Abre http://localhost:${config.puerto}/oficina (Contexto en /markets, Tú en /analytics)`))
   return server
 }

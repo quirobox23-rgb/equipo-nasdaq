@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import WeeklyCalendarStrip from '@/components/WeeklyCalendarStrip'
 import { useState, useEffect, useCallback, type SVGProps } from 'react'
 import { RefreshCw, ChevronRight } from 'lucide-react'
@@ -272,7 +273,7 @@ export default function MentorIAPage() {
   const fetchLatest = useCallback((pw: string) => {
     setLoading(true)
     setError(null)
-    fetch('/api/nova/latest', { headers: { 'x-admin-password': pw } })
+    fetch(conBase('/api/nova/latest'), { headers: { 'x-admin-password': pw } })
       .then(async res => {
         if (res.status === 401) {
           clearStoredAdminPassword()
@@ -312,7 +313,7 @@ export default function MentorIAPage() {
     if (!password) return
     setGenerating(true)
     setError(null)
-    fetch('/api/nova/generate', { method: 'POST', headers: { 'x-admin-password': password } })
+    fetch(conBase('/api/nova/generate'), { method: 'POST', headers: { 'x-admin-password': password } })
       .then(async res => {
         if (res.status === 401) {
           clearStoredAdminPassword()
