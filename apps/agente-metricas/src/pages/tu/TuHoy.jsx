@@ -30,6 +30,38 @@ function useTu() {
   return tu
 }
 
+// Los mensajes llegan con el formato de Telegram (*negrita*, _cursiva_).
+const sinFormato = (t) => t.replace(/[*_]/g, '')
+
+function Atractor({ mensajes }) {
+  if (!mensajes?.length) {
+    return <p style={{ color: 'var(--text3)', margin: 0 }}>Hoy aún no te ha escrito. La guía sale a las 8:30 y la sesión se abre a las 15:25.</p>
+  }
+  const ultimos = [...mensajes].reverse()
+  const [primero, ...resto] = ultimos
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      <div>
+        <div className="mono muted" style={{ fontSize: 11, marginBottom: 6 }}>{primero.hora}</div>
+        <div style={{ whiteSpace: 'pre-line', lineHeight: 1.55, color: 'var(--text)' }}>{sinFormato(primero.texto)}</div>
+      </div>
+      {resto.length > 0 && (
+        <details>
+          <summary style={{ cursor: 'pointer', color: 'var(--text2)', fontSize: 13 }}>Antes hoy ({resto.length})</summary>
+          <div style={{ display: 'grid', gap: 14, marginTop: 12 }}>
+            {resto.map((m, i) => (
+              <div key={`${m.hora}-${i}`} style={{ borderTop: '1px solid var(--border)', paddingTop: 10 }}>
+                <div className="mono muted" style={{ fontSize: 11, marginBottom: 6 }}>{m.hora}</div>
+                <div style={{ whiteSpace: 'pre-line', lineHeight: 1.5, color: 'var(--text2)', fontSize: 13 }}>{sinFormato(m.texto)}</div>
+              </div>
+            ))}
+          </div>
+        </details>
+      )}
+    </div>
+  )
+}
+
 function Nota({ etiqueta, valor }) {
   return (
     <div>
@@ -72,13 +104,19 @@ export default function TuHoy() {
 
   return (
     <div className="page-inner">
-      <PageHeader title="Tú hoy" subtitle="Cómo van tus métricas y cómo vas tú, que eres quien ejecuta." />
+      <PageHeader title="Hoy" subtitle="Lo que te dice Atractor, cómo van tus métricas y cómo vas tú, que eres quien ejecuta." />
 
       {tu === null && (
         <div className="card" style={{ marginBottom: 20, color: 'var(--text2)' }}>
           Tu estado lo da la oficina. Abre Entropia con <code>npm run entropia</code> y contesta el check-in de la mañana en Telegram; aquí verás tu nota, tus hábitos y tu sesgo.
         </div>
       )}
+
+      <div style={{ marginBottom: 20 }}>
+        <Card title="Atractor · lo que te ha dicho hoy">
+          <Atractor mensajes={tu?.atractor} />
+        </Card>
+      </div>
 
       <div className="grid-3" style={{ marginBottom: 20 }}>
         <Card title="Readiness de hoy">

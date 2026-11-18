@@ -1,5 +1,6 @@
 // Envío de mensajes. WhatsApp Cloud API de Meta; sin credenciales, consola.
 import { config } from '../config.ts'
+import { apuntarMensaje } from './historial.ts'
 
 export interface Boton { texto: string; dato: string }
 export interface Mensajero {
@@ -81,10 +82,20 @@ export function telegram(): Mensajero {
   }
 }
 
-export function mensajero(): Mensajero {
+function canal(): Mensajero {
   if (config.dryRun) return consola
   if (config.telegram.token && config.telegram.chatId) return telegram()
   const w = config.whatsapp
   if (w.token && w.phoneNumberId && w.destino) return whatsapp()
   return consola
+}
+
+/** El canal que toque, guardando cada mensaje para la tarjeta de Atractor en Control. */
+export function mensajero(): Mensajero {
+  const c = canal()
+  const guardarlo = (texto: string) => apuntarMensaje(texto).catch(e => console.error('[historial]', e))
+  return {
+    async enviar(texto) { await c.enviar(texto); await guardarlo(texto) },
+    async enviarConBotones(texto, filas) { await c.enviarConBotones(texto, filas); await guardarlo(texto) },
+  }
 }
