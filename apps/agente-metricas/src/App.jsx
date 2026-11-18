@@ -26,13 +26,31 @@ import Calendar     from '@/pages/Calendar'
 import MonteCarlo   from '@/pages/MonteCarlo'
 import Kelly        from '@/pages/Kelly'
 import Rentabilidad from '@/pages/Rentabilidad'
-import IaMentor     from '@/pages/IaMentor'
 import Consistency  from '@/pages/Consistency'
 import Setups       from '@/pages/Setups'
-import TraderScore  from '@/pages/TraderScore'
 import BusinessROI  from '@/pages/BusinessROI'
 import DailyRoutine from '@/pages/DailyRoutine'
 import TuHoy from '@/pages/tu/TuHoy'
+import Pestanas from '@/pages/control/Pestanas'
+
+// Entropia Control: cinco secciones. Las páginas de siempre siguen igual,
+// agrupadas con pestañas; las rutas antiguas llevan a su pestaña.
+const RENDIMIENTO = [
+  { id: 'panel', label: 'Panel', Componente: Dashboard },
+  { id: 'basico', label: 'Básico', Componente: MetrixBasic },
+  { id: 'intermedio', label: 'Intermedio', Componente: MetrixAnalytics },
+  { id: 'pro', label: 'Pro', Componente: MetrixLab },
+  { id: 'consistencia', label: 'Consistencia', Componente: Consistency },
+]
+const DIARIO = [
+  { id: 'calendario', label: 'Calendario', Componente: Calendar },
+  { id: 'historial', label: 'Historial', Componente: Historial },
+  { id: 'setups', label: 'Setups', Componente: Setups },
+]
+const CUENTAS = [
+  { id: 'portafolio', label: 'Portafolio', Componente: Portfolio },
+  { id: 'inversion', label: 'Inversión y retiros', Componente: BusinessROI },
+]
 
 // Todas las rutas de la aplicación (idénticas a como estaban, mismo
 // orden, mismos componentes) viven ahora dentro de AppShell. Es el
@@ -44,27 +62,35 @@ function AppRoutes() {
       <AppShell>
       <Routes>
         <Route path="/home"         element={<Home />} />
-        <Route path="/inicio"    element={<Dashboard />} />
-        <Route path="/tu-hoy"    element={<TuHoy />} />
-        <Route path="/metricas-basico" element={<MetrixBasic />} />
-        <Route path="/metricas-intermedio" element={<MetrixAnalytics />} />
-        <Route path="/metricas-pro" element={<MetrixLab />} />
-        <Route path="/entrenamiento"     element={<Training />} />
-        <Route path="/mapas"   element={<Blueprints />} />
-        <Route path="/portafolio"    element={<Portfolio />} />
-        <Route path="/historial"    element={<Historial />} />
+        <Route path="/hoy"         element={<TuHoy />} />
+        <Route path="/rendimiento" element={<Pestanas pestanas={RENDIMIENTO} />} />
+        <Route path="/diario"      element={<Pestanas pestanas={DIARIO} />} />
+        <Route path="/pulso"       element={<DailyRoutine />} />
+        <Route path="/cuentas"     element={<Pestanas pestanas={CUENTAS} />} />
+        <Route path="/entrenamiento" element={<Training />} />
+        {/* Herramientas que siguen abiertas por enlace, fuera del menú */}
+        <Route path="/mapas"        element={<Blueprints />} />
         <Route path="/approach"     element={<Approach />} />
-        <Route path="/calendar"     element={<Calendar />} />
         <Route path="/montecarlo"   element={<MonteCarlo />} />
         <Route path="/kelly"        element={<Kelly />} />
         <Route path="/rentabilidad" element={<Rentabilidad />} />
-        <Route path="/mentor-ia"           element={<IaMentor />} />
-        <Route path="/consistencia"  element={<Consistency />} />
-        <Route path="/setups"       element={<Setups />} />
-        <Route path="/puntaje-trader" element={<TraderScore />} />
-        <Route path="/roi" element={<BusinessROI />} />
-        <Route path="/rutina-diaria" element={<DailyRoutine />} />
-        <Route path="*"             element={<Navigate to="/inicio" replace />} />
+        {/* Rutas antiguas → su sitio nuevo */}
+        <Route path="/inicio"   element={<Navigate to="/rendimiento?p=panel" replace />} />
+        <Route path="/tu-hoy"   element={<Navigate to="/hoy" replace />} />
+        <Route path="/metricas-basico"     element={<Navigate to="/rendimiento?p=basico" replace />} />
+        <Route path="/metricas-intermedio" element={<Navigate to="/rendimiento?p=intermedio" replace />} />
+        <Route path="/metricas-pro"        element={<Navigate to="/rendimiento?p=pro" replace />} />
+        <Route path="/consistencia" element={<Navigate to="/rendimiento?p=consistencia" replace />} />
+        <Route path="/calendar"     element={<Navigate to="/diario?p=calendario" replace />} />
+        <Route path="/historial"    element={<Navigate to="/diario?p=historial" replace />} />
+        <Route path="/setups"       element={<Navigate to="/diario?p=setups" replace />} />
+        <Route path="/portafolio"   element={<Navigate to="/cuentas?p=portafolio" replace />} />
+        <Route path="/roi"          element={<Navigate to="/cuentas?p=inversion" replace />} />
+        <Route path="/rutina-diaria" element={<Navigate to="/pulso" replace />} />
+        {/* Mentor IA se funde en Atractor (el coach está en Hoy); el Puntaje usaba datos de ejemplo */}
+        <Route path="/mentor-ia"      element={<Navigate to="/hoy" replace />} />
+        <Route path="/puntaje-trader" element={<Navigate to="/hoy" replace />} />
+        <Route path="*"             element={<Navigate to="/hoy" replace />} />
       </Routes>
       </AppShell>
     </AuthGate>
@@ -137,7 +163,7 @@ export default function App() {
             muestra el login, con sesión entra directo al Dashboard.
             No se borra por si hace falta volver:
         <Route path="/" element={<Hero />} /> */}
-        <Route path="/" element={<Navigate to="/inicio" replace />} />
+        <Route path="/" element={<Navigate to="/hoy" replace />} />
         <Route path="/*" element={<AppRoutes />} />
       </Routes>
       {shouldShow && (
