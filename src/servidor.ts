@@ -80,6 +80,24 @@ interface WebhookWA {
   entry?: Array<{ changes?: Array<{ value?: { messages?: Array<{ from: string; type: string; text?: { body: string } }> } }> }>
 }
 
+/** En la oficina, la planta baja también trabaja: Rendimiento y Coach salen de la zona "Tú". */
+async function conZonaTu(e: Awaited<ReturnType<typeof leerEstado>>) {
+  if (!e) return e
+  const [checkins, sesgos, readiness] = await Promise.all([
+    leer<Record<string, CheckIn>>('checkins', {}),
+    leer<Record<string, RegistroSesgoTu>>('sesgos', {}),
+    leer<{ dia: string; mercado: Nota } | null>('readiness', null),
+  ])
+  const tu = resumenTu(checkins, sesgos, readiness, claveDia(new Date(), config.tzUsuaria))
+  const hora = new Date().toISOString()
+  const agentes = { ...e.agentes } as Record<string, { estado: 'alerta' | 'trabajando' | 'descanso'; mensaje: string; hora: string }>
+  agentes.coach = tu.consejos.length
+    ? { estado: 'trabajando', mensaje: tu.consejos[0], hora }
+    : { estado: 'descanso', mensaje: 'Sin nada que corregir por ahora.', hora }
+  agentes.rendimiento ??= { estado: 'descanso', mensaje: 'Tus métricas, en Analytics → Tú hoy.', hora }
+  return { ...e, agentes }
+}
+
 export function arrancarServidor() {
   const server = http.createServer(async (req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost')
@@ -90,7 +108,7 @@ export function arrancarServidor() {
       return
     }
     if (req.method === 'GET' && url.pathname === '/estado') {
-      const estado = await leerEstado()
+      const estado = await conZonaTu(await leerEstado())
       res.writeHead(estado ? 200 : 404, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
       res.end(JSON.stringify(estado ?? { error: 'La oficina aún no ha trabajado hoy.' }))
       return

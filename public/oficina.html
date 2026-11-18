@@ -72,7 +72,10 @@ h1.logo span { color: var(--suave); font-weight: 500; font-size: 0.8em; letter-s
 }
 .controles button:hover, .vistas button:hover { border-color: var(--laton); }
 .controles button:focus-visible, .vistas button:focus-visible, li button:focus-visible { outline: 2px solid var(--laton); outline-offset: 2px; }
-.vistas { position: absolute; left: 10px; bottom: 10px; display: flex; gap: 6px; flex-wrap: wrap; right: 10px; }
+.vistas { position: absolute; left: 10px; bottom: 10px; display: grid; gap: 6px; right: 10px; }
+.fila-plantas, .fila-salas { display: flex; gap: 6px; flex-wrap: wrap; }
+.fila-plantas button { font-weight: 600; }
+.vistas button[data-planta][aria-pressed="true"] { border-color: #22d3ee; color: #22d3ee; }
 .vistas button[aria-pressed="true"] { border-color: var(--laton); color: var(--laton); }
 aside { background: var(--panel); border: 1px solid var(--linea); border-radius: 10px; padding: 14px; display: grid; gap: 12px; min-width: 0; }
 .cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
@@ -112,7 +115,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       <a id="ir-markets" href="#" target="_blank" rel="noopener" hidden><span>02</span>Markets ↗</a>
       <a id="ir-analytics" href="#" target="_blank" rel="noopener" hidden><span>03</span>Analytics ↗</a>
     </nav>
-    <p class="ayuda">Arrastra para girar, rueda o pellizco para acercar. Toca a una persona para ver qué está haciendo.</p>
+    <p class="ayuda">Tres plantas: abajo tú, en medio el mercado y arriba el mentor. Elige planta abajo a la izquierda, arrastra para girar y toca a una persona para ver qué hace.</p>
   </header>
   <div class="contenido">
     <div class="escena" id="escena">
@@ -121,7 +124,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       <div class="controles">
         <button type="button" id="girar-izq" aria-label="Girar a la izquierda">⟲</button>
         <button type="button" id="girar-der" aria-label="Girar a la derecha">⟳</button>
-        <button type="button" id="centrar">Vista general</button>
+        <button type="button" id="centrar">Centrar</button>
       </div>
       <div class="vistas" id="vistas"></div>
     </div>
@@ -143,31 +146,38 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
 (() => {
   // ───────────────────────── Datos ─────────────────────────
   const AGENTES = [
-    { id: 'coordinador', nombre: 'Coordinadora', rol: 'Junta los avisos y te escribe', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
-    { id: 'estructura', nombre: 'Estructura', rol: 'Niveles de tu estrategia', ropa: 0x7a2e3a, piel: 0xa8714e, pelo: 0x15100c, pantalon: 0x2a2d33 },
+    // Ático · Mentor
+    { id: 'coordinador', nombre: 'Mentor', rol: 'Lo enlaza todo y te escribe a Telegram', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
+    // Planta 1 · Mercado
+    { id: 'macro', nombre: 'Macro', rol: 'Eventos económicos', ropa: 0x1f2d3d, piel: 0xb98563, pelo: 0x231812, pantalon: 0x3a3f47 },
+    { id: 'estructura', nombre: 'Técnico', rol: 'Niveles y zonas del gráfico', ropa: 0x7a2e3a, piel: 0xa8714e, pelo: 0x15100c, pantalon: 0x2a2d33 },
+    { id: 'volatilidad', nombre: 'Volatilidad y ATR', rol: 'VIX, ATR y movimiento esperado', ropa: 0x5b6470, piel: 0xdba684, pelo: 0x4a3222, pantalon: 0x1f2227 },
     { id: 'volumen', nombre: 'Volumen', rol: 'Volumen frente a lo normal', ropa: 0x3d5a4a, piel: 0x7c4f33, pelo: 0x0f0b09, pantalon: 0x26292e, largo: true },
-    { id: 'volatilidad', nombre: 'Volatilidad y rango', rol: 'VIX, ATR y movimiento esperado', ropa: 0x5b6470, piel: 0xdba684, pelo: 0x4a3222, pantalon: 0x1f2227 },
-    { id: 'noticias', nombre: 'Noticias', rol: 'Titulares que mueven el Nasdaq', ropa: 0x9a7b4f, piel: 0xf3d6bd, pelo: 0xc89b54, pantalon: 0x2b2e35, largo: true },
-    { id: 'macro', nombre: 'Macro', rol: 'Calendario económico', ropa: 0x1f2d3d, piel: 0xb98563, pelo: 0x231812, pantalon: 0x3a3f47 },
+    { id: 'noticias', nombre: 'Noticias', rol: 'Trump, CEOs y titulares que mueven el NQ', ropa: 0x9a7b4f, piel: 0xf3d6bd, pelo: 0xc89b54, pantalon: 0x2b2e35, largo: true },
     { id: 'fed', nombre: 'Fed', rol: 'Discursos, actas y tipos', ropa: 0xe9e6df, piel: 0xf0cfb0, pelo: 0x8a5a33, pantalon: 0x30343c },
-    { id: 'earnings', nombre: 'Resultados', rol: 'Nvidia, Apple, Microsoft...', ropa: 0x6b3f69, piel: 0x8d5b3c, pelo: 0x120d0a, pantalon: 0x262a30, largo: true },
-    { id: 'cuentas', nombre: 'Gestor de cuentas', rol: 'Límites de tus cuentas', ropa: 0x4b4f8a, piel: 0xcf9c78, pelo: 0x2e2018, pantalon: 0x23262c },
-    { id: 'bienestar', nombre: 'Coach', rol: 'Cómo estás hoy', ropa: 0x2f7a6d, piel: 0xe8bb98, pelo: 0x5c3a22, pantalon: 0x1c1f24, largo: true },
+    { id: 'earnings', nombre: 'Earnings', rol: 'Las 7 magníficas', ropa: 0x6b3f69, piel: 0x8d5b3c, pelo: 0x120d0a, pantalon: 0x262a30, largo: true },
+    // Planta baja · Tú
+    { id: 'rendimiento', nombre: 'Rendimiento', rol: 'Qué haces con tus cuentas: tus métricas', ropa: 0x2b5c8a, piel: 0xd9a77f, pelo: 0x3a2618, pantalon: 0x22262c, largo: true },
+    { id: 'bienestar', nombre: 'Pulso', rol: 'Cómo llegas tú hoy', ropa: 0x2f7a6d, piel: 0xe8bb98, pelo: 0x5c3a22, pantalon: 0x1c1f24, largo: true },
+    { id: 'cuentas', nombre: 'Capital', rol: 'Gestor de cuentas: límites y fondeo', ropa: 0x4b4f8a, piel: 0xcf9c78, pelo: 0x2e2018, pantalon: 0x23262c },
+    { id: 'coach', nombre: 'Coach', rol: 'Qué mejorar en tus métricas y en ti', ropa: 0x22d3ee, piel: 0x9c6a48, pelo: 0x14100d, pantalon: 0x1e2a36 },
   ]
 
   const EJEMPLO = {
     ejemplo: true, equipos: ['Nasdaq'], semaforo: 'ambar', actualizado: new Date().toISOString(),
     agentes: {
-      coordinador: { estado: 'trabajando', mensaje: 'Te ha mandado el aviso del barrido de Asia.' },
-      estructura: { estado: 'alerta', mensaje: 'Ha barrido el mínimo de Asia (21.034) a las 15:42. Todavía no ha recuperado el nivel.' },
-      volumen: { estado: 'trabajando', mensaje: 'Entra volumen: 1,9 veces lo normal a esta hora.' },
+      coordinador: { estado: 'trabajando', mensaje: 'Te ha escrito: mercado regular, noticias poco favorables y volatilidad alta. Hoy mejor no operar las funded.' },
+      estructura: { estado: 'alerta', mensaje: 'Ha barrido el mínimo de Asia a las 15:42. Todavía no ha recuperado el nivel.' },
+      volumen: { estado: 'trabajando', mensaje: 'Poco volumen: 0,7 veces lo normal a esta hora.' },
       macro: { estado: 'trabajando', mensaje: '14:30 CPI. Evita abrir posiciones desde 15 min antes.' },
       fed: { estado: 'alerta', mensaje: 'A las 16:00 habla Kevin Warsh (presidente de la Fed).' },
       earnings: { estado: 'trabajando', mensaje: 'Nvidia presenta resultados hoy después del cierre.' },
-      volatilidad: { estado: 'descanso', mensaje: 'El NQ se mueve de media unos 300 puntos al día. VIX en 17,2.' },
+      volatilidad: { estado: 'trabajando', mensaje: 'Volatilidad alta: el NQ se mueve de media unos 300 puntos al día. VIX en 21.' },
       noticias: { estado: 'descanso', mensaje: 'Nada relevante en la última media hora.' },
-      bienestar: { estado: 'descanso', mensaje: 'Aptitud 85/100: has dormido 7 h y has entrenado.' },
-      cuentas: { estado: 'descanso', mensaje: 'Tienes 5 cuentas activas: 3 fondeadas y 2 en challenge.' },
+      rendimiento: { estado: 'descanso', mensaje: 'Últimos 30 días: 57 % de aciertos y profit factor 1,8.' },
+      bienestar: { estado: 'descanso', mensaje: 'Pulso 85/100: has dormido 7 h y has meditado.' },
+      cuentas: { estado: 'descanso', mensaje: 'Tienes 5 cuentas activas: 3 funded y 2 en challenge.' },
+      coach: { estado: 'trabajando', mensaje: 'Los días que llegas flojo pierdes de media. Hoy, tamaño mínimo.' },
     },
   }
 
@@ -177,45 +187,78 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   }
 
   // ───────────────────────── Plano (metros) ─────────────────────────
-  // Fila norte: sala de operaciones, despacho de la coordinadora, sala de reuniones.
-  // Pasillo. Fila sur: zona de descanso, gimnasio, terraza con jardín y piscina.
+  // Edificio de tres plantas de 38 × 25 m. En cada planta: fila norte de
+  // salas, pasillo (z 11-13) con el ascensor al fondo, y fila sur.
+  //   Planta baja · Tú: Rendimiento, Pulso y Capital → Coach → Academia.
+  //   Planta 1 · Mercado: todo el contexto de la operativa.
+  //   Ático · Mentor: su despacho, la sala de mando y una gran terraza.
+  const ALTURA_PLANTA = 4.2
+  const PLANTAS = [
+    { nombre: 'Planta baja · Tú', corto: 'Tú' },
+    { nombre: 'Planta 1 · Mercado', corto: 'Mercado' },
+    { nombre: 'Ático · Mentor', corto: 'Mentor' },
+  ]
   const SALAS = {
-    operaciones: { x0: 0, x1: 20, z0: 0, z1: 11, nombre: 'Sala de operaciones', suelo: 'roble', puerta: 10 },
-    despacho: { x0: 20, x1: 28, z0: 0, z1: 11, nombre: 'Despacho', suelo: 'claro', puerta: 24, vidrio: true },
-    reuniones: { x0: 28, x1: 38, z0: 0, z1: 11, nombre: 'Sala de reuniones', suelo: 'claro', puerta: 33, vidrio: true },
-    descanso: { x0: 0, x1: 13, z0: 13, z1: 25, nombre: 'Zona de descanso', suelo: 'moqueta', puerta: 6.5 },
-    gimnasio: { x0: 13, x1: 21, z0: 13, z1: 25, nombre: 'Gimnasio', suelo: 'caucho', puerta: 17 },
-    terraza: { x0: 21, x1: 38, z0: 13, z1: 25, nombre: 'Terraza y piscina', suelo: 'tarima', puerta: 26, abierta: true },
+    rendimiento: { planta: 0, x0: 0, x1: 13, z0: 0, z1: 11, nombre: 'Rendimiento', suelo: 'claro', puerta: 6.5 },
+    pulso: { planta: 0, x0: 13, x1: 25, z0: 0, z1: 11, nombre: 'Pulso', suelo: 'moqueta', puerta: 19, vidrio: true },
+    capital: { planta: 0, x0: 25, x1: 38, z0: 0, z1: 11, nombre: 'Capital', suelo: 'roble', puerta: 31.5, vidrio: true },
+    coach: { planta: 0, x0: 0, x1: 17, z0: 13, z1: 25, nombre: 'Coach', suelo: 'claro', puerta: 8.5 },
+    academia: { planta: 0, x0: 17, x1: 38, z0: 13, z1: 25, nombre: 'Academia', suelo: 'caucho', puerta: 21 },
+
+    mercado: { planta: 1, x0: 0, x1: 26, z0: 0, z1: 11, nombre: 'Sala de mercados', suelo: 'roble', puerta: 13 },
+    reuniones: { planta: 1, x0: 26, x1: 38, z0: 0, z1: 11, nombre: 'Sala de reuniones', suelo: 'claro', puerta: 32, vidrio: true },
+    cafeteria: { planta: 1, x0: 0, x1: 19, z0: 13, z1: 25, nombre: 'Cafetería', suelo: 'moqueta', puerta: 9.5 },
+    lectura: { planta: 1, x0: 19, x1: 38, z0: 13, z1: 25, nombre: 'Sala de lectura', suelo: 'claro', puerta: 24, vidrio: true },
+
+    despacho: { planta: 2, x0: 0, x1: 18, z0: 0, z1: 11, nombre: 'Despacho del mentor', suelo: 'roble', puerta: 9 },
+    mando: { planta: 2, x0: 18, x1: 38, z0: 0, z1: 11, nombre: 'Sala de mando', suelo: 'claro', puerta: 28, vidrio: true },
+    terraza: { planta: 2, x0: 0, x1: 38, z0: 13, z1: 25, nombre: 'Terraza', suelo: 'tarima', puerta: 19, abierta: true },
   }
   const PASILLO_Z = 12
+  const ASCENSOR = { x: 37.1, z: 12, puerta: 35.7 }
 
   // Puestos de trabajo
-  const PUESTOS = {}
-  const ordenMesas = ['estructura', 'volatilidad', 'volumen', 'noticias', 'macro', 'fed', 'earnings', 'cuentas']
-  ordenMesas.forEach((id, i) => {
+  const PUESTOS = {
+    rendimiento: { x: 6.5, z: 6.2, rot: 0, sala: 'rendimiento' },
+    bienestar: { x: 19, z: 6.2, rot: 0, sala: 'pulso' },
+    cuentas: { x: 31.5, z: 6.2, rot: 0, sala: 'capital' },
+    coach: { x: 8.5, z: 17.6, rot: Math.PI, sala: 'coach' },
+    coordinador: { x: 8, z: 5, rot: 0, sala: 'despacho' },
+  }
+  ;['macro', 'estructura', 'volatilidad', 'volumen', 'noticias', 'fed', 'earnings'].forEach((id, i) => {
     const col = i % 4, fila = Math.floor(i / 4)
-    PUESTOS[id] = { x: 3 + col * 4.5, z: 3 + fila * 4.6, rot: 0, sala: 'operaciones' }
+    PUESTOS[id] = { x: 3.6 + col * 6, z: 4.2 + fila * 4.4, rot: 0, sala: 'mercado' }
   })
-  PUESTOS.coordinador = { x: 24, z: 4, rot: 0, sala: 'despacho' }
-  PUESTOS.bienestar = { x: 19, z: 22.6, rot: Math.PI, sala: 'gimnasio' }
 
   // Sitios de descanso: pose = sentado | de pie | tumbado | nadando | andando (cinta)
   const SITIOS = [
-    { x: 2.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'descanso', que: 'sofá' },
-    { x: 3.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'descanso', que: 'sofá' },
-    { x: 4.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'descanso', que: 'sofá' },
-    { x: 9.8, z: 15.4, rot: 0, pose: 'de pie', sala: 'descanso', que: 'café' },
-    { x: 11.0, z: 15.4, rot: 0, pose: 'de pie', sala: 'descanso', que: 'café' },
-    { x: 8.7, z: 21.6, rot: -Math.PI / 2, pose: 'sentado', sala: 'descanso', que: 'mesa' },
-    { x: 10.5, z: 21.6, rot: Math.PI / 2, pose: 'sentado', sala: 'descanso', que: 'mesa' },
-    { x: 15.0, z: 16.5, rot: 0, pose: 'andando', sala: 'gimnasio', que: 'cinta' },
-    { x: 16.6, z: 20.6, rot: Math.PI / 2, pose: 'de pie', sala: 'gimnasio', que: 'estiramientos' },
-    { x: 23.2, z: 23.2, rot: Math.PI, pose: 'tumbado', sala: 'terraza', que: 'tumbona' },
-    { x: 25.0, z: 23.2, rot: Math.PI, pose: 'tumbado', sala: 'terraza', que: 'tumbona' },
-    { x: 31.5, z: 18.5, rot: 0, pose: 'nadando', sala: 'terraza', que: 'piscina' },
-    { x: 36.2, z: 14.95, rot: Math.PI, pose: 'sentado', sala: 'terraza', que: 'banco' },
-    { x: 31.0, z: 6.0, rot: -Math.PI / 2, pose: 'sentado', sala: 'reuniones', que: 'reunión' },
-    { x: 34.6, z: 6.0, rot: Math.PI / 2, pose: 'sentado', sala: 'reuniones', que: 'reunión' },
+    // Planta baja
+    { x: 4.8, z: 21.8, rot: 0, pose: 'sentado', sala: 'coach', que: 'sesión con el coach' },
+    { x: 12.2, z: 21.8, rot: 0, pose: 'sentado', sala: 'coach', que: 'sesión con el coach' },
+    { x: 20.5, z: 16.5, rot: 0, pose: 'andando', sala: 'academia', que: 'cinta' },
+    { x: 24.6, z: 21.4, rot: Math.PI / 2, pose: 'de pie', sala: 'academia', que: 'estiramientos' },
+    { x: 31.5, z: 21.2, rot: 0, pose: 'sentado', sala: 'academia', que: 'simulador' },
+    { x: 34.8, z: 21.2, rot: 0, pose: 'sentado', sala: 'academia', que: 'simulador' },
+    { x: 17.6, z: 9.6, rot: Math.PI, pose: 'sentado', sala: 'pulso', que: 'sillón' },
+    // Planta 1
+    { x: 2.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'cafeteria', que: 'sofá' },
+    { x: 3.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'cafeteria', que: 'sofá' },
+    { x: 4.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'cafeteria', que: 'sofá' },
+    { x: 13.8, z: 15.4, rot: 0, pose: 'de pie', sala: 'cafeteria', que: 'café' },
+    { x: 15.0, z: 15.4, rot: 0, pose: 'de pie', sala: 'cafeteria', que: 'café' },
+    { x: 22.6, z: 21.2, rot: Math.PI / 4, pose: 'sentado', sala: 'lectura', que: 'sillón de lectura' },
+    { x: 26.8, z: 21.2, rot: -Math.PI / 4, pose: 'sentado', sala: 'lectura', que: 'sillón de lectura' },
+    { x: 29.2, z: 6.0, rot: -Math.PI / 2, pose: 'sentado', sala: 'reuniones', que: 'reunión' },
+    { x: 34.8, z: 6.0, rot: Math.PI / 2, pose: 'sentado', sala: 'reuniones', que: 'reunión' },
+    // Ático
+    { x: 4.2, z: 23.2, rot: Math.PI, pose: 'tumbado', sala: 'terraza', que: 'tumbona' },
+    { x: 6.0, z: 23.2, rot: Math.PI, pose: 'tumbado', sala: 'terraza', que: 'tumbona' },
+    { x: 7.8, z: 23.2, rot: Math.PI, pose: 'tumbado', sala: 'terraza', que: 'tumbona' },
+    { x: 19.5, z: 18.8, rot: 0, pose: 'nadando', sala: 'terraza', que: 'piscina' },
+    { x: 34.2, z: 14.95, rot: Math.PI, pose: 'sentado', sala: 'terraza', que: 'banco' },
+    { x: 29.6, z: 23.6, rot: Math.PI, pose: 'de pie', sala: 'terraza', que: 'mirador' },
+    { x: 24.6, z: 6.0, rot: -Math.PI / 2, pose: 'sentado', sala: 'mando', que: 'sala de mando' },
+    { x: 31.4, z: 6.0, rot: Math.PI / 2, pose: 'sentado', sala: 'mando', que: 'sala de mando' },
   ]
 
   const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -276,6 +319,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
   const escena = new THREE.Scene()
+  let capa = escena // dónde se construye ahora (cada planta tiene su grupo)
   escena.background = new THREE.Color(0x11161c)
 
   const camara = new THREE.OrthographicCamera(-10, 10, 10, -10, 0.1, 400)
@@ -289,11 +333,18 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   controles.maxZoom = 4
   controles.screenSpacePanning = false
 
-  function vistaGeneral(animar = true) {
-    const destino = new THREE.Vector3(19, 0, 12.5)
+  // Planta que se ve: las de encima se ocultan, como en una maqueta que se levanta.
+  let plantaVista = 0
+  const techoVisible = () => plantaVista * ALTURA_PLANTA
+  function verPlanta(f, animar = true) {
+    plantaVista = f
+    plantasG.forEach((g, k) => { g.visible = k <= f })
+    const destino = new THREE.Vector3(19, f * ALTURA_PLANTA, 12.5)
     const pos = destino.clone().add(new THREE.Vector3(-26, 30, 30))
     moverCamara(pos, destino, 1.15, animar)
+    pintarBotones()
   }
+  function vistaGeneral(animar = true) { verPlanta(plantaVista, animar) }
   let transicion = null
   function moverCamara(pos, objetivo, zoom, animar) {
     if (!animar || reducido) {
@@ -318,10 +369,10 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   escena.add(hemi)
   const sol = new THREE.DirectionalLight(0xfff1dc, 0.95)
   sol.position.set(-12, 30, 8)
-  sol.target.position.set(19, 0, 12)
+  sol.target.position.set(19, ALTURA_PLANTA, 12)
   sol.castShadow = true
   sol.shadow.mapSize.set(2048, 2048)
-  Object.assign(sol.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30, near: 1, far: 90 })
+  Object.assign(sol.shadow.camera, { left: -32, right: 32, top: 32, bottom: -32, near: 1, far: 110 })
   sol.shadow.bias = -0.0005
   escena.add(sol, sol.target)
 
@@ -386,30 +437,32 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   }
 
   // ───────────────────────── Utilidades de construcción ─────────────────────────
-  function caja(w, h, d, material, x, y, z, padre = escena, sombra = true) {
+  function caja(w, h, d, material, x, y, z, padre = capa, sombra = true) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material)
     m.position.set(x, y, z)
     m.castShadow = sombra; m.receiveShadow = true
     padre.add(m)
     return m
   }
-  function cilindro(rt, rb, h, material, x, y, z, padre = escena, seg = 16) {
+  function cilindro(rt, rb, h, material, x, y, z, padre = capa, seg = 16) {
     const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), material)
     m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true
     padre.add(m)
     return m
   }
-  function esfera(r, material, x, y, z, padre = escena) {
+  function esfera(r, material, x, y, z, padre = capa) {
     const m = new THREE.Mesh(new THREE.SphereGeometry(r, 18, 14), material)
     m.position.set(x, y, z); m.castShadow = true
     padre.add(m)
     return m
   }
-  function grupo(x, z, rot = 0, padre = escena) {
+  function grupo(x, z, rot = 0, padre = capa) {
     const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = rot; padre.add(g); return g
   }
 
   // ───────────────────────── Edificio ─────────────────────────
+  // Cada planta es un grupo a su altura; lo que se construye va a `capa`.
+  const plantasG = PLANTAS.map((_, f) => { const g = new THREE.Group(); g.position.y = f * ALTURA_PLANTA; escena.add(g); return g })
   function suelo(x0, x1, z0, z1, tex, y = 0) {
     const t = TEX[tex].clone(); t.needsUpdate = true
     t.repeat.set((x1 - x0) / 4, (z1 - z0) / 4)
@@ -417,12 +470,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     m.rotation.x = -Math.PI / 2
     m.position.set((x0 + x1) / 2, y, (z0 + z1) / 2)
     m.receiveShadow = true
-    escena.add(m)
+    capa.add(m)
   }
-  // Base del edificio
-  caja(40, 0.4, 27, mat(0x23282f), 19, -0.21, 12.5, escena, false)
-  suelo(0, 38, 11, 13, 'hormigon', 0.001)
-  for (const s of Object.values(SALAS)) suelo(s.x0, s.x1, s.z0, s.z1, s.suelo, 0.002)
 
   const ALTO = 1.25 // paredes cortadas, como en una maqueta
   function pared(x0, z0, x1, z1, vidrio = false, huecos = []) {
@@ -439,34 +488,48 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       const x = horizontal ? Math.min(x0, x1) + c : x0
       const z = horizontal ? z0 : Math.min(z0, z1) + c
       if (vidrio) {
-        caja(horizontal ? l : 0.06, 2.2, horizontal ? 0.06 : l, M.vidrio, x, 1.1, z, escena, false)
+        caja(horizontal ? l : 0.06, 2.2, horizontal ? 0.06 : l, M.vidrio, x, 1.1, z, capa, false)
         caja(horizontal ? l : 0.1, 0.06, horizontal ? 0.1 : l, M.marco, x, 2.2, z)
         caja(horizontal ? l : 0.1, 0.06, horizontal ? 0.1 : l, M.marco, x, 0.03, z)
       } else {
         caja(horizontal ? l : 0.18, ALTO, horizontal ? 0.18 : l, M.pared, x, ALTO / 2, z)
-        caja(horizontal ? l : 0.2, 0.04, horizontal ? 0.2 : l, M.canto, x, ALTO + 0.02, z, escena, false)
+        caja(horizontal ? l : 0.2, 0.04, horizontal ? 0.2 : l, M.canto, x, ALTO + 0.02, z, capa, false)
       }
     }
   }
-  // Perímetro (la terraza tiene barandilla de vidrio)
-  pared(0, 0, 38, 0)
-  pared(0, 0, 0, 25)
-  pared(38, 0, 38, 13)
-  pared(0, 25, 21, 25)
-  pared(21, 25, 38, 25, true)
-  pared(38, 13, 38, 25, true)
-  // Fila norte, lado del pasillo, con puertas
-  pared(0, 11, 20, 11, false, [SALAS.operaciones.puerta])
-  pared(20, 11, 28, 11, true, [SALAS.despacho.puerta - 20])
-  pared(28, 11, 38, 11, true, [SALAS.reuniones.puerta - 28])
-  pared(20, 0, 20, 11, true)
-  pared(28, 0, 28, 11, true)
-  // Fila sur
-  pared(0, 13, 13, 13, false, [SALAS.descanso.puerta])
-  pared(13, 13, 21, 13, false, [SALAS.gimnasio.puerta - 13])
-  pared(21, 13, 38, 13, true, [SALAS.terraza.puerta - 21])
-  pared(13, 13, 13, 25)
-  pared(21, 13, 21, 25)
+
+  // Suelos, perímetro y tabiques de cada planta, a partir de SALAS
+  PLANTAS.forEach((_, f) => {
+    capa = plantasG[f]
+    caja(38.6, 0.4, 25.6, mat(0x23282f), 19, -0.21, 12.5, capa, false)
+    suelo(0, 38, 11, 13, 'hormigon', 0.001)
+    const salas = Object.values(SALAS).filter(s => s.planta === f)
+    for (const s of salas) suelo(s.x0, s.x1, s.z0, s.z1, s.suelo, 0.002)
+    const abierta = salas.some(s => s.abierta)
+    pared(0, 0, 38, 0)
+    pared(0, 0, 0, abierta ? 13 : 25)
+    pared(38, 0, 38, abierta ? 13 : 25)
+    if (abierta) { pared(0, 13, 0, 25, true); pared(38, 13, 38, 25, true); pared(0, 25, 38, 25, true) }
+    else pared(0, 25, 38, 25)
+    for (const s of salas) {
+      const norte = s.z1 <= 11
+      if (!s.abierta) pared(s.x0, norte ? 11 : 13, s.x1, norte ? 11 : 13, !!s.vidrio, [s.puerta - s.x0])
+      if (s.x0 > 0) pared(s.x0, s.z0, s.x0, s.z1, !!s.vidrio)
+    }
+    // Rótulo de la planta en el suelo del pasillo
+    const rotulo = lienzoTextura(512, 64, (g, w, h) => {
+      g.fillStyle = 'rgba(0,0,0,0)'; g.clearRect(0, 0, w, h)
+      g.font = '600 34px "IBM Plex Sans", sans-serif'; g.fillStyle = 'rgba(231,236,241,.55)'; g.textBaseline = 'middle'
+      g.fillText(PLANTAS[f].nombre.toUpperCase(), 10, h / 2)
+    })
+    const r = new THREE.Mesh(new THREE.PlaneGeometry(8, 1), new THREE.MeshBasicMaterial({ map: rotulo, transparent: true }))
+    r.rotation.x = -Math.PI / 2; r.position.set(5, 0.01, 12); capa.add(r)
+  })
+  capa = escena
+
+  // Ascensor de cristal que une las tres plantas, al fondo del pasillo
+  caja(1.5, ALTURA_PLANTA * 2 + 2.4, 1.5, new THREE.MeshStandardMaterial({ color: 0x22d3ee, transparent: true, opacity: 0.12, roughness: 0.1 }), ASCENSOR.x, (ALTURA_PLANTA * 2 + 2.4) / 2, ASCENSOR.z, escena, false)
+  for (const [dx, dz] of [[-0.75, -0.75], [0.75, -0.75], [-0.75, 0.75], [0.75, 0.75]]) caja(0.08, ALTURA_PLANTA * 2 + 2.4, 0.08, M.marco, ASCENSOR.x + dx, (ALTURA_PLANTA * 2 + 2.4) / 2, ASCENSOR.z + dz)
 
   // ───────────────────────── Mobiliario ─────────────────────────
   const pantallas = {} // id → materiales de pantalla
@@ -485,13 +548,29 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     g.strokeStyle = color; g.lineWidth = 2; g.beginPath(); g.moveTo(0, 60); g.lineTo(w, 60); g.stroke()
     g.fillStyle = color; g.fillRect(0, 0, w, 6)
   })
-  const TEX_PANTALLA = { alerta: graficoTex('#ef5b5b'), trabajando: graficoTex('#c9a46a'), descanso: graficoTex('#3a4554') }
+  // Pantallas de métricas (curva de equity y barras), para la planta baja
+  const metricasTex = (color) => lienzoTextura(256, 160, (g, w, h) => {
+    g.fillStyle = '#0d1117'; g.fillRect(0, 0, w, h)
+    g.strokeStyle = color; g.lineWidth = 3; g.beginPath()
+    let y = 120
+    for (let x = 10; x < w - 10; x += 12) { y = Math.max(25, y - (azar() - 0.3) * 12); x === 10 ? g.moveTo(x, y) : g.lineTo(x, y) }
+    g.stroke()
+    for (let k = 0; k < 8; k++) { g.fillStyle = k % 3 ? 'rgba(62,207,142,.7)' : 'rgba(239,91,91,.7)'; const a = 10 + azar() * 30; g.fillRect(14 + k * 29, h - 8 - a, 18, a) }
+    g.fillStyle = color; g.fillRect(0, 0, w, 6)
+  })
+  const TEX_PANTALLA = { alerta: graficoTex('#ef5b5b'), trabajando: graficoTex('#22d3ee'), descanso: graficoTex('#3a4554') }
+
+  function pantallaGrande(x, z, ancho, alto, tex, rot = 0, y = 1.7) {
+    const g = grupo(x, z, rot)
+    caja(ancho + 0.2, alto + 0.2, 0.1, M.monitor, 0, y, 0, g)
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(ancho, alto), new THREE.MeshStandardMaterial({ map: tex, emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: 0.5 }))
+    m.position.set(0, y, 0.06); g.add(m)
+  }
 
   function puesto(id, p) {
     const g = grupo(p.x, p.z, p.rot)
     caja(2.2, 0.06, 1.0, M.mesa, 0, 0.74, 0, g)
     for (const sx of [-1.02, 1.02]) caja(0.06, 0.72, 0.9, M.patas, sx, 0.37, 0, g)
-    // Dos monitores
     const mats = []
     for (const sx of [-0.42, 0.42]) {
       const pm = new THREE.MeshStandardMaterial({ map: TEX_PANTALLA.descanso, emissive: 0xffffff, emissiveMap: TEX_PANTALLA.descanso, emissiveIntensity: 0.35, roughness: 0.4 })
@@ -501,10 +580,9 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       caja(0.06, 0.32, 0.06, M.patas, sx, 0.9, -0.3, g)
       mats.push(pm)
     }
-    caja(0.5, 0.02, 0.16, M.negro, 0, 0.78, 0.12, g)                 // teclado
-    caja(0.07, 0.02, 0.11, M.negro, 0.42, 0.78, 0.14, g)             // ratón
-    cilindro(0.045, 0.04, 0.1, M.laton, -0.85, 0.82, 0.1, g)         // taza
-    // Silla
+    caja(0.5, 0.02, 0.16, M.negro, 0, 0.78, 0.12, g)
+    caja(0.07, 0.02, 0.11, M.negro, 0.42, 0.78, 0.14, g)
+    cilindro(0.045, 0.04, 0.1, M.laton, -0.85, 0.82, 0.1, g)
     const s = grupo(0, 0.75, 0, g)
     caja(0.52, 0.08, 0.5, M.silla, 0, 0.46, 0, s)
     caja(0.5, 0.62, 0.07, M.silla, 0, 0.82, 0.24, s)
@@ -512,20 +590,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     caja(0.6, 0.04, 0.06, M.patas, 0, 0.04, 0, s); caja(0.06, 0.04, 0.6, M.patas, 0, 0.04, 0, s)
     pantallas[id] = mats
   }
-  for (const [id, p] of Object.entries(PUESTOS)) puesto(id, p)
-  // Puesto libre y videowall de la sala de operaciones
-  ;(() => {
-    const g = grupo(3 + 3 * 4.5, 3 + 4.6, 0)
-    caja(2.2, 0.06, 1.0, M.mesa, 0, 0.74, 0, g)
-    for (const sx of [-1.02, 1.02]) caja(0.06, 0.72, 0.9, M.patas, sx, 0.37, 0, g)
-    const vw = grupo(10, 0.35, 0)
-    caja(8.4, 2.0, 0.1, M.monitor, 0, 1.75, 0, vw)
-    for (let k = 0; k < 4; k++) {
-      const t = graficoTex(['#c9a46a', '#3ecf8e', '#6fa8dc', '#c9a46a'][k])
-      const m = new THREE.Mesh(new THREE.PlaneGeometry(1.95, 1.8), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.55 }))
-      m.position.set(-3.15 + k * 2.1, 1.75, 0.06); vw.add(m)
-    }
-  })()
+  for (const [id, p] of Object.entries(PUESTOS)) { capa = plantasG[SALAS[p.sala].planta]; puesto(id, p) }
 
   function planta(x, z, alto = 1.2) {
     cilindro(0.28, 0.22, 0.5, M.maceta, x, 0.25, z)
@@ -534,68 +599,118 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       h.scale.y = 1.3
     }
   }
-  planta(0.8, 10.2); planta(19.2, 0.8); planta(19.2, 10.2)
-
-  // Despacho de la coordinadora: estantería y sillón
-  caja(3.0, 1.9, 0.4, M.madera, 24, 0.95, 0.4)
-  for (let k = 0; k < 3; k++) caja(2.8, 0.03, 0.36, M.canto, 24, 0.5 + k * 0.5, 0.42)
-  for (let k = 0; k < 14; k++) caja(0.08, 0.32, 0.26, [M.laton, M.negro, M.tela, M.cuero][k % 4], 22.8 + k * 0.17, 0.68 + (k % 3) * 0.5, 0.42)
-  caja(1.4, 0.45, 0.8, M.cuero, 26.2, 0.25, 8.6); caja(1.4, 0.5, 0.18, M.cuero, 26.2, 0.6, 9.0)
-  planta(27.3, 1.2)
-
-  // Sala de reuniones
-  caja(4.6, 0.07, 1.8, M.madera, 32.8, 0.75, 6)
-  for (const sx of [-1.8, 1.8]) caja(0.1, 0.72, 1.4, M.patas, 32.8 + sx, 0.37, 6)
-  for (const [x, z, r] of [[31, 6, -Math.PI / 2], [34.6, 6, Math.PI / 2], [31.8, 4.4, 0], [33.8, 4.4, 0], [31.8, 7.6, Math.PI], [33.8, 7.6, Math.PI]]) {
-    const s = grupo(x, z, r); caja(0.5, 0.08, 0.5, M.silla, 0, 0.46, 0, s); caja(0.5, 0.55, 0.07, M.silla, 0, 0.78, 0.24, s)
+  function sofa(x, z, ancho = 3.6, rot = 0) {
+    const g = grupo(x, z, rot)
+    caja(ancho, 0.42, 0.9, M.sofa, 0, 0.21, 0, g); caja(ancho, 0.6, 0.25, M.sofa, 0, 0.6, 0.45, g)
+    for (let k = 0; k < 3; k++) caja(ancho / 3 - 0.1, 0.12, 0.7, M.cojin, (k - 1) * ancho / 3, 0.48, -0.05, g)
   }
-  caja(3.4, 1.9, 0.06, M.monitor, 33, 1.5, 0.2)
-  ;(() => { const t = graficoTex('#6fa8dc'); const m = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 1.75), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.45 })); m.position.set(33, 1.5, 0.24); escena.add(m) })()
+  function sillon(x, z, rot = 0, material = M.cuero) {
+    const g = grupo(x, z, rot)
+    caja(0.9, 0.42, 0.85, material, 0, 0.21, 0, g); caja(0.9, 0.55, 0.2, material, 0, 0.6, 0.35, g)
+    caja(0.16, 0.25, 0.85, material, -0.45, 0.5, 0, g); caja(0.16, 0.25, 0.85, material, 0.45, 0.5, 0, g)
+  }
+  function mesaReunion(x, z, largo, sillas) {
+    caja(largo, 0.07, 1.8, M.madera, x, 0.75, z)
+    for (const sx of [-largo / 2 + 0.4, largo / 2 - 0.4]) caja(0.1, 0.72, 1.4, M.patas, x + sx, 0.37, z)
+    for (const [sx, sz, r] of sillas) { const s = grupo(x + sx, z + sz, r); caja(0.5, 0.08, 0.5, M.silla, 0, 0.46, 0, s); caja(0.5, 0.55, 0.07, M.silla, 0, 0.78, 0.24, s) }
+  }
+  function estanteria(x, z, ancho = 3.0, rot = 0) {
+    const g = grupo(x, z, rot)
+    caja(ancho, 1.9, 0.4, M.madera, 0, 0.95, 0, g)
+    for (let k = 0; k < 3; k++) caja(ancho - 0.2, 0.03, 0.36, M.canto, 0, 0.5 + k * 0.5, 0.02, g)
+    const n = Math.floor(ancho / 0.2)
+    for (let k = 0; k < n; k++) caja(0.08, 0.32, 0.26, [M.laton, M.negro, M.tela, M.cuero][k % 4], -ancho / 2 + 0.2 + k * 0.17, 0.68 + (k % 3) * 0.5, 0.02, g)
+  }
+  function arbol(x, z, h = 2.6) {
+    cilindro(0.12, 0.16, h * 0.55, M.madera, x, h * 0.27, z, capa, 8)
+    for (let k = 0; k < 4; k++) esfera(0.7 + azar() * 0.35, k % 2 ? M.hoja : M.hoja2, x + (azar() - 0.5) * 0.8, h * 0.7 + azar() * 0.6, z + (azar() - 0.5) * 0.8)
+  }
 
-  // Zona de descanso: sofá, alfombra, mesa baja, barra de café, mesa alta
-  caja(5.0, 0.04, 3.2, M.tela, 3.6, 0.02, 20.2, escena, false)
-  caja(3.6, 0.42, 0.9, M.sofa, 3.6, 0.21, 21.8); caja(3.6, 0.6, 0.25, M.sofa, 3.6, 0.6, 22.25)
-  for (const sx of [-1.15, 0, 1.15]) caja(1.05, 0.12, 0.7, M.cojin, 3.6 + sx, 0.48, 21.75)
+  // ── Planta baja · Tú ──
+  capa = plantasG[0]
+  pantallaGrande(6.5, 0.35, 5.2, 1.6, metricasTex('#22d3ee'))                      // Rendimiento: tus métricas
+  planta(0.8, 10.2); planta(12.2, 0.8)
+  pantallaGrande(19, 0.35, 3.2, 1.3, metricasTex('#3ecf8e'))                       // Pulso: tu estado
+  sillon(17.6, 9.6, Math.PI); planta(24.2, 10.2)
+  pantallaGrande(31.5, 0.35, 4.2, 1.4, graficoTex('#6fa8dc'))                      // Capital: tus cuentas
+  estanteria(36.6, 5.5, 3.0, -Math.PI / 2); planta(26, 10.2)
+  // Coach: pizarra y dos sillas para la sesión
+  caja(4.4, 1.5, 0.08, M.blanco, 8.5, 1.35, 24.7)
+  for (let k = 0; k < 5; k++) caja(0.6 + azar() * 1.6, 0.04, 0.02, mat([0x2b5c8a, 0xef5b5b, 0x22d3ee][k % 3]), 7 + azar() * 2.5, 1.0 + k * 0.22, 24.65, capa, false)
+  for (const x of [4.8, 12.2]) { const s = grupo(x, 21.8, 0); caja(0.6, 0.08, 0.55, M.silla, 0, 0.46, 0, s); caja(0.6, 0.6, 0.08, M.silla, 0, 0.8, 0.26, s) }
+  caja(3.0, 0.04, 2.2, M.tela, 8.5, 0.02, 21.2, capa, false)
+  planta(0.8, 13.8); planta(16.2, 24.2, 1.6)
+  // Academia: cinta, esterilla, mancuernas, espejo y dos simuladores
+  caja(0.9, 0.22, 2.1, M.negro, 20.5, 0.11, 16.5); caja(0.8, 1.2, 0.1, M.patas, 20.5, 0.8, 15.5); caja(0.9, 0.08, 0.35, M.negro, 20.5, 1.35, 15.6)
+  caja(1.8, 0.02, 0.8, mat(0x2f7a6d), 24.6, 0.012, 21.4, capa, false)
+  for (let k = 0; k < 5; k++) caja(0.5, 0.12, 0.14, M.laton, 27.4, 0.2 + k * 0.25, 15 + (k % 2) * 0.1)
+  caja(0.05, 1.1, 3.2, M.vidrio, 17.15, 0.9, 20.0, capa, false)
+  for (const x of [31.5, 34.8]) {
+    const g = grupo(x, 21.95, Math.PI); caja(1.6, 0.06, 0.8, M.mesa, 0, 0.74, 0, g); caja(0.06, 0.72, 0.7, M.patas, -0.75, 0.37, 0, g); caja(0.06, 0.72, 0.7, M.patas, 0.75, 0.37, 0, g)
+    const t = graficoTex('#22d3ee'); const pm = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 0.5), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.4 }))
+    caja(0.96, 0.56, 0.04, M.monitor, 0, 1.12, 0.25, g); pm.position.set(0, 1.12, 0.228); pm.rotation.y = Math.PI; g.add(pm)
+  }
+  pantallaGrande(33.2, 24.7, 4.0, 1.3, metricasTex('#c9a46a'), Math.PI, 1.6)
+
+  // ── Planta 1 · Mercado ──
+  capa = plantasG[1]
+  pantallaGrande(12.6, 0.35, 10.4, 1.9, graficoTex('#22d3ee'), 0, 1.75)
+  ;(() => { const g = grupo(21.6, 8.6, 0); caja(2.2, 0.06, 1.0, M.mesa, 0, 0.74, 0, g); for (const sx of [-1.02, 1.02]) caja(0.06, 0.72, 0.9, M.patas, sx, 0.37, 0, g) })()
+  planta(0.8, 10.2); planta(25.2, 0.8); planta(25.2, 10.2)
+  mesaReunion(32, 6, 4.6, [[-2.8, 0, -Math.PI / 2], [2.8, 0, Math.PI / 2], [-1, -1.6, 0], [1, -1.6, 0], [-1, 1.6, Math.PI], [1, 1.6, Math.PI]])
+  pantallaGrande(32, 0.25, 3.2, 1.6, graficoTex('#6fa8dc'), 0, 1.5)
+  caja(5.0, 0.04, 3.2, M.tela, 3.6, 0.02, 20.2, capa, false)
+  sofa(3.6, 21.8)
   caja(1.4, 0.36, 0.7, M.madera, 3.6, 0.18, 19.6)
-  caja(3.4, 1.0, 0.7, M.madera, 10.4, 0.5, 14.3); caja(3.5, 0.05, 0.8, M.blanco, 10.4, 1.02, 14.3)
-  caja(0.45, 0.5, 0.4, M.patas, 9.8, 1.3, 14.25); caja(0.45, 0.5, 0.4, M.patas, 11.0, 1.3, 14.25)
-  cilindro(0.5, 0.5, 0.05, M.blanco, 9.6, 0.74, 21.6); cilindro(0.06, 0.06, 0.72, M.patas, 9.6, 0.37, 21.6, escena, 8)
-  planta(0.8, 13.8); planta(12.2, 24.2, 1.6)
+  caja(3.4, 1.0, 0.7, M.madera, 14.4, 0.5, 14.3); caja(3.5, 0.05, 0.8, M.blanco, 14.4, 1.02, 14.3)
+  caja(0.45, 0.5, 0.4, M.patas, 13.8, 1.3, 14.25); caja(0.45, 0.5, 0.4, M.patas, 15.0, 1.3, 14.25)
+  for (const [x, z] of [[9.6, 21.6], [14.6, 21.6]]) { cilindro(0.5, 0.5, 0.05, M.blanco, x, 0.74, z); cilindro(0.06, 0.06, 0.72, M.patas, x, 0.37, z, capa, 8) }
+  planta(0.8, 13.8); planta(18.2, 24.2, 1.6)
+  estanteria(24.5, 24.6, 4.0, Math.PI); estanteria(30.5, 24.6, 4.0, Math.PI); estanteria(37.6, 19, 4.0, -Math.PI / 2)
+  sillon(22.6, 21.2, Math.PI / 4 + Math.PI); sillon(26.8, 21.2, -Math.PI / 4 + Math.PI)
+  cilindro(0.45, 0.45, 0.05, M.madera, 24.7, 0.45, 20.4); cilindro(0.05, 0.05, 0.43, M.patas, 24.7, 0.22, 20.4, capa, 8)
+  planta(19.8, 13.8); planta(33, 15, 1.4)
 
-  // Gimnasio: cinta, esterilla, mancuernas, espejo
-  caja(0.9, 0.22, 2.1, M.negro, 15, 0.11, 16.5); caja(0.8, 1.2, 0.1, M.patas, 15, 0.8, 15.5); caja(0.9, 0.08, 0.35, M.negro, 15, 1.35, 15.6)
-  caja(1.8, 0.02, 0.8, mat(0x2f7a6d), 16.6, 0.012, 20.6, escena, false)
-  for (let k = 0; k < 5; k++) caja(0.5, 0.12, 0.14, M.laton, 20.4, 0.2 + k * 0.25, 15 + (k % 2) * 0.1)
-  caja(0.05, 1.1, 3.2, M.vidrio, 13.15, 0.9, 19.5, escena, false)
-  // mesa de la coach
-  // (puesto ya creado; rotado hacia la sala)
-
-  // Terraza: tumbonas, sombrilla, piscina, jardín, banco
-  for (const x of [23.2, 25.0]) {
+  // ── Ático · Mentor ──
+  capa = plantasG[2]
+  estanteria(8, 0.4, 4.0)
+  sillon(15.6, 8.4, Math.PI / 2); sillon(15.6, 6.4, Math.PI / 2)
+  pantallaGrande(2.2, 5.5, 3.0, 1.4, metricasTex('#22d3ee'), Math.PI / 2, 1.5)
+  planta(0.8, 10.2); planta(17.2, 0.8)
+  // Sala de mando: mesa larga y videowall con todo enlazado
+  mesaReunion(28, 6, 6.6, [[-3.6, 0, -Math.PI / 2], [3.6, 0, Math.PI / 2], [-2, -1.6, 0], [0, -1.6, 0], [2, -1.6, 0], [-2, 1.6, Math.PI], [0, 1.6, Math.PI], [2, 1.6, Math.PI]])
+  ;(() => {
+    const vw = grupo(28, 0.35, 0)
+    caja(12.6, 2.0, 0.1, M.monitor, 0, 1.75, 0, vw)
+    const cols = ['#22d3ee', '#3ecf8e', '#6fa8dc', '#c9a46a', '#ef5b5b', '#22d3ee']
+    for (let k = 0; k < 6; k++) {
+      const t = k % 2 ? metricasTex(cols[k]) : graficoTex(cols[k])
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(1.95, 1.8), new THREE.MeshStandardMaterial({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.55 }))
+      m.position.set(-5.25 + k * 2.1, 1.75, 0.06); vw.add(m)
+    }
+  })()
+  planta(37.2, 10.2); planta(18.8, 10.2)
+  // Gran terraza: tumbonas, sombrilla, piscina, jardín, banco, mirador y caseta
+  for (const x of [4.2, 6.0, 7.8]) {
     const g = grupo(x, 23.2, 0)
     caja(0.75, 0.25, 2.0, M.blanco, 0, 0.25, 0, g); const resp = caja(0.75, 0.08, 0.7, M.blanco, 0, 0.55, -0.85, g); resp.rotation.x = 0.7
   }
-  cilindro(0.04, 0.04, 2.4, M.patas, 24.1, 1.2, 21.7, escena, 8)
-  const sombrilla = new THREE.Mesh(new THREE.ConeGeometry(1.8, 0.5, 8, 1, true), mat(0xe8e2d6, { side: THREE.DoubleSide }))
-  sombrilla.position.set(24.1, 2.4, 21.7); sombrilla.castShadow = true; escena.add(sombrilla)
-  // Piscina
-  caja(10.4, 0.35, 5.4, M.borde, 31.6, 0.17, 18.6)
+  cilindro(0.04, 0.04, 2.4, M.patas, 6.0, 1.2, 21.4, capa, 8)
+  const sombrilla = new THREE.Mesh(new THREE.ConeGeometry(2.0, 0.5, 8, 1, true), mat(0xe8e2d6, { side: THREE.DoubleSide }))
+  sombrilla.position.set(6.0, 2.4, 21.4); sombrilla.castShadow = true; capa.add(sombrilla)
+  caja(10.4, 0.35, 5.4, M.borde, 19.5, 0.17, 18.6)
   const agua = new THREE.Mesh(new THREE.PlaneGeometry(9.6, 4.6), new THREE.MeshStandardMaterial({ map: TEX.agua, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.92 }))
-  agua.rotation.x = -Math.PI / 2; agua.position.set(31.6, 0.36, 18.6); agua.receiveShadow = true; escena.add(agua)
-  // Jardín
-  const cesped = new THREE.Mesh(new THREE.PlaneGeometry(5.6, 4.6), new THREE.MeshStandardMaterial({ map: TEX.cesped }))
-  cesped.rotation.x = -Math.PI / 2; cesped.position.set(34.8, 0.01, 22.4); cesped.receiveShadow = true; escena.add(cesped)
-  function arbol(x, z, h = 2.6) {
-    cilindro(0.12, 0.16, h * 0.55, M.madera, x, h * 0.27, z, escena, 8)
-    for (let k = 0; k < 4; k++) esfera(0.7 + azar() * 0.35, k % 2 ? M.hoja : M.hoja2, x + (azar() - 0.5) * 0.8, h * 0.7 + azar() * 0.6, z + (azar() - 0.5) * 0.8)
-  }
-  arbol(33.2, 23.4); arbol(36.8, 21.2, 3.0); arbol(22.4, 14.4, 2.2)
-  for (let k = 0; k < 18; k++) esfera(0.07, mat([0xe8b4c0, 0xf2d06b, 0xffffff, 0xb79be0][k % 4]), 32.4 + azar() * 5, 0.12, 20.6 + azar() * 3.8)
-  caja(1.8, 0.08, 0.5, M.madera, 36.2, 0.45, 14.8); caja(1.8, 0.45, 0.06, M.madera, 36.2, 0.7, 14.55)
-  for (const sx of [-0.8, 0.8]) caja(0.08, 0.42, 0.45, M.patas, 36.2 + sx, 0.22, 14.8)
-  // Caseta del perro
+  agua.rotation.x = -Math.PI / 2; agua.position.set(19.5, 0.36, 18.6); agua.receiveShadow = true; capa.add(agua)
+  const cesped = new THREE.Mesh(new THREE.PlaneGeometry(7.6, 5.4), new THREE.MeshStandardMaterial({ map: TEX.cesped }))
+  cesped.rotation.x = -Math.PI / 2; cesped.position.set(33.6, 0.01, 21.8); cesped.receiveShadow = true; capa.add(cesped)
+  arbol(31.2, 23.4); arbol(36.6, 20.6, 3.0); arbol(1.6, 14.4, 2.2); arbol(27, 15, 2.4)
+  for (let k = 0; k < 22; k++) esfera(0.07, mat([0xe8b4c0, 0xf2d06b, 0xffffff, 0xb79be0][k % 4]), 30.2 + azar() * 6.6, 0.12, 19.6 + azar() * 4.6)
+  caja(1.8, 0.08, 0.5, M.madera, 34.2, 0.45, 14.8); caja(1.8, 0.45, 0.06, M.madera, 34.2, 0.7, 14.55)
+  for (const sx of [-0.8, 0.8]) caja(0.08, 0.42, 0.45, M.patas, 34.2 + sx, 0.22, 14.8)
   caja(1.0, 0.7, 0.9, mat(0x8a5a3c), 37.0, 0.35, 24.0)
-  const tejado = new THREE.Mesh(new THREE.ConeGeometry(0.8, 0.45, 4), mat(0x4a3428)); tejado.position.set(37.0, 0.92, 24.0); tejado.rotation.y = Math.PI / 4; tejado.castShadow = true; escena.add(tejado)
+  const tejado = new THREE.Mesh(new THREE.ConeGeometry(0.8, 0.45, 4), mat(0x4a3428)); tejado.position.set(37.0, 0.92, 24.0); tejado.rotation.y = Math.PI / 4; tejado.castShadow = true; capa.add(tejado)
+  capa = escena
+
 
   // ───────────────────────── Personas ─────────────────────────
   function crearPersona(a) {
@@ -633,23 +748,28 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     return { raiz, cuerpo, piernas, brazos, anillo }
   }
 
-  // Rutas por las puertas: sala → puerta → pasillo → puerta → sala
+  // Rutas: sala → puerta → pasillo → (ascensor si cambia de planta) → puerta → sala
   function puertaDe(sala) {
     const s = SALAS[sala]
     const norte = s.z1 <= 11
     return { x: s.puerta, z: norte ? 10.3 : 13.7, pasillo: { x: s.puerta, z: PASILLO_Z } }
   }
-  function salaEn(x, z) {
-    for (const [k, s] of Object.entries(SALAS)) if (x >= s.x0 && x <= s.x1 && z >= s.z0 && z <= s.z1) return k
+  function salaEn(x, z, f) {
+    for (const [k, s] of Object.entries(SALAS)) if (s.planta === f && x >= s.x0 && x <= s.x1 && z >= s.z0 && z <= s.z1) return k
     return 'pasillo'
   }
-  function ruta(desde, hasta, salaDestino) {
-    const sa = salaEn(desde.x, desde.z)
+  function ruta(p, hasta, salaDestino) {
+    const fDestino = SALAS[salaDestino].planta
+    const sa = salaEn(p.x, p.z, p.f)
     if (sa === salaDestino) return [hasta]
     const pts = []
-    if (sa !== 'pasillo') { const d = puertaDe(sa); pts.push({ x: d.x, z: d.z }, d.pasillo) }
+    if (sa !== 'pasillo' && !SALAS[sa].abierta) { const d = puertaDe(sa); pts.push({ x: d.x, z: d.z }, d.pasillo) }
+    if (fDestino !== p.f) {
+      pts.push({ x: ASCENSOR.puerta, z: PASILLO_Z }, { x: ASCENSOR.x, z: ASCENSOR.z }, { x: ASCENSOR.x, z: ASCENSOR.z, f: fDestino }, { x: ASCENSOR.puerta, z: PASILLO_Z })
+    }
     const d2 = puertaDe(salaDestino)
-    pts.push(d2.pasillo, { x: d2.x, z: d2.z }, hasta)
+    if (SALAS[salaDestino].abierta) pts.push(d2.pasillo, hasta)
+    else pts.push(d2.pasillo, { x: d2.x, z: d2.z }, hasta)
     return pts
   }
 
@@ -666,12 +786,16 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     const p = {
       ...a, ...modelo, etq,
       x: puestoA.x + Math.sin(puestoA.rot) * 0.75, z: puestoA.z + Math.cos(puestoA.rot) * 0.75, rot: puestoA.rot,
+      f: SALAS[puestoA.sala].planta, y: SALAS[puestoA.sala].planta * ALTURA_PLANTA,
       camino: [], sitio: null, pose: 'sentado', estado: 'descanso', espera: Math.random() * 4, fase: Math.random() * 6,
       enPuesto: true,
       lugarTexto() {
+        if (this.camino.some(c => c.f !== undefined)) return 'en el ascensor'
         if (this.camino.length) return 'de camino'
-        if (this.enPuesto) return SALAS[PUESTOS[this.id].sala].nombre.toLowerCase().replace('sala de operaciones', 'en su mesa')
-        return this.sitio ? `${this.sitio.que} (${SALAS[this.sitio.sala].nombre.toLowerCase()})` : ''
+        const sala = this.enPuesto ? SALAS[PUESTOS[this.id].sala] : this.sitio ? SALAS[this.sitio.sala] : null
+        if (!sala) return ''
+        const donde = `${sala.nombre.toLowerCase()}, ${PLANTAS[sala.planta].corto.toLowerCase()}`
+        return this.enPuesto ? `en su mesa (${donde})` : `${this.sitio.que} (${donde})`
       },
     }
     personas.push(p)
@@ -679,7 +803,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
 
   const asiento = s => ({ x: s.x + Math.sin(s.rot) * 0.75, z: s.z + Math.cos(s.rot) * 0.75 })
   function irA(p, destino, sala, pose, rotFinal) {
-    p.camino = ruta({ x: p.x, z: p.z }, destino, sala)
+    p.camino = ruta(p, destino, sala)
     p.poseFinal = pose
     p.rotFinal = rotFinal
     p.pose = 'caminando'
@@ -692,7 +816,12 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       return
     }
     const libres = SITIOS.filter(s => !personas.some(o => o !== p && o.sitio === s))
-    const s = libres[Math.floor(Math.random() * libres.length)]
+    // Casi siempre descansan en su planta; a veces suben a la terraza del ático.
+    const casa = SALAS[PUESTOS[p.id].sala].planta
+    const cerca = libres.filter(s => SALAS[s.sala].planta === casa)
+    const terraza = libres.filter(s => SALAS[s.sala].planta === 2)
+    const pool = cerca.length && Math.random() < 0.7 ? cerca : terraza.length ? terraza : libres
+    const s = pool[Math.floor(Math.random() * pool.length)]
     if (!s) return
     p.sitio = s; p.enPuesto = false; p.yendoAPuesto = false
     irA(p, { x: s.x, z: s.z }, s.sala, s.pose, s.rot)
@@ -708,7 +837,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     const patas = [[-0.1, -0.2], [0.1, -0.2], [-0.1, 0.2], [0.1, 0.2]].map(([x, z]) => caja(0.07, 0.3, 0.07, pelaje, x, 0.15, z, g))
     const cola = caja(0.05, 0.05, 0.28, pelaje, 0, 0.55, 0.38, g); cola.rotation.x = -0.6
     escena.add(g)
-    return { g, patas, cola, cab, tipo: 'perro', x: 30, z: 23.4, destino: null, espera: 1, fase: 0, vel: 1.4, zona: { x0: 22, x1: 37, z0: 21.5, z1: 24.5 } }
+    return { g, patas, cola, cab, tipo: 'perro', x: 30, z: 23.4, f: 2, destino: null, espera: 1, fase: 0, vel: 1.4, zona: { x0: 26, x1: 36.4, z0: 21.6, z1: 24.5 } }
   }
   function crearGato() {
     const g = new THREE.Group(), pelaje = mat(0x6b6e78)
@@ -720,7 +849,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     const cola = caja(0.035, 0.035, 0.32, pelaje, 0, 0.3, 0.32, g); cola.rotation.x = -0.9
     g.traverse(o => { if (o.isMesh) o.castShadow = true })
     escena.add(g)
-    return { g, patas, cola, tipo: 'gato', x: 3.0, z: 21.8, destino: null, espera: 10, fase: 0, vel: 0.7, zona: { x0: 1, x1: 12, z0: 16.5, z1: 23.5 }, altura: 0.54 }
+    return { g, patas, cola, tipo: 'gato', x: 3.0, z: 21.8, f: 1, destino: null, espera: 10, fase: 0, vel: 0.7, zona: { x0: 1, x1: 12, z0: 16.5, z1: 23.5 }, altura: 0.54 }
   }
   const mascotas = [crearPerro(), crearGato()]
 
@@ -731,7 +860,13 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       const obj = p.camino[0]
       const dx = obj.x - p.x, dz = obj.z - p.z, d = Math.hypot(dx, dz)
       const vel = p.estado === 'alerta' ? 2.6 : 1.3
-      if (d < 0.05) {
+      if (obj.f !== undefined && obj.f !== p.f) {
+        // En el ascensor: sube o baja de pie
+        const yObj = obj.f * ALTURA_PLANTA, dy = yObj - p.y
+        p.pose = 'de pie'
+        if (Math.abs(dy) < 0.05) { p.y = yObj; p.f = obj.f; p.camino.shift(); p.pose = 'caminando' }
+        else p.y += Math.sign(dy) * Math.min(Math.abs(dy), 2.4 * dt)
+      } else if (d < 0.05) {
         p.camino.shift()
         if (!p.camino.length) {
           p.pose = p.poseFinal; p.rot = p.rotFinal ?? p.rot
@@ -758,7 +893,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
 
     // Pose
     const r = p.raiz, c = p.cuerpo
-    r.position.set(p.x, 0, p.z); r.rotation.y = p.rot
+    r.position.set(p.x, p.y, p.z); r.rotation.y = p.rot
+    r.visible = p.y <= techoVisible() + 0.1
     c.position.set(0, 0, 0); c.rotation.set(0, 0, 0)
     p.piernas.forEach(l => l.rotation.set(0, 0, 0)); p.brazos.forEach(b => b.rotation.set(0, 0, 0))
     const mov = reducido ? 0 : 1
@@ -828,7 +964,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     m.patas.forEach((p, i) => { p.rotation.x = andando ? Math.sin(m.fase + (i % 2) * Math.PI) * 0.5 : 0 })
     m.cola.rotation.y = m.tipo === 'perro' ? Math.sin(t * (andando ? 12 : 5)) * 0.5 * (reducido ? 0 : 1) : Math.sin(t * 1.2) * 0.3 * (reducido ? 0 : 1)
     const enSofa = m.tipo === 'gato' && !m.destino && Math.hypot(m.x - 3.0, m.z - 21.8) < 0.1
-    m.g.position.set(m.x, enSofa ? m.altura : 0, m.z)
+    m.g.position.set(m.x, m.f * ALTURA_PLANTA + (enSofa ? m.altura : 0), m.z)
+    m.g.visible = m.f <= plantaVista
   }
 
   const v = new THREE.Vector3()
@@ -836,8 +973,9 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     const r = escenaEl.getBoundingClientRect()
     for (const p of personas) {
       const alto = p.pose === 'tumbado' ? 1.0 : p.pose === 'nadando' ? 0.7 : p.pose === 'sentado' ? 1.75 : 2.15
-      v.set(p.x, alto, p.z).project(camara)
-      const fuera = v.z > 1 || Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05
+      v.set(p.x, p.y + alto, p.z).project(camara)
+      const enAscensor = p.camino[0]?.f !== undefined && Math.abs(p.x - ASCENSOR.x) < 0.1
+      const fuera = !p.raiz.visible || (p.f !== plantaVista && !enAscensor) || v.z > 1 || Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05
       p.etq.style.display = fuera ? 'none' : 'flex'
       p.etq.style.left = `${(v.x + 1) / 2 * r.width}px`
       p.etq.style.top = `${(1 - v.y) / 2 * r.height}px`
@@ -894,7 +1032,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     seleccionado = seleccionado === id && !enfocar ? null : id
     const p = personas.find(p => p.id === id)
     if (enfocar && p) {
-      const objetivo = new THREE.Vector3(p.x, 0.8, p.z)
+      if (p.f > plantaVista || p.f < plantaVista) verPlanta(p.f, false)
+      const objetivo = new THREE.Vector3(p.x, p.y + 0.8, p.z)
       const desplaz = camara.position.clone().sub(controles.target)
       moverCamara(objetivo.clone().add(desplaz), objetivo, 2.4, true)
     }
@@ -911,20 +1050,33 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   document.getElementById('girar-izq').addEventListener('click', () => girar(Math.PI / 4))
   document.getElementById('girar-der').addEventListener('click', () => girar(-Math.PI / 4))
 
-  // Botones de salas
+  // Botones: una fila con las plantas y otra con las salas de la planta que se ve
   const vistas = document.getElementById('vistas')
-  function marcarVista(k) { vistas.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sala === k))) }
-  for (const [k, s] of Object.entries(SALAS)) {
-    const b = document.createElement('button')
-    b.type = 'button'; b.textContent = s.nombre; b.dataset.sala = k; b.id = `sala-${k}`
-    b.addEventListener('click', () => {
-      const objetivo = new THREE.Vector3((s.x0 + s.x1) / 2, 0.5, (s.z0 + s.z1) / 2)
-      const desplaz = camara.position.clone().sub(controles.target)
-      const ancho = Math.max(s.x1 - s.x0, s.z1 - s.z0)
-      moverCamara(objetivo.clone().add(desplaz), objetivo, Math.min(3, 28 / ancho), true)
-      marcarVista(k)
+  function marcarVista(k) { vistas.querySelectorAll('button[data-sala]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.sala === k))) }
+  function pintarBotones() {
+    const filaPlantas = document.createElement('div'); filaPlantas.className = 'fila-plantas'
+    PLANTAS.map((pl, f) => [pl, f]).reverse().forEach(([pl, f]) => {
+      const b = document.createElement('button')
+      b.type = 'button'; b.textContent = pl.nombre; b.dataset.planta = String(f)
+      b.setAttribute('aria-pressed', String(f === plantaVista))
+      b.addEventListener('click', () => { seleccionado = null; verPlanta(f); pintarPanel() })
+      filaPlantas.append(b)
     })
-    vistas.append(b)
+    const filaSalas = document.createElement('div'); filaSalas.className = 'fila-salas'
+    for (const [k, s] of Object.entries(SALAS)) {
+      if (s.planta !== plantaVista) continue
+      const b = document.createElement('button')
+      b.type = 'button'; b.textContent = s.nombre; b.dataset.sala = k; b.id = `sala-${k}`
+      b.addEventListener('click', () => {
+        const objetivo = new THREE.Vector3((s.x0 + s.x1) / 2, s.planta * ALTURA_PLANTA + 0.5, (s.z0 + s.z1) / 2)
+        const desplaz = camara.position.clone().sub(controles.target)
+        const ancho = Math.max(s.x1 - s.x0, s.z1 - s.z0)
+        moverCamara(objetivo.clone().add(desplaz), objetivo, Math.min(3, 28 / ancho), true)
+        marcarVista(k)
+      })
+      filaSalas.append(b)
+    }
+    vistas.replaceChildren(filaPlantas, filaSalas)
   }
 
   // ───────────────────────── Datos en vivo ─────────────────────────
@@ -961,7 +1113,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     if (p.estado === 'descanso') decidir(p)
     if (p.camino.length) {
       const fin = p.camino[p.camino.length - 1]
-      p.x = fin.x; p.z = fin.z; p.camino = []; p.pose = p.poseFinal; p.rot = p.rotFinal ?? p.rot
+      const destinoF = p.camino.reduce((f, c) => c.f ?? f, p.f)
+      p.x = fin.x; p.z = fin.z; p.f = destinoF; p.y = destinoF * ALTURA_PLANTA; p.camino = []; p.pose = p.poseFinal; p.rot = p.rotFinal ?? p.rot
       if (p.yendoAPuesto) { p.enPuesto = true; p.yendoAPuesto = false }
     }
   }
