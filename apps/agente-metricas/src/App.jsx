@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import '@/styles/responsive.css'
 import AppShell     from '@/components/layout/AppShell'
 import { useStore } from '@/store/useStore'
@@ -32,6 +32,13 @@ import BusinessROI  from '@/pages/BusinessROI'
 import DailyRoutine from '@/pages/DailyRoutine'
 import TuHoy from '@/pages/tu/TuHoy'
 import Pestanas from '@/pages/control/Pestanas'
+
+// Redirección que conserva el "state" (filtros, abrir formulario…) de los
+// enlaces que aún apuntan a las rutas antiguas.
+function Ir({ to }) {
+  const { state } = useLocation()
+  return <Navigate to={to} replace state={state} />
+}
 
 // Entropia Control: cinco secciones. Las páginas de siempre siguen igual,
 // agrupadas con pestañas; las rutas antiguas llevan a su pestaña.
@@ -75,21 +82,21 @@ function AppRoutes() {
         <Route path="/kelly"        element={<Kelly />} />
         <Route path="/rentabilidad" element={<Rentabilidad />} />
         {/* Rutas antiguas → su sitio nuevo */}
-        <Route path="/inicio"   element={<Navigate to="/rendimiento?p=panel" replace />} />
-        <Route path="/tu-hoy"   element={<Navigate to="/hoy" replace />} />
-        <Route path="/metricas-basico"     element={<Navigate to="/rendimiento?p=basico" replace />} />
-        <Route path="/metricas-intermedio" element={<Navigate to="/rendimiento?p=intermedio" replace />} />
-        <Route path="/metricas-pro"        element={<Navigate to="/rendimiento?p=pro" replace />} />
-        <Route path="/consistencia" element={<Navigate to="/rendimiento?p=consistencia" replace />} />
-        <Route path="/calendar"     element={<Navigate to="/diario?p=calendario" replace />} />
-        <Route path="/historial"    element={<Navigate to="/diario?p=historial" replace />} />
-        <Route path="/setups"       element={<Navigate to="/diario?p=setups" replace />} />
-        <Route path="/portafolio"   element={<Navigate to="/cuentas?p=portafolio" replace />} />
-        <Route path="/roi"          element={<Navigate to="/cuentas?p=inversion" replace />} />
-        <Route path="/rutina-diaria" element={<Navigate to="/pulso" replace />} />
+        <Route path="/inicio"   element={<Ir to="/rendimiento?p=panel" />} />
+        <Route path="/tu-hoy"   element={<Ir to="/hoy" />} />
+        <Route path="/metricas-basico"     element={<Ir to="/rendimiento?p=basico" />} />
+        <Route path="/metricas-intermedio" element={<Ir to="/rendimiento?p=intermedio" />} />
+        <Route path="/metricas-pro"        element={<Ir to="/rendimiento?p=pro" />} />
+        <Route path="/consistencia" element={<Ir to="/rendimiento?p=consistencia" />} />
+        <Route path="/calendar"     element={<Ir to="/diario?p=calendario" />} />
+        <Route path="/historial"    element={<Ir to="/diario?p=historial" />} />
+        <Route path="/setups"       element={<Ir to="/diario?p=setups" />} />
+        <Route path="/portafolio"   element={<Ir to="/cuentas?p=portafolio" />} />
+        <Route path="/roi"          element={<Ir to="/cuentas?p=inversion" />} />
+        <Route path="/rutina-diaria" element={<Ir to="/pulso" />} />
         {/* Mentor IA se funde en Atractor (el coach está en Hoy); el Puntaje usaba datos de ejemplo */}
-        <Route path="/mentor-ia"      element={<Navigate to="/hoy" replace />} />
-        <Route path="/puntaje-trader" element={<Navigate to="/hoy" replace />} />
+        <Route path="/mentor-ia"      element={<Ir to="/hoy" />} />
+        <Route path="/puntaje-trader" element={<Ir to="/hoy" />} />
         <Route path="*"             element={<Navigate to="/hoy" replace />} />
       </Routes>
       </AppShell>
