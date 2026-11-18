@@ -5,7 +5,7 @@
 
 import {
   LineChart, Briefcase, Brain, BarChart, PieChart, Beaker, BookOpen, Map,
-  Award, PiggyBank, Sun, CalendarDays, ShieldCheck,
+  Award, PiggyBank, Sun, CalendarDays, ShieldCheck, HeartPulse,
 } from 'lucide-react'
 
 /**
@@ -41,6 +41,11 @@ export const NAVIGATION = [
         to: '/inicio',
         icon: LineChart,
         label: 'Inicio',
+      },
+      {
+        to: '/tu-hoy',
+        icon: HeartPulse,
+        label: 'Tú hoy',
       },
       {
         to: '/portafolio',
