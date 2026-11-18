@@ -6,9 +6,10 @@
 import { config } from '../config.ts'
 import { claveDia } from '../tiempo.ts'
 import type { EstadoCuenta, ReglasCuenta } from './gestor.ts'
+import type { Operacion } from './plan.ts'
 
 interface FilaCuenta { id: string; name: string; status?: string; initial_capital?: number; drawdown_type?: string; data?: Record<string, unknown> }
-interface FilaTrade { account_id: string | null; date: string | null; dollar_pnl: number | null; r_pnl: number | null }
+interface FilaTrade { account_id: string | null; date: string | null; time?: string | null; dollar_pnl: number | null; r_pnl: number | null }
 
 export interface CuentaFM {
   id: string
@@ -55,10 +56,11 @@ export function dolares(t: FilaTrade, riesgo: number): number {
 }
 
 /** Reglas y estado de hoy de cada cuenta activa, a partir de sus operaciones. */
-export function calcular(cuentas: CuentaFM[], trades: FilaTrade[], ahora: Date): { reglas: ReglasCuenta[]; estados: EstadoCuenta[] } {
+export function calcular(cuentas: CuentaFM[], trades: FilaTrade[], ahora: Date): { reglas: ReglasCuenta[]; estados: EstadoCuenta[]; operaciones: Operacion[] } {
   const hoy = claveDia(ahora, config.tzUsuaria)
   const reglas: ReglasCuenta[] = []
   const estados: EstadoCuenta[] = []
+  const operaciones: Operacion[] = []
   for (const c of cuentas.filter(c => c.activa && c.tamano > 0)) {
     const propios = trades.filter(t => t.account_id === c.id && t.date).sort((a, b) => a.date!.localeCompare(b.date!))
     // Balance de cierre por día (como buildDailyClosingBalances)
@@ -66,6 +68,8 @@ export function calcular(cuentas: CuentaFM[], trades: FilaTrade[], ahora: Date):
     let saldo = c.tamano
     for (const t of propios) { saldo += dolares(t, c.riesgoPorTrade); cierres.set(t.date!, saldo) }
     const maxCierre = Math.max(c.tamano, ...cierres.values())
+    const objetivoCuenta = c.objetivoPct ? (c.tamano * c.objetivoPct) / 100 : undefined
+    for (const t of propios) operaciones.push({ cuenta: c.nombre, fase: c.fase, fecha: t.date!, hora: t.time ?? undefined, dolares: Math.round(dolares(t, c.riesgoPorTrade) * 100) / 100, objetivoCuenta })
     const pnlHoy = propios.filter(t => t.date === hoy).reduce((s, t) => s + dolares(t, c.riesgoPorTrade), 0)
     reglas.push({
       nombre: c.nombre,
@@ -85,7 +89,7 @@ export function calcular(cuentas: CuentaFM[], trades: FilaTrade[], ahora: Date):
       actualizado: ahora.toISOString(),
     })
   }
-  return { reglas, estados }
+  return { reglas, estados, operaciones }
 }
 
 export function configurado(): boolean {
@@ -124,7 +128,7 @@ export async function leerFactorMetricas(ahora = new Date()) {
   const jwt = await token()
   const [cuentas, trades] = await Promise.all([
     leerTabla<FilaCuenta>('accounts', 'id,name,status,initial_capital,drawdown_type,data', jwt),
-    leerTabla<FilaTrade>('trades', 'account_id,date,dollar_pnl,r_pnl', jwt),
+    leerTabla<FilaTrade>('trades', 'account_id,date,time,dollar_pnl,r_pnl', jwt),
   ])
   return calcular(cuentas.map(leerCuenta), trades, ahora)
 }

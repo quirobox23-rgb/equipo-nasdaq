@@ -16,6 +16,7 @@ import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
 import { evaluarBienestar, aptitud, cargarAjustesCoach, preguntaCheckin, type CheckIn } from './personal/coach.ts'
 import { cargarReglas, evaluarCuentas, proveedorManual, type ReglasCuenta } from './personal/gestor.ts'
+import { bloqueMentor, cargarPlan, revisarDia, type Operacion } from './personal/plan.ts'
 import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
@@ -41,10 +42,10 @@ export async function checkinDeHoy(ahora = new Date()): Promise<CheckIn | undefi
 }
 
 /** Con Factor Métricas configurado, las cuentas salen de ahí; si no, de config/cuentas.json y tus "pnl …". */
-async function cuentasYFases(ahora = new Date()): Promise<{ hallazgos: Hallazgo[]; fases?: Fases }> {
+async function cuentasYFases(ahora = new Date()): Promise<{ hallazgos: Hallazgo[]; fases?: Fases; operaciones?: Operacion[] }> {
   if (configuradoFM()) {
     const fm = await intentar('factor-metricas', () => leerFactorMetricas(ahora))
-    if (fm) return { hallazgos: evaluarCuentas(fm.reglas, fm.estados), fases: contarFases(fm.reglas) }
+    if (fm) return { hallazgos: evaluarCuentas(fm.reglas, fm.estados), fases: contarFases(fm.reglas), operaciones: fm.operaciones }
     return { hallazgos: [sinDatos('cuentas', 'tus cuentas en Factor Métricas')] }
   }
   const reglas = await cargarReglas()
@@ -111,6 +112,14 @@ async function noticiasEquipos(informes: InformeEquipo[], ahora: Date, ventanaMi
   return out
 }
 
+/** Operaciones del último día operado antes de hoy (como mucho 4 días atrás: cubre el fin de semana). */
+export function ultimoDiaOperado(ops: Operacion[], hoy: string): Operacion[] {
+  const limite = [1, 2, 3, 4].reduce(d => diaAnterior(d), hoy)
+  const fechas = ops.map(o => o.fecha).filter(f => f < hoy && f >= limite).sort()
+  const ultimo = fechas.at(-1)
+  return ultimo ? ops.filter(o => o.fecha === ultimo) : []
+}
+
 /** "jueves 20 de noviembre" en tu zona horaria. */
 export function fechaLarga(ahora: Date): string {
   return new Intl.DateTimeFormat('es-ES', { timeZone: config.tzUsuaria, weekday: 'long', day: 'numeric', month: 'long' }).format(ahora)
@@ -172,14 +181,17 @@ export async function guiaDiaria(ahora = new Date()): Promise<string> {
   const { habitos } = await cargarAjustesCoach()
   const mercado = marketReadiness(h)
   await guardar('readiness', { dia: claveDia(ahora, config.tzUsuaria), mercado })
+  const plan = await cargarPlan()
+  const opsAyer = cu.operaciones ? ultimoDiaOperado(cu.operaciones, claveDia(ahora, config.tzUsuaria)) : []
   const contexto = [
     `📅 Hoy es ${fechaLarga(ahora)}.`,
     ...describirReadiness(mercado, null, cu.fases),
+    ...bloqueMentor(opsAyer, plan),
     ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto)),
     `💬 ${preguntaCheckin(habitos)}`,
   ]
   const paraIA = [
-    'Empieza diciendo qué día es hoy (📅); justo después pon el bloque de Daily Trading Readiness (🧭) tal cual, y luego cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
+    'Empieza diciendo qué día es hoy (📅); justo después pon el bloque de Daily Trading Readiness (🧭) tal cual, luego las líneas de ayer y del plan (📋, 🧑‍🏫, 🎯) tal cual, y después cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
     'Si hay datos o discursos importantes, explica en una frase por qué pueden mover el NQ, sin adivinar la dirección.',
     'Termina con la pregunta del coach (💬) tal cual.',
     ...(config.soloTexto ? [SIN_PRECIOS] : []),
@@ -257,7 +269,10 @@ const pct = (x: number) => `${x >= 0 ? '+' : ''}${x.toLocaleString('es-ES', { ma
 export async function cierre(ahora = new Date()): Promise<string> {
   const inf = await equipos(ahora)
   const c = await checkinDeHoy(ahora)
-  const h: Hallazgo[] = [...(await cuentas())]
+  const cu = await cuentasYFases(ahora)
+  const h: Hallazgo[] = [...cu.hallazgos]
+  const hoy = claveDia(ahora, config.tzUsuaria)
+  const fallos = cu.operaciones ? revisarDia(cu.operaciones.filter(o => o.fecha === hoy), await cargarPlan()) : []
   const contexto = [
     ...inf.map(i => {
       const n = i.velas ? calcularNiveles(i.velas, ahora) : null
@@ -266,6 +281,7 @@ export async function cierre(ahora = new Date()): Promise<string> {
       return `Hoy ${i.eq.nombre} se ha movido ${rango} puntos de máximo a mínimo (lo normal son unos ${Math.round(n.rangoMedio ?? 0)}).`
     }),
     c ? `Esta mañana su aptitud era ${aptitud(c).nota}/100.` : '',
+    fallos.length ? `🧑‍🏫 Hoy te has salido del plan: ${fallos.join(' ')}` : '',
   ]
   const principal = inf[0]
   const mov = principal?.velas ? movimientoDelDia(principal.velas, ahora) : null
@@ -277,7 +293,7 @@ export async function cierre(ahora = new Date()): Promise<string> {
     await guardar('sesgos', sesgos)
   }
   contexto.push('💬 ¿Cómo te has sentido operando hoy? Si quieres, actualiza tus cuentas escribiendo: pnl <cuenta> <resultado>')
-  return enviar(await redactar('cierre', h, contexto.filter(Boolean), ['Incluye la línea del sesgo (🧭) si está, sin juzgar.', 'Termina con la pregunta (💬) tal cual.']))
+  return enviar(await redactar('cierre', h, contexto.filter(Boolean), ['Incluye la línea del sesgo (🧭) si está, sin juzgar.', 'Si está la línea del coach (🧑‍🏫), inclúyela tal cual, con tono de compañero, sin reñir.', 'Termina con la pregunta (💬) tal cual.']))
 }
 
 /** Domingo por la tarde: la semana que viene, tus cuentas y cómo has estado. */

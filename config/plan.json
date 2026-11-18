@@ -1,0 +1,21 @@
+{
+  "_nota": "Tu plan de riesgo. El mentor te lo recuerda cada mañana y el coach marca cuando te sales de él. Importes en dólares.",
+  "funded": {
+    "sl": 240,
+    "tp": 440,
+    "breakEven": false,
+    "perdidaCierraDia": true,
+    "consistencia": 0.2,
+    "objetivo": 2200
+  },
+  "challenge": {
+    "sl": 800,
+    "perdidaDiariaMax": 1000,
+    "ciclos": [
+      { "nombre": "ratio negativo", "tp": 400 },
+      { "nombre": "ratio positivo", "tp": 800 }
+    ],
+    "consistencia": 0.45
+  },
+  "margen": 0.15
+}

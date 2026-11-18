@@ -63,6 +63,9 @@ export const config = {
   /** Hábitos que el coach te pregunta cada mañana (meditar, boxeo...). */
   coachArchivo: process.env.COACH_ARCHIVO ?? './config/coach.json',
 
+  /** Tu plan de riesgo (SL, TP, topes) para el mentor y el coach. */
+  planArchivo: process.env.PLAN_ARCHIVO ?? './config/plan.json',
+
   /** Con SOLO_TEXTO=1 los mensajes no llevan precios exactos, solo contexto (modo de venta sin licencia de CME). */
   soloTexto: process.env.SOLO_TEXTO === '1',
 
