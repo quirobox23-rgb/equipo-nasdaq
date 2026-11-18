@@ -3,10 +3,10 @@
 //  Centralised menu structure for Atlas
 // ─────────────────────────────────────────────
 
-import { HeartPulse, LineChart, CalendarDays, Sun, Briefcase, BookOpen } from 'lucide-react'
+import { HeartPulse, LineChart, CalendarDays, Sun, Briefcase } from 'lucide-react'
 
 /**
- * Entropia Control: lo que depende de ti. Cinco secciones y la Academia.
+ * Entropia Control: lo que depende de ti. Cinco secciones.
  *  - Hoy: tu estado, tus métricas de 30 días y el coach.
  *  - Rendimiento: el panel y las métricas (Básico/Intermedio/Pro son los
  *    planes; cada pestaña lleva su candado) más la consistencia.
@@ -15,7 +15,8 @@ import { HeartPulse, LineChart, CalendarDays, Sun, Briefcase, BookOpen } from 'l
  *  - Cuentas: portafolio e inversión y retiros.
  * Mentor IA y Puntaje del Trader salen del menú: el mentor es Atractor (la
  * oficina) y el puntaje usaba datos de ejemplo. Mapas, Monte Carlo, Kelly y
- * Rentabilidad siguen abiertos por enlace, fuera del día a día.
+ * Rentabilidad siguen abiertos por enlace, fuera del día a día. Entrenamiento
+ * también: lo que propone lo cubre el coach de Hoy con tus datos reales.
  */
 export const NAVIGATION = [
   {
@@ -27,13 +28,6 @@ export const NAVIGATION = [
       { to: '/diario', icon: CalendarDays, label: 'Diario' },
       { to: '/pulso', icon: Sun, label: 'Pulso' },
       { to: '/cuentas', icon: Briefcase, label: 'Cuentas' },
-    ],
-  },
-  {
-    id: 'academia',
-    label: 'Academia',
-    items: [
-      { to: '/entrenamiento', icon: BookOpen, label: 'Entrenamiento' },
     ],
   },
 ]

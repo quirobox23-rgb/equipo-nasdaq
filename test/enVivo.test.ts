@@ -44,3 +44,12 @@ test('unir: en una cuenta con botones mandan los botones, sin duplicar el CSV', 
   assert.deepEqual(unirOperaciones(vivo, fm).map(o => o.cuenta), ['F1', 'F2'])
   assert.equal(await apuntarOperacion('F9', 'xx', plan), 'No lo he entendido. Usa los botones o escribe, por ejemplo: op F1 -240')
 })
+
+test('lo que manda Atractor se guarda para verlo en Control', async () => {
+  const { mensajero } = await import('../src/mensajeria/index.ts')
+  const { mensajesDeHoy } = await import('../src/mensajeria/historial.ts')
+  await mensajero().enviar('*Atractor*\nPrimera perdedora. Día cerrado.')
+  const hoy = await mensajesDeHoy()
+  assert.equal(hoy.at(-1)?.texto, '*Atractor*\nPrimera perdedora. Día cerrado.')
+  assert.match(hoy.at(-1)!.hora, /^\d\d:\d\d$/)
+})

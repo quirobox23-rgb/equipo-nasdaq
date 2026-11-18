@@ -13,6 +13,7 @@ import { cargarMiembros, type MiembroFed } from './equipo/fed.ts'
 import { avisosAtractor, readinessTrasCheckin } from './tareas.ts'
 import { interpretarComandoPnl, type EstadoCuenta } from './personal/gestor.ts'
 import { mensajero } from './mensajeria/index.ts'
+import { mensajesDeHoy } from './mensajeria/historial.ts'
 import { claveDia, hora } from './tiempo.ts'
 import { promises as fs } from 'node:fs'
 import path from 'node:path'
@@ -128,13 +129,14 @@ export function arrancarServidor() {
       return
     }
     if (req.method === 'GET' && url.pathname === '/tu') {
-      const [checkins, sesgos, readiness] = await Promise.all([
+      const [checkins, sesgos, readiness, atractor] = await Promise.all([
         leer<Record<string, CheckIn>>('checkins', {}),
         leer<Record<string, RegistroSesgoTu>>('sesgos', {}),
         leer<{ dia: string; mercado: Nota } | null>('readiness', null),
+        mensajesDeHoy(),
       ])
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
-      res.end(JSON.stringify(resumenTu(checkins, sesgos, readiness, claveDia(new Date(), config.tzUsuaria))))
+      res.end(JSON.stringify({ ...resumenTu(checkins, sesgos, readiness, claveDia(new Date(), config.tzUsuaria)), atractor }))
       return
     }
     if (url.pathname === '/markets' || url.pathname.startsWith('/markets/')) {

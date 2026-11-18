@@ -6,7 +6,7 @@ import {
 } from 'recharts'
 import {
   Calendar as CalendarIcon, Sun, Plus, Wallet, Trophy, XCircle, Layers,
-  AlertTriangle, Rocket, ThumbsDown, ThumbsUp, BarChart, ArrowRight, ListChecks, Briefcase, Map, Lightbulb, PieChart, Compass, BrainCircuit,
+  AlertTriangle, Rocket, ThumbsDown, ThumbsUp, BarChart, ArrowRight, ListChecks, Briefcase, Map, Lightbulb, BrainCircuit,
 } from 'lucide-react'
 import {
   Card, PageHeader, MetricCard, IconCircle, IconDisplay, ActionCard,
@@ -315,30 +315,6 @@ function DashboardPortada({ navigate, accounts, trades }) {
         </div>
       </div>
 
-      {/* Acciones — separadas de la franja de datos de arriba: acá
-          solo viven las 2 acciones de la portada, en su jerarquía
-          (Ver mis métricas #1, Mapas #2 — ver docs/buenas-practicas-ui-design.md,
-          regla 6-3-1). ActionCard (ver StyleGuide → Cards → "Tarjetas
-          de acción", traída de Entropia Markets). El botón mantiene la
-          jerarquía: primary en Mis Métricas, outline en Mapas. */}
-      <div className="section-gap" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-        <ActionCard
-          primary
-          icon={PieChart}
-          title="Mis Métricas"
-          description="Equity, win rate, profit factor y todo tu rendimiento."
-          cta="Ir a Métricas"
-          onClick={() => navigate('/metricas-basico')}
-        />
-        <ActionCard
-          icon={Compass}
-          title="Mis Mapas"
-          description="Las rutas de trading que te acercan a la consistencia."
-          cta="Ir a Mapas"
-          onClick={() => navigate('/mapas')}
-        />
-      </div>
-
       <SectionLabel>Consejos</SectionLabel>
       {/* 2fr 1fr — "Estado de cuentas" (Necesitan atención + Van muy
           bien fusionadas en una sola card neutra, ver abajo) / Mi
@@ -384,9 +360,9 @@ function DashboardPortada({ navigate, accounts, trades }) {
         <ActionCard
           compact
           icon={BrainCircuit}
-          title="Mi mentor IA"
-          cta="Consultar"
-          onClick={() => navigate('/mentor-ia')}
+          title="Atractor"
+          cta="Ver lo de hoy"
+          onClick={() => navigate('/hoy')}
         />
       </div>
 
@@ -440,8 +416,8 @@ function InsightHero({ stats, navigate }) {
           {insight || 'Registra al menos 10 trades en esta cuenta para que el Insight semanal empiece a mostrar patrones reales.'}
         </div>
       </div>
-      <button className="btn btn-primary btn-sm" onClick={() => navigate('/mentor-ia')} style={{ flexShrink: 0 }}>
-        Ver análisis completo <ArrowRight size={13} />
+      <button className="btn btn-primary btn-sm" onClick={() => navigate('/hoy')} style={{ flexShrink: 0 }}>
+        Ver el coach <ArrowRight size={13} />
       </button>
     </div>
   )
