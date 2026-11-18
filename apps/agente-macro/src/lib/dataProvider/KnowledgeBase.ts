@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useSyncExternalStore } from 'react'
 import cpi from '@/data/knowledge/cpi.json'
 import ppi from '@/data/knowledge/ppi.json'
@@ -110,7 +111,7 @@ class KnowledgeStoreImpl {
    */
   private syncToServer(entry: KnowledgeEntry) {
     if (typeof window === 'undefined') return
-    fetch('/api/knowledge/save', {
+    fetch(conBase('/api/knowledge/save'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(entry),

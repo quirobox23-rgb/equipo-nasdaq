@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useState } from 'react'
 import { AlertCircle, Plus, Trash2 } from 'lucide-react'
 import { getFirebaseAuth } from '@/lib/firebase/client'
@@ -34,7 +35,7 @@ export function WeeklyEditor({ onPublished }: { onPublished: (a: WeeklyAnalysis)
 
 
   async function call(body: object) {
-    const res = await fetch('/api/weekly', {
+    const res = await fetch(conBase('/api/weekly'), {
       method: 'POST',
       // Se identifica con su sesión de Firebase: el servidor comprueba que es del equipo.
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${await getFirebaseAuth().currentUser?.getIdToken()}` },

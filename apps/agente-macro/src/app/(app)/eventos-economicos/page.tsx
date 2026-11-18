@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { expirationEvents } from '@/lib/expirations'
@@ -58,7 +59,7 @@ export default function EventosEconomicosPage() {
 
   // Rango real del NQ por día (velas diarias de /api/market-data).
   useEffect(() => {
-    fetch('/api/market-data')
+    fetch(conBase('/api/market-data'))
       .then(r => (r.ok ? r.json() : null))
       .then(d => setNq(d?.daily_ranges_nq ?? null))
       .catch(() => setNq(null))

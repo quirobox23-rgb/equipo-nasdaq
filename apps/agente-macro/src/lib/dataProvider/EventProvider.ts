@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useSyncExternalStore } from 'react'
 import type { MacroEvent } from '@/types/macro'
 import week_2026_31 from '@/data/weeks/week_2026_31.json'
@@ -121,7 +122,7 @@ class EventStoreImpl {
     this.serverLoaded.add(monday)
 
     try {
-      const res = await fetch(`/api/weeks/${monday}`)
+      const res = await fetch(conBase(`/api/weeks/${monday}`))
       if (res.ok) {
         const data = await res.json()
         const events: RawWeekEvent[] = data.events || []
@@ -172,7 +173,7 @@ class EventStoreImpl {
       })),
     }
     const adminPassword = getStoredAdminPassword()
-    fetch('/api/calendar/save', {
+    fetch(conBase('/api/calendar/save'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

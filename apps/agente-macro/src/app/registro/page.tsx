@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { Suspense, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createUserWithEmailAndPassword } from 'firebase/auth'
@@ -47,7 +48,7 @@ function RegistroForm() {
     }
     setLoading(true)
     try {
-      const res = await fetch('/api/access', {
+      const res = await fetch(conBase('/api/access'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, token }),
@@ -146,7 +147,7 @@ function RegistroForm() {
 
       <p className="text-center mt-[18px] text-[13px] text-base-faint">
         ¿Ya tenés cuenta?{' '}
-        <a href="/" className="font-semibold text-base-text underline">Entrá acá</a>
+        <a href={conBase("/")} className="font-semibold text-base-text underline">Entrá acá</a>
         {' · '}
         <a href={DISCORD_URL} target="_blank" rel="noopener noreferrer" className="font-semibold text-base-text underline">
           Ayuda

@@ -1,3 +1,4 @@
+import { conBase } from '@/lib/base'
 import { useState, useEffect, useCallback } from 'react'
 import type { MacroEvent } from '@/types/macro'
 
@@ -22,7 +23,7 @@ export function useWeekEvents(weekOffset: number) {
     setLoading(true)
     try {
       const dateStr = getWeekDate()
-      const response = await fetch(`/api/weeks/${dateStr}`)
+      const response = await fetch(conBase(`/api/weeks/${dateStr}`))
       if (!response.ok) {
         setEvents([])
         setLoading(false)
@@ -41,7 +42,7 @@ export function useWeekEvents(weekOffset: number) {
     async (eventId: number, updates: Partial<MacroEvent>) => {
       try {
         const dateStr = getWeekDate()
-        const response = await fetch(`/api/weeks/${dateStr}`, {
+        const response = await fetch(conBase(`/api/weeks/${dateStr}`), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ eventId, updates }),

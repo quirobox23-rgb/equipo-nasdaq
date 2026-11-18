@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useEffect, useState } from 'react'
 import { Badge, PanelHeader } from '@/components/ui'
 
@@ -110,7 +111,7 @@ export function PendingMetricsCard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/market-data')
+    fetch(conBase('/api/market-data'))
       .then(res => res.ok ? res.json() : null)
       .then(setData)
       .catch(() => setData(null))

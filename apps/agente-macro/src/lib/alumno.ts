@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore'
 import type { User } from 'firebase/auth'
-import { getDb } from '@/lib/firebase/client'
+import { getDb, MODO_LOCAL } from '@/lib/firebase/client'
 
 // alumno.ts — niveles de acceso, como los códigos de Entropia Analytics.
 // Cualquiera puede crearse una cuenta con su email y contraseña; después
@@ -85,9 +85,10 @@ export function useAlumno(): AlumnoState {
 
 /** Estado de alumno para el usuario con sesión; lo usa (app)/layout.tsx para el AlumnoContext. */
 export function useAlumnoState(user: User | null | undefined): AlumnoState {
-  const [nivel, setNivel] = useState<Nivel | null | undefined>(undefined)
+  const [nivel, setNivel] = useState<Nivel | null | undefined>(MODO_LOCAL ? 'admin' : undefined)
 
   useEffect(() => {
+    if (MODO_LOCAL) return
     if (!user) { setNivel(user === null ? null : undefined); return }
     let cancelled = false
     setNivel(undefined)

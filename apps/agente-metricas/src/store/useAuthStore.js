@@ -93,7 +93,7 @@ export const useAuthStore = create((set, get) => ({
   sendPasswordReset: async (email) => {
     set({ authError: null })
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/`,
+      redirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
     })
     if (error) { set({ authError: error.message }); return false }
     return true

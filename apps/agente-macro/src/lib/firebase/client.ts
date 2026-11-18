@@ -14,6 +14,10 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
+/** Sin claves de Firebase la app funciona en modo local: sin login y con todo
+ *  abierto, para probarla en tu ordenador. Al publicarla, pon las claves. */
+export const MODO_LOCAL = !firebaseConfig.apiKey
+
 // Se inicializa solo cuando se usa (en el navegador): si se hiciera al
 // importar el módulo, `next build` fallaría al prerenderizar las páginas
 // en el servidor (auth/invalid-api-key). getApps() evita reinicializar en

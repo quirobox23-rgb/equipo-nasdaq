@@ -34,3 +34,14 @@ test('readiness: bloque de texto sin check-in y sin señales', () => {
   assert.match(t, /pendiente de tu check-in/)
   assert.ok(!pareceSenal(t))
 })
+
+test('consejo por tipo de cuenta: en días flojos se protegen primero las funded', async () => {
+  const { consejoCuentas, describirReadiness } = await import('../src/readiness.ts')
+  const f = { fondeada: 3, challenge: 2, personal: 0 }
+  assert.equal(consejoCuentas('ready', f), null)
+  assert.match(consejoCuentas('caution', f) ?? '', /3 funded y 2 en challenge: quizá hoy mejor no operar las funded/)
+  assert.match(consejoCuentas('not-ready', f) ?? '', /hoy mejor no tocarlas.*challenge.*tamaño mínimo/)
+  assert.match(consejoCuentas('not-ready', { fondeada: 0, challenge: 0, personal: 1 }) ?? '', /no operar ninguna/)
+  const lineas = describirReadiness({ nota: 60, motivos: [] }, null, f)
+  assert.ok(lineas.at(-1)?.startsWith('💼'))
+})

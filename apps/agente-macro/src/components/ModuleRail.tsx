@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useEffect, useState } from 'react'
 import type { SVGProps } from 'react'
 import { ThemeToggle } from './ThemeToggle'
@@ -22,9 +23,9 @@ const IconFoco: Icono = p => (
 )
 
 const MODULOS: { id: string; nombre: string; Icon: Icono; href?: string; activo?: boolean }[] = [
-  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: process.env.NEXT_PUBLIC_URL_INTELLIGENCE },
-  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: '/home', activo: true },
-  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: process.env.NEXT_PUBLIC_URL_ANALYTICS },
+  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: process.env.NEXT_PUBLIC_URL_INTELLIGENCE || '/oficina' },
+  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: conBase('/home'), activo: true },
+  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: process.env.NEXT_PUBLIC_URL_ANALYTICS || '/analytics/inicio' },
 ]
 
 const CLAVE_FOCO = 'entropia_foco'
@@ -51,7 +52,7 @@ export function ModuleRail() {
   return (
     <aside className="module-rail" aria-label="Módulos de Entropia">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/icon.png" alt="" className="w-9 h-9 rounded-xl mb-4" />
+      <img src={conBase("/icon.png")} alt="" className="w-9 h-9 rounded-xl mb-4" />
       <nav className="flex flex-col gap-1.5">
         {MODULOS.map(({ id, nombre, Icon, href, activo }) => (
           <a

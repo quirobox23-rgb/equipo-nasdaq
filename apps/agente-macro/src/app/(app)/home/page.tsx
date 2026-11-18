@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useEffect, useMemo, useState } from 'react'
 import { CalendarDays, Activity } from 'lucide-react'
 import { useWeekEvents } from '@/hooks/useWeekEvents'
@@ -50,7 +51,7 @@ export default function HomePage() {
   const nextDates = useMemo(() => weekDates(now, 1), [now])
 
   useEffect(() => {
-    fetch('/api/market-data')
+    fetch(conBase('/api/market-data'))
       .then(r => (r.ok ? r.json() : null)).then(setMarket).catch(() => setMarket(null))
       .finally(() => setMarketLoading(false))
     fetchEarnings(dates[0], dates[4], true).then(setEarnWeek)

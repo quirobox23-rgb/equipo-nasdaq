@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 
 import { useEffect, useMemo, useState } from 'react'
 import type { MacroEvent } from '@/types/macro'
@@ -51,7 +52,7 @@ export function WeekTab({ events, dates, thermometer, historicalProb, catalyst }
   const [nq, setNq] = useState<{ avg: number | null; ranges: Record<string, number> } | null | undefined>(undefined)
 
   useEffect(() => {
-    fetch('/api/market-data')
+    fetch(conBase('/api/market-data'))
       .then(r => (r.ok ? r.json() : null))
       .then(d => {
         const r = d?.daily_ranges_nq

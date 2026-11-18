@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 import { useEffect, useState } from 'react'
 import { AlertCircle, Copy, Check } from 'lucide-react'
 import { getStoredAdminPassword, setStoredAdminPassword } from '@/lib/adminSession'
@@ -32,7 +33,7 @@ export default function InvitarPage() {
     setLink(null)
     setCopied(false)
     try {
-      const res = await fetch('/api/invite', {
+      const res = await fetch(conBase('/api/invite'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
         body: JSON.stringify({ email }),
@@ -42,7 +43,7 @@ export default function InvitarPage() {
         setError(data.error ?? 'No se pudo generar el enlace.')
       } else {
         setStoredAdminPassword(adminPassword)
-        setLink(`${window.location.origin}/registro?email=${encodeURIComponent(data.email)}&t=${data.token}`)
+        setLink(`${window.location.origin}${conBase('/registro')}?email=${encodeURIComponent(data.email)}&t=${data.token}`)
       }
     } catch {
       setError('No se pudo generar el enlace.')

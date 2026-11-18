@@ -1,4 +1,5 @@
 'use client'
+import { conBase } from '@/lib/base'
 
 import { useState, useEffect, useCallback } from 'react'
 import { getStoredAdminPassword, clearStoredAdminPassword } from '@/lib/adminSession'
@@ -94,7 +95,7 @@ export default function MacroPage() {
       return
     }
 
-    fetch('/api/nova/latest', { headers: { 'x-admin-password': password } })
+    fetch(conBase('/api/nova/latest'), { headers: { 'x-admin-password': password } })
       .then(async res => {
         if (res.status === 401) {
           clearStoredAdminPassword()
@@ -128,7 +129,7 @@ export default function MacroPage() {
     return (
       <div className="max-w-md mx-auto mt-16 text-center">
         <p className="text-base-text text-sm mb-2">⚠ {error}</p>
-        <p className="text-base-muted text-xs">Inicia sesión en <a href="/mentor-ia" className="text-brand hover:underline">Mentor IA</a> primero.</p>
+        <p className="text-base-muted text-xs">Inicia sesión en <a href={conBase("/mentor-ia")} className="text-brand hover:underline">Mentor IA</a> primero.</p>
       </div>
     )
   }
