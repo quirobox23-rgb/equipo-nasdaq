@@ -3,138 +3,37 @@
 //  Centralised menu structure for Atlas
 // ─────────────────────────────────────────────
 
-import {
-  LineChart, Briefcase, Brain, BarChart, PieChart, Beaker, BookOpen, Map,
-  Award, PiggyBank, Sun, CalendarDays, ShieldCheck, HeartPulse,
-} from 'lucide-react'
+import { HeartPulse, LineChart, CalendarDays, Sun, Briefcase, BookOpen } from 'lucide-react'
 
 /**
- * Navigation structure for the application
- * Format:
- * {
- *   id: unique identifier for the group
- *   label: displayed group name
- *   items: array of navigation items
- *     - to: route path
- *     - icon: lucide icon component
- *     - label: displayed label
- *     - disabled: optional, hide from menu (prepared for future features)
- * }
- *
- * NOTA (Sprint 10): Weekly Summary, Approach, Historial, Calendar y Setups
- * ya no aparecen en el menú lateral. Sus páginas y rutas siguen existiendo
- * sin cambios; se accede a ellas desde las tarjetas de Acciones Rápidas
- * del Dashboard. Monte Carlo tampoco aparece porque ya forma parte de
- * Metrix Lab.
- *
- * NOTA (Sprint "unificación de planes"): las 3 pestañas de Métricas
- * usan ahora EXACTAMENTE los mismos nombres que los 3 planes de pago
- * (Básico/Intermedio/Pro) — antes decían "Básico/Analítica/Laboratorio",
- * lo que no coincidía con Free/Intermedio/Pro y generaba confusión.
+ * Entropia Control: lo que depende de ti. Cinco secciones y la Academia.
+ *  - Hoy: tu estado, tus métricas de 30 días y el coach.
+ *  - Rendimiento: el panel y las métricas (Básico/Intermedio/Pro son los
+ *    planes; cada pestaña lleva su candado) más la consistencia.
+ *  - Diario: calendario, historial y setups.
+ *  - Pulso: cómo llegas (rutina, check-in, hábitos). Solo estado.
+ *  - Cuentas: portafolio e inversión y retiros.
+ * Mentor IA y Puntaje del Trader salen del menú: el mentor es Atractor (la
+ * oficina) y el puntaje usaba datos de ejemplo. Mapas, Monte Carlo, Kelly y
+ * Rentabilidad siguen abiertos por enlace, fuera del día a día.
  */
 export const NAVIGATION = [
   {
-    id: 'performance',
-    label: 'Resumen',
+    id: 'control',
+    label: 'Control',
     items: [
-      {
-        to: '/inicio',
-        icon: LineChart,
-        label: 'Inicio',
-      },
-      {
-        to: '/tu-hoy',
-        icon: HeartPulse,
-        label: 'Tú hoy',
-      },
-      {
-        to: '/portafolio',
-        icon: Briefcase,
-        label: 'Portafolio',
-      },
+      { to: '/hoy', icon: HeartPulse, label: 'Hoy' },
+      { to: '/rendimiento', icon: LineChart, label: 'Rendimiento' },
+      { to: '/diario', icon: CalendarDays, label: 'Diario' },
+      { to: '/pulso', icon: Sun, label: 'Pulso' },
+      { to: '/cuentas', icon: Briefcase, label: 'Cuentas' },
     ],
   },
   {
-    id: 'metrix',
-    label: 'Métricas',
+    id: 'academia',
+    label: 'Academia',
     items: [
-      {
-        to: '/metricas-basico',
-        icon: BarChart,
-        label: 'Básico',
-      },
-      {
-        to: '/metricas-intermedio',
-        icon: PieChart,
-        label: 'Intermedio',
-      },
-      {
-        to: '/metricas-pro',
-        icon: Beaker,
-        label: 'Pro',
-      },
-    ],
-  },
-  {
-    id: 'elite-performance',
-    label: 'Rendimiento Elite',
-    items: [
-      {
-        to: '/mapas',
-        icon: Map,
-        label: 'Mapas',
-      },
-      {
-        to: '/mentor-ia',
-        icon: Brain,
-        label: 'Mentor IA',
-      },
-      {
-        to: '/entrenamiento',
-        icon: BookOpen,
-        label: 'Entrenamiento',
-      },
-    ],
-  },
-  {
-    id: 'journal',
-    label: 'Journal',
-    items: [
-      {
-        to: '/rutina-diaria',
-        icon: Sun,
-        label: 'Rutina Diaria',
-      },
-      {
-        to: '/calendar',
-        icon: CalendarDays,
-        label: 'Calendario',
-        // Oculto del menú lateral: ya está disponible como botón
-        // secundario dentro de Metrix Básico (ver MetrixBasic.jsx),
-        // duplicarlo acá era ruido en el grupo Journal.
-        disabled: true,
-      },
-      {
-        to: '/consistencia',
-        icon: ShieldCheck,
-        label: 'Consistencia',
-      },
-      {
-        to: '/puntaje-trader',
-        icon: Award,
-        label: 'Puntaje del Trader',
-      },
-    ],
-  },
-  {
-    id: 'business',
-    label: 'Mi negocio',
-    items: [
-      {
-        to: '/roi',
-        icon: PiggyBank,
-        label: 'Inversión y retiros',
-      },
+      { to: '/entrenamiento', icon: BookOpen, label: 'Entrenamiento' },
     ],
   },
 ]

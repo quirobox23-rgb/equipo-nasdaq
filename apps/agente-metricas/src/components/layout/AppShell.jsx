@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home as HomeIcon, Wallet, History, Map, Brain } from 'lucide-react'
+import { Home as HomeIcon, Wallet, History, BarChart3, Sun } from 'lucide-react'
 import styles from './AppShell.module.css'
 import LogoEntropia from './LogoEntropia'
 import { useTheme, useToggleTheme, useStore } from '@/store/useStore'
@@ -15,11 +15,11 @@ import PricingModal from '@/components/upgrade/PricingModal'
 // accesos principales, misma navegación de siempre (NavLink), solo
 // presentado distinto en pantallas estrechas.
 const BOTTOM_NAV_ITEMS = [
-  { to: '/inicio',  label: 'Inicio',     icon: HomeIcon },
-  { to: '/portafolio',  label: 'Portfolio',  icon: Wallet },
-  { to: '/historial',  label: 'Historial',  icon: History },
-  { to: '/mapas', label: 'Mapas',      icon: Map },
-  { to: '/mentor-ia',         label: 'Mentor',     icon: Brain },
+  { to: '/hoy',         label: 'Hoy',         icon: HomeIcon },
+  { to: '/rendimiento', label: 'Rendimiento', icon: BarChart3 },
+  { to: '/diario',      label: 'Diario',      icon: History },
+  { to: '/pulso',       label: 'Pulso',       icon: Sun },
+  { to: '/cuentas',     label: 'Cuentas',     icon: Wallet },
 ]
 
 
@@ -106,9 +106,9 @@ const IconFoco = (p) => (
   <svg viewBox="0 0 24 24" {...trazo} {...p}><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.2" /></svg>
 )
 const MODULOS = [
-  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: import.meta.env.VITE_URL_INTELLIGENCE || '/oficina' },
-  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: import.meta.env.VITE_URL_MARKETS || '/markets/home' },
-  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: `${import.meta.env.BASE_URL}inicio`, activo: true },
+  { id: 'intelligence', nombre: 'Atractor', Icon: IconIntelligence, href: import.meta.env.VITE_URL_INTELLIGENCE || '/oficina' },
+  { id: 'markets', nombre: 'Contexto', Icon: IconMarkets, href: import.meta.env.VITE_URL_MARKETS || '/markets/home' },
+  { id: 'analytics', nombre: 'Control', Icon: IconAnalytics, href: `${import.meta.env.BASE_URL}hoy`, activo: true },
 ]
 const CLAVE_FOCO = 'entropia_foco'
 
