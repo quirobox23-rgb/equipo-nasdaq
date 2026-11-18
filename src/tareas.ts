@@ -16,7 +16,7 @@ import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
 import { evaluarBienestar, aptitud, cargarAjustesCoach, preguntaCheckin, type CheckIn } from './personal/coach.ts'
 import { cargarReglas, evaluarCuentas, proveedorManual, type ReglasCuenta } from './personal/gestor.ts'
-import { bloqueMentor, cargarPlan, revisarDia, type Operacion } from './personal/plan.ts'
+import { avisosEnVivo, bloqueMentor, cargarPlan, revisarDia, type Operacion } from './personal/plan.ts'
 import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
 import { redactar } from './coordinador.ts'
 import { mensajero } from './mensajeria/index.ts'
@@ -252,6 +252,26 @@ export async function vigilancia(ahora = new Date()): Promise<string | null> {
   if (nuevos.length === 0) return null
   await registrarClaves(nuevos, ahora)
   return enviar(await redactar('aviso', nuevos, [], [], nombreEquipos(inf)))
+}
+
+/**
+ * Cada 5 minutos durante la sesión: Atractor mira tus operaciones de hoy en
+ * Factor Métricas y te escribe en cuanto te sales del plan (primera perdedora
+ * en una funded, volver a entrar con el día cerrado, SL alargado, pérdida
+ * diaria de una challenge). Cada aviso sale una sola vez al día.
+ */
+export async function atractorEnVivo(ahora = new Date()): Promise<string | null> {
+  if (!configuradoFM()) return null
+  const fm = await intentar('factor-metricas', () => leerFactorMetricas(ahora))
+  if (!fm) return null
+  const hoy = claveDia(ahora, config.tzUsuaria)
+  const avisos = avisosEnVivo(fm.operaciones.filter(o => o.fecha === hoy), await cargarPlan())
+  const r = await leer<{ dia: string; claves: string[] }>('atractor-vivo', { dia: hoy, claves: [] })
+  const vistas = new Set(r.dia === hoy ? r.claves : [])
+  const nuevos = avisos.filter(a => !vistas.has(a.clave))
+  if (!nuevos.length) return null
+  await guardar('atractor-vivo', { dia: hoy, claves: [...vistas, ...nuevos.map(a => a.clave)] })
+  return enviar(['*Atractor*', ...nuevos.map(a => a.texto)].join('\n'))
 }
 
 export interface RegistroSesgo { sesgo: NonNullable<CheckIn['sesgo']>; movimiento: number; coincide: boolean }
