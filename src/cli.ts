@@ -1,5 +1,5 @@
-// Ejecuta una tarea a mano: npm run tarea -- guia | apertura | vigilancia | cierre | semanal | leer | telegram-id | mensaje "texto"
-import { guiaDiaria, preApertura, vigilancia, cierre, resumenSemanal } from './tareas.ts'
+// Ejecuta una tarea a mano: npm run tarea -- guia | apertura | vigilancia | atractor | cierre | semanal | leer | telegram-id | mensaje "texto"
+import { guiaDiaria, preApertura, vigilancia, cierre, resumenSemanal, atractorEnVivo } from './tareas.ts'
 import { procesarMensaje } from './servidor.ts'
 import { leerTelegram, mostrarChats } from './mensajeria/telegramEntrada.ts'
 
@@ -8,6 +8,7 @@ const tareas: Record<string, () => Promise<unknown>> = {
   guia: () => guiaDiaria(),
   apertura: () => preApertura(),
   vigilancia: async () => (await vigilancia()) ?? console.log('Nada nuevo que avisar (o fuera de horario).'),
+  atractor: async () => (await atractorEnVivo()) ?? console.log('Atractor: nada que avisar (o Factor Métricas sin configurar).'),
   cierre: () => cierre(),
   semanal: () => resumenSemanal(),
   leer: async () => console.log(`Mensajes atendidos: ${await leerTelegram()}`),

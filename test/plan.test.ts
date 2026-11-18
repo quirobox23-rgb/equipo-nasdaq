@@ -47,3 +47,24 @@ test('último día operado: el lunes mira el viernes', () => {
   assert.equal(ultimoDiaOperado(ops, '2026-11-16')[0].fecha, '2026-11-13')
   assert.deepEqual(ultimoDiaOperado(ops, '2026-11-30'), [])
 })
+
+test('Atractor en vivo: primera perdedora en funded cierra el día y avisa si vuelves a entrar', async () => {
+  const { avisosEnVivo } = await import('../src/personal/plan.ts')
+  const a = avisosEnVivo([op('F1', 'fondeada', -240, '15:35')], plan)
+  assert.equal(a.length, 1)
+  assert.equal(a[0].clave, 'cerrado:F1')
+  assert.match(a[0].texto, /primera perdedora \(-240 \$\)\. Día cerrado/)
+  const b = avisosEnVivo([op('F1', 'fondeada', -240, '15:35'), op('F1', 'fondeada', -500, '15:50')], plan)
+  assert.ok(b.some(x => x.clave === 'tras-cierre:F1:1'))
+  assert.ok(b.some(x => x.clave.startsWith('sl-largo:F1:15:50') && x.texto.includes('500 $')))
+  // Ganar la primera no cierra el día
+  assert.deepEqual(avisosEnVivo([op('F2', 'fondeada', 440, '15:35')], plan), [])
+})
+
+test('Atractor en vivo: challenge con dos pérdidas y con la pérdida diaria máxima', async () => {
+  const { avisosEnVivo } = await import('../src/personal/plan.ts')
+  const dos = avisosEnVivo([op('C1', 'challenge', -300, '15:35'), op('C1', 'challenge', -300, '15:50')], plan)
+  assert.deepEqual(dos.map(x => x.clave), ['dos-perdidas:C1'])
+  const max = avisosEnVivo([op('C1', 'challenge', -800, '15:35'), op('C1', 'challenge', -300, '15:50')], plan)
+  assert.deepEqual(max.map(x => x.clave), ['max-diario:C1'])
+})

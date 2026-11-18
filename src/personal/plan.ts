@@ -118,3 +118,45 @@ export function bloqueMentor(opsAyer: Operacion[], plan: PlanTrading): string[] 
   lineas.push(`🎯 *Hoy:* ${recordatorioPlan(plan)}`)
   return lineas
 }
+
+/** Un aviso de Atractor durante la sesión. La clave evita repetirlo. */
+export interface AvisoEnVivo { clave: string; texto: string }
+
+/**
+ * Atractor mira tus operaciones de hoy mientras operas y te escribe en el
+ * momento del impulso: tras la primera perdedora en una funded, si vuelves a
+ * entrar con el día cerrado, si un SL se ha alargado o si una challenge llega
+ * a su pérdida diaria. Mensajes cortos y literales, sin pasar por la IA.
+ */
+export function avisosEnVivo(ops: Operacion[], plan: PlanTrading): AvisoEnVivo[] {
+  const out: AvisoEnVivo[] = []
+  const porCuenta = new Map<string, Operacion[]>()
+  for (const o of ops) porCuenta.set(o.cuenta, [...(porCuenta.get(o.cuenta) ?? []), o])
+  const m = 1 + plan.margen
+  for (const [cuenta, lista] of porCuenta) {
+    const dia = [...lista].sort((a, b) => (a.hora ?? '').localeCompare(b.hora ?? ''))
+    const fase = dia[0].fase
+    const sl = fase === 'fondeada' ? plan.funded.sl : fase === 'challenge' ? plan.challenge.sl : undefined
+    for (const o of dia) {
+      if (sl && o.dolares < -sl * m) {
+        out.push({ clave: `sl-largo:${cuenta}:${o.hora ?? ''}:${o.dolares}`, texto: `⚠️ ${cuenta}: esa pérdida es de ${usd(-o.dolares)} y tu SL es ${usd(sl)}. El stop no se mueve.` })
+      }
+    }
+    if (fase === 'fondeada' && plan.funded.perdidaCierraDia) {
+      const i = dia.findIndex(o => o.dolares < -BE)
+      if (i === 0) out.push({ clave: `cerrado:${cuenta}`, texto: `🛑 ${cuenta}: primera perdedora (${usd(dia[0].dolares)}). Día cerrado en esta cuenta. No hay que recuperar nada hoy; mañana, el mismo plan.` })
+      if (i >= 0 && dia.length - 1 > i) {
+        const mas = dia.length - 1 - i
+        out.push({ clave: `tras-cierre:${cuenta}:${mas}`, texto: `🛑 ${cuenta}: has vuelto a entrar con el día cerrado (${mas === 1 ? '1 operación más' : `${mas} operaciones más`}). Cierra la plataforma; lo que toca hoy ya está hecho.` })
+      }
+    }
+    if (fase === 'challenge') {
+      const total = dia.reduce((s, o) => s + o.dolares, 0)
+      const max = plan.challenge.perdidaDiariaMax
+      if (total <= -max) out.push({ clave: `max-diario:${cuenta}`, texto: `🛑 ${cuenta}: llevas ${usd(total)} hoy, tu pérdida diaria máxima es ${usd(max)}. Día cerrado en esta cuenta.` })
+      const perdidas = dia.filter(o => o.dolares < -BE).length
+      if (perdidas >= 2 && total > -max) out.push({ clave: `dos-perdidas:${cuenta}`, texto: `✋ ${cuenta}: segunda pérdida de hoy. Es el momento en que se quiere recuperar; para aquí.` })
+    }
+  }
+  return out
+}
