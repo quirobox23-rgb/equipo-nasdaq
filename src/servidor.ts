@@ -17,6 +17,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { leerEstado } from './estadoOficina.ts'
 import { modulos, servirAnalytics, pasarAMarkets } from './entropia.ts'
+import { resumenTu, type RegistroSesgoTu } from './tu.ts'
+import type { Nota } from './readiness.ts'
 
 const PAGINA_OFICINA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'oficina.html')
 
@@ -96,6 +98,16 @@ export function arrancarServidor() {
     if (req.method === 'GET' && url.pathname === '/modulos') {
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
       res.end(JSON.stringify(modulos()))
+      return
+    }
+    if (req.method === 'GET' && url.pathname === '/tu') {
+      const [checkins, sesgos, readiness] = await Promise.all([
+        leer<Record<string, CheckIn>>('checkins', {}),
+        leer<Record<string, RegistroSesgoTu>>('sesgos', {}),
+        leer<{ dia: string; mercado: Nota } | null>('readiness', null),
+      ])
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
+      res.end(JSON.stringify(resumenTu(checkins, sesgos, readiness, claveDia(new Date(), config.tzUsuaria))))
       return
     }
     if (url.pathname === '/markets' || url.pathname.startsWith('/markets/')) {

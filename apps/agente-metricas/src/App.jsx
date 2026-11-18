@@ -32,6 +32,7 @@ import Setups       from '@/pages/Setups'
 import TraderScore  from '@/pages/TraderScore'
 import BusinessROI  from '@/pages/BusinessROI'
 import DailyRoutine from '@/pages/DailyRoutine'
+import TuHoy from '@/pages/tu/TuHoy'
 
 // Todas las rutas de la aplicación (idénticas a como estaban, mismo
 // orden, mismos componentes) viven ahora dentro de AppShell. Es el
@@ -44,6 +45,7 @@ function AppRoutes() {
       <Routes>
         <Route path="/home"         element={<Home />} />
         <Route path="/inicio"    element={<Dashboard />} />
+        <Route path="/tu-hoy"    element={<TuHoy />} />
         <Route path="/metricas-basico" element={<MetrixBasic />} />
         <Route path="/metricas-intermedio" element={<MetrixAnalytics />} />
         <Route path="/metricas-pro" element={<MetrixLab />} />
