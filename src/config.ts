@@ -66,6 +66,12 @@ export const config = {
   /** Con SOLO_TEXTO=1 los mensajes no llevan precios exactos, solo contexto (modo de venta sin licencia de CME). */
   soloTexto: process.env.SOLO_TEXTO === '1',
 
+  /** Direcciones de las apps de Entropia, para los botones de la oficina (opcional). */
+  apps: {
+    markets: process.env.URL_MARKETS,
+    analytics: process.env.URL_ANALYTICS,
+  },
+
   dataDir: process.env.DATA_DIR ?? './data',
   cuentasArchivo: process.env.CUENTAS_ARCHIVO ?? './config/cuentas.json',
   puerto: num(process.env.PORT, 3000),

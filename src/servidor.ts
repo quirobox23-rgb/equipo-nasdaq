@@ -92,6 +92,11 @@ export function arrancarServidor() {
       res.end(JSON.stringify(estado ?? { error: 'La oficina aún no ha trabajado hoy.' }))
       return
     }
+    if (req.method === 'GET' && url.pathname === '/modulos') {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })
+      res.end(JSON.stringify({ markets: config.apps.markets ?? null, analytics: config.apps.analytics ?? null }))
+      return
+    }
     if (req.method === 'GET' && url.pathname === '/salud') {
       res.writeHead(200).end('ok')
       return
