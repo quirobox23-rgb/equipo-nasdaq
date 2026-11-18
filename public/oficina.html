@@ -112,8 +112,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
       <span class="reloj" id="reloj"></span>
     </div>
     <nav class="modulos" id="modulos" aria-label="Apps de Entropia" hidden>
-      <a id="ir-markets" href="#" target="_blank" rel="noopener" hidden><span>02</span>Markets ↗</a>
-      <a id="ir-analytics" href="#" target="_blank" rel="noopener" hidden><span>03</span>Analytics ↗</a>
+      <a id="ir-markets" href="#" target="_blank" rel="noopener" hidden><span>02</span>Contexto ↗</a>
+      <a id="ir-analytics" href="#" target="_blank" rel="noopener" hidden><span>03</span>Control ↗</a>
     </nav>
     <p class="ayuda">Tres plantas: abajo tú, en medio el mercado y arriba el mentor. Elige planta abajo a la izquierda, arrastra para girar y toca a una persona para ver qué hace.</p>
   </header>
@@ -146,8 +146,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
 (() => {
   // ───────────────────────── Datos ─────────────────────────
   const AGENTES = [
-    // Ático · Mentor
-    { id: 'coordinador', nombre: 'Mentor', rol: 'Lo enlaza todo y te escribe a Telegram', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
+    // Ático · Atractor
+    { id: 'coordinador', nombre: 'Atractor', rol: 'Ordena todo y te escribe a Telegram', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
     // Planta 1 · Mercado
     { id: 'macro', nombre: 'Macro', rol: 'Eventos económicos', ropa: 0x1f2d3d, piel: 0xb98563, pelo: 0x231812, pantalon: 0x3a3f47 },
     { id: 'estructura', nombre: 'Técnico', rol: 'Niveles y zonas del gráfico', ropa: 0x7a2e3a, piel: 0xa8714e, pelo: 0x15100c, pantalon: 0x2a2d33 },
@@ -191,12 +191,12 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   // salas, pasillo (z 11-13) con el ascensor al fondo, y fila sur.
   //   Planta baja · Tú: Rendimiento, Pulso y Capital → Coach → Academia.
   //   Planta 1 · Mercado: todo el contexto de la operativa.
-  //   Ático · Mentor: su despacho, la sala de mando y una gran terraza.
+  //   Ático · Atractor: su despacho, la sala de mando y una gran terraza.
   const ALTURA_PLANTA = 4.2
   const PLANTAS = [
-    { nombre: 'Planta baja · Tú', corto: 'Tú' },
-    { nombre: 'Planta 1 · Mercado', corto: 'Mercado' },
-    { nombre: 'Ático · Mentor', corto: 'Mentor' },
+    { nombre: 'Planta baja · Control', corto: 'Control' },
+    { nombre: 'Planta 1 · Contexto', corto: 'Contexto' },
+    { nombre: 'Ático · Atractor', corto: 'Atractor' },
   ]
   const SALAS = {
     rendimiento: { planta: 0, x0: 0, x1: 13, z0: 0, z1: 11, nombre: 'Rendimiento', suelo: 'claro', puerta: 6.5 },
@@ -671,7 +671,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   cilindro(0.45, 0.45, 0.05, M.madera, 24.7, 0.45, 20.4); cilindro(0.05, 0.05, 0.43, M.patas, 24.7, 0.22, 20.4, capa, 8)
   planta(19.8, 13.8); planta(33, 15, 1.4)
 
-  // ── Ático · Mentor ──
+  // ── Ático · Atractor ──
   capa = plantasG[2]
   estanteria(8, 0.4, 4.0)
   sillon(15.6, 8.4, Math.PI / 2); sillon(15.6, 6.4, Math.PI / 2)

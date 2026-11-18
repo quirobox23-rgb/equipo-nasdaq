@@ -23,9 +23,9 @@ const IconFoco: Icono = p => (
 )
 
 const MODULOS: { id: string; nombre: string; Icon: Icono; href?: string; activo?: boolean }[] = [
-  { id: 'intelligence', nombre: 'Intelligence', Icon: IconIntelligence, href: process.env.NEXT_PUBLIC_URL_INTELLIGENCE || '/oficina' },
-  { id: 'markets', nombre: 'Markets', Icon: IconMarkets, href: conBase('/home'), activo: true },
-  { id: 'analytics', nombre: 'Analytics', Icon: IconAnalytics, href: process.env.NEXT_PUBLIC_URL_ANALYTICS || '/analytics/inicio' },
+  { id: 'intelligence', nombre: 'Atractor', Icon: IconIntelligence, href: process.env.NEXT_PUBLIC_URL_INTELLIGENCE || '/oficina' },
+  { id: 'markets', nombre: 'Contexto', Icon: IconMarkets, href: conBase('/home'), activo: true },
+  { id: 'analytics', nombre: 'Control', Icon: IconAnalytics, href: process.env.NEXT_PUBLIC_URL_ANALYTICS || '/analytics/hoy' },
 ]
 
 const CLAVE_FOCO = 'entropia_foco'

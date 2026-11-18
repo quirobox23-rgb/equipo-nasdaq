@@ -58,15 +58,6 @@ function IconDoc(p: SVGProps<SVGSVGElement>) {
     </svg>
   )
 }
-function IconSpark(p: SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" {...p}>
-      <path d="M10 3v3M10 14v3M3 10h3M14 10h3M5.5 5.5l2 2M12.5 12.5l2 2M14.5 5.5l-2 2M7.5 12.5l-2 2" />
-      <circle cx="10" cy="10" r="2" />
-    </svg>
-  )
-}
-
 const ANALISIS = '/analisis-semanal'
 
 /**
@@ -98,32 +89,26 @@ function useNovedadesAnalisis(enabled: boolean): number {
 
 interface NavItem { Icon: (p: SVGProps<SVGSVGElement>) => React.ReactElement; label: string; href: string }
 
-// Tres niveles, como en Entropia Analytics (ver src/lib/alumno.ts): Básico con
-// el código gratis, Intermedio con el VIP y Equipo (solo nivel admin).
-// Las pestañas que el nivel del usuario no abre llevan candado.
+// Entropia Contexto: dos momentos. "Pre-mercado" es lo que miras antes de
+// abrir (lo que importa para NQ hoy) y "La Semana" lo que se lee el domingo.
+// Los niveles (Básico, Intermedio, Equipo) ya no son secciones: cada pestaña
+// lleva su candado según tu nivel (ver src/lib/alumno.ts). El Mentor IA de
+// aquí se funde en Atractor, el mentor de la oficina, y sale del menú.
 const GROUPS: { title: string; adminOnly?: boolean; items: NavItem[] }[] = [
   {
-    title: 'Básico',
+    title: 'Pre-mercado',
     items: [
       { Icon: IconRadar,    label: 'El Mercado Hoy',     href: '/home' },
-      { Icon: IconCalendar, label: 'Eventos Económicos', href: '/eventos-economicos' },
+      { Icon: IconCalendar, label: 'Eventos',            href: '/eventos-economicos' },
+      { Icon: IconPulse,    label: 'Volatilidad y ATR',  href: '/mercado' },
+      { Icon: IconGrid,     label: 'Técnico',            href: '/contexto-tecnico' },
     ],
   },
   {
-    title: 'Intermedio',
+    title: 'La Semana',
     items: [
-      { Icon: IconPulse, label: 'Volatilidad',      href: '/mercado' },
-      { Icon: IconGlobe, label: 'Geopolítica',      href: '/geopolitica' },
       { Icon: IconDoc,   label: 'Análisis Semanal', href: '/analisis-semanal' },
-    ],
-  },
-  {
-    // Contexto Técnico está en desarrollo; Mentor IA además pide la clave de admin.
-    title: 'Equipo',
-    adminOnly: true,
-    items: [
-      { Icon: IconGrid,  label: 'Contexto Técnico', href: '/contexto-tecnico' },
-      { Icon: IconSpark, label: 'Mentor IA',        href: '/mentor-ia' },
+      { Icon: IconGlobe, label: 'Geopolítica',      href: '/geopolitica' },
     ],
   },
 ]

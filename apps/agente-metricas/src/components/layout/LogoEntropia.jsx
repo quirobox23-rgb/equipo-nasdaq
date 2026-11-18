@@ -1,6 +1,6 @@
 // Logo de Entropia (public/entropia-logo*.png): blanco en oscuro, grafito en claro,
 // con el nombre del módulo al lado.
-export default function LogoEntropia({ alto = 22, modulo = 'Analytics' }) {
+export default function LogoEntropia({ alto = 22, modulo = 'Control' }) {
   return (
     <span className="logo-entropia">
       <img src={`${import.meta.env.BASE_URL}entropia-logo.png`} alt="entropia" className="logo-oscuro" style={{ height: alto }} />

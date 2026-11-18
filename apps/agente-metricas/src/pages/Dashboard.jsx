@@ -226,7 +226,7 @@ function DashboardPortada({ navigate, accounts, trades }) {
     return { attention: att.slice(0, 4), thriving: good.slice(0, 4) }
   }, [accounts, trades])
 
-  const goToAccount = () => navigate('/portafolio')
+  const goToAccount = () => navigate('/cuentas?p=portafolio')
 
   return (
     <div className="page-inner">
@@ -406,7 +406,7 @@ function DashboardPortada({ navigate, accounts, trades }) {
           <QuickAccessButton icon={<Sun size={16} />} label="Rutina Diaria" onClick={() => navigate('/rutina-diaria')} />
           <QuickAccessButton icon={<Map size={16} />} label="Mapas" onClick={() => navigate('/mapas')} />
           */}
-          <QuickAccessButton icon={<Briefcase size={16} />} label="Nueva Cuenta" onClick={() => navigate('/portafolio', { state: { openAddForm: true } })} />
+          <QuickAccessButton icon={<Briefcase size={16} />} label="Nueva Cuenta" onClick={() => navigate('/cuentas?p=portafolio', { state: { openAddForm: true } })} />
           <QuickAccessButton icon={<Plus size={16} />} label="Nueva Operación" onClick={() => navigate('/historial', { state: { openForm: true } })} />
         </div>
       </div>
