@@ -148,20 +148,24 @@ export function Sidebar() {
   const isLocked = (href: string) => nivel !== undefined && !canSee(nivel, routeLevel(href))
   const novedades = useNovedadesAnalisis(nivel !== undefined && !isLocked(ANALISIS))
 
-  // Entropia Markets: navegación en una cápsula flotante, numerada (01, 02…)
-  // y agrupada por nivel. Siempre en el mismo orden y el mismo sitio.
-  let n = 0
+  // Entropia Contexto: arriba, las dos pantallas (Pre-mercado y La Semana);
+  // debajo, las pestañas de la pantalla en la que estás, con su candado.
+  const grupoActivo = GROUPS.find(g => g.items.some(i => isActive(i.href))) ?? GROUPS[0]
+  const iconoGrupo = (g: typeof GROUPS[number]) => g.items[0].Icon
   return (
-    <nav className="sticky top-[84px] z-40 mx-4 mt-3 flex justify-center" aria-label="Secciones">
+    <nav className="sticky top-[84px] z-40 mx-4 mt-3 flex flex-col items-center gap-2" aria-label="Secciones">
       <div className="floating-panel pill-bar">
-        {GROUPS.filter(g => !g.adminOnly || nivel === 'admin').map((g, gi) => (
-          <div key={g.title} className={`flex items-center gap-1 ${gi > 0 ? 'pl-2 ml-1 border-l border-base-line/70' : ''}`}>
-            <span className="pill-group">{g.title}</span>
-            {g.items.map(item => (
-              <NavLink key={item.href} item={item} n={++n} active={isActive(item.href)} locked={isLocked(item.href)}
-                count={item.href === ANALISIS ? novedades : 0} />
-            ))}
-          </div>
+        <span className="pill-group">Contexto</span>
+        {GROUPS.map((g, gi) => (
+          <NavLink key={g.title} n={gi + 1} active={g === grupoActivo}
+            item={{ Icon: iconoGrupo(g), label: g.title, href: g.items[0].href }}
+            count={g.items.some(i => i.href === ANALISIS) ? novedades : 0} />
+        ))}
+      </div>
+      <div className="floating-panel pill-bar pill-bar-sub" role="tablist" aria-label={grupoActivo.title}>
+        {grupoActivo.items.map((item, i) => (
+          <NavLink key={item.href} item={item} n={i + 1} active={isActive(item.href)} locked={isLocked(item.href)}
+            count={item.href === ANALISIS ? novedades : 0} />
         ))}
       </div>
     </nav>

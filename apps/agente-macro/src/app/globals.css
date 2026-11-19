@@ -492,6 +492,7 @@ body {
 [data-theme='light'] .floating-panel, [data-theme='light'] .app-topbar.floating-panel { background: rgb(255 255 255 / 0.8); box-shadow: 0 10px 30px -20px rgb(15 22 35 / 0.35); }
 
 .pill-bar { display: flex; align-items: center; gap: 2px; padding: 5px; overflow-x: auto; max-width: 100%; border-radius: 999px; }
+.pill-bar-sub { padding: 3px; transform: scale(0.94); opacity: 0.95; }
 .pill-group { font-size: 9px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--base-faint)); padding: 0 6px 0 8px; white-space: nowrap; }
 .pill-link {
   display: inline-flex; align-items: center; gap: 7px; height: 34px; padding: 0 14px; border-radius: 999px;
@@ -521,5 +522,9 @@ body {
 @media (max-width: 768px) {
   .module-rail { display: none; }
 }
-.pill-bar { scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
+.pill-bar { scrollbar-width: none; }
+/* Solo cuando no cabe: difumina el borde derecho para indicar que hay más. */
+@media (max-width: 900px) {
+  .pill-bar { -webkit-mask-image: linear-gradient(90deg, #000 92%, transparent); mask-image: linear-gradient(90deg, #000 92%, transparent); }
+}
 .pill-bar::-webkit-scrollbar { display: none; }
