@@ -90,7 +90,7 @@ function canal(): Mensajero {
   return consola
 }
 
-/** El canal que toque, guardando cada mensaje para la tarjeta de Atractor en Control. */
+/** El canal que toque, guardando cada mensaje para la tarjeta de Guía en Control. */
 export function mensajero(): Mensajero {
   const c = canal()
   const guardarlo = (texto: string) => apuntarMensaje(texto).catch(e => console.error('[historial]', e))

@@ -114,8 +114,9 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     <nav class="modulos" id="modulos" aria-label="Apps de Entropia" hidden>
       <a id="ir-markets" href="#" target="_blank" rel="noopener" hidden><span>02</span>Contexto ↗</a>
       <a id="ir-analytics" href="#" target="_blank" rel="noopener" hidden><span>03</span>Control ↗</a>
+      <a id="ir-backtesting" href="#" target="_blank" rel="noopener" hidden><span>04</span>Backtesting ↗</a>
     </nav>
-    <p class="ayuda">Tres plantas: abajo tú, en medio el mercado y arriba el mentor. Elige planta abajo a la izquierda, arrastra para girar y toca a una persona para ver qué hace.</p>
+    <p class="ayuda">Tres plantas: abajo tú (Control y Backtesting), en medio el mercado y arriba Atractor, que lo evalúa todo, y Guía, que te escribe. Elige planta abajo a la izquierda, arrastra para girar y toca a una persona para ver qué hace.</p>
   </header>
   <div class="contenido">
     <div class="escena" id="escena">
@@ -147,7 +148,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   // ───────────────────────── Datos ─────────────────────────
   const AGENTES = [
     // Ático · Atractor
-    { id: 'coordinador', nombre: 'Atractor', rol: 'Ordena todo y te escribe a Telegram', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
+    { id: 'atractor', nombre: 'Atractor', rol: 'Mentor: evalúa Control, Contexto y Backtesting y te dice qué va bien y qué no', ropa: 0x2c3e66, piel: 0xe3b48f, pelo: 0x2b1d14, pantalon: 0x22252b, largo: true },
+    { id: 'coordinador', nombre: 'Guía', rol: 'Te escribe a Telegram lo que dice el equipo', ropa: 0x1d4f5c, piel: 0xc58c66, pelo: 0x1a120d, pantalon: 0x22252b },
     // Planta 1 · Mercado
     { id: 'macro', nombre: 'Macro', rol: 'Eventos económicos', ropa: 0x1f2d3d, piel: 0xb98563, pelo: 0x231812, pantalon: 0x3a3f47 },
     { id: 'estructura', nombre: 'Técnico', rol: 'Niveles y zonas del gráfico', ropa: 0x7a2e3a, piel: 0xa8714e, pelo: 0x15100c, pantalon: 0x2a2d33 },
@@ -161,12 +163,15 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     { id: 'bienestar', nombre: 'Pulso', rol: 'Cómo llegas tú hoy', ropa: 0x2f7a6d, piel: 0xe8bb98, pelo: 0x5c3a22, pantalon: 0x1c1f24, largo: true },
     { id: 'cuentas', nombre: 'Capital', rol: 'Gestor de cuentas: límites y fondeo', ropa: 0x4b4f8a, piel: 0xcf9c78, pelo: 0x2e2018, pantalon: 0x23262c },
     { id: 'coach', nombre: 'Coach', rol: 'Qué mejorar en tus métricas y en ti', ropa: 0x22d3ee, piel: 0x9c6a48, pelo: 0x14100d, pantalon: 0x1e2a36 },
+    { id: 'backtesting', nombre: 'Backtesting', rol: 'Tu setup en el histórico y el replay para entrenar', ropa: 0x3b4a5e, piel: 0xe0b08a, pelo: 0x6b4a2c, pantalon: 0x1f2328, largo: true },
   ]
 
   const EJEMPLO = {
     ejemplo: true, equipos: ['Nasdaq'], semaforo: 'ambar', actualizado: new Date().toISOString(),
     agentes: {
       coordinador: { estado: 'trabajando', mensaje: 'Te ha escrito: mercado regular, noticias poco favorables y volatilidad alta. Hoy mejor no operar las funded.' },
+      atractor: { estado: 'alerta', mensaje: 'Tus ganadoras reales son de 260 $ de media; con el TP fijo serían 440 $. Es ejecución, no el setup.' },
+      backtesting: { estado: 'trabajando', mensaje: 'Último backtest: 212 operaciones, acierto 41 %, 38 $ por operación.' },
       estructura: { estado: 'alerta', mensaje: 'Ha barrido el mínimo de Asia a las 15:42. Todavía no ha recuperado el nivel.' },
       volumen: { estado: 'trabajando', mensaje: 'Poco volumen: 0,7 veces lo normal a esta hora.' },
       macro: { estado: 'trabajando', mensaje: '14:30 CPI. Evita abrir posiciones desde 15 min antes.' },
@@ -189,9 +194,9 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   // ───────────────────────── Plano (metros) ─────────────────────────
   // Edificio de tres plantas de 38 × 25 m. En cada planta: fila norte de
   // salas, pasillo (z 11-13) con el ascensor al fondo, y fila sur.
-  //   Planta baja · Tú: Rendimiento, Pulso y Capital → Coach → Academia.
+  //   Planta baja · Control: Rendimiento, Pulso y Capital → Coach, y Backtesting (con los simuladores del replay).
   //   Planta 1 · Mercado: todo el contexto de la operativa.
-  //   Ático · Atractor: su despacho, la sala de mando y una gran terraza.
+  //   Ático · Atractor: su despacho, la sala de mando (donde Guía te escribe) y una gran terraza.
   const ALTURA_PLANTA = 4.2
   const PLANTAS = [
     { nombre: 'Planta baja · Control', corto: 'Control' },
@@ -203,7 +208,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     pulso: { planta: 0, x0: 13, x1: 25, z0: 0, z1: 11, nombre: 'Pulso', suelo: 'moqueta', puerta: 19, vidrio: true },
     capital: { planta: 0, x0: 25, x1: 38, z0: 0, z1: 11, nombre: 'Capital', suelo: 'roble', puerta: 31.5, vidrio: true },
     coach: { planta: 0, x0: 0, x1: 17, z0: 13, z1: 25, nombre: 'Coach', suelo: 'claro', puerta: 8.5 },
-    academia: { planta: 0, x0: 17, x1: 38, z0: 13, z1: 25, nombre: 'Academia', suelo: 'caucho', puerta: 21 },
+    academia: { planta: 0, x0: 17, x1: 38, z0: 13, z1: 25, nombre: 'Backtesting', suelo: 'caucho', puerta: 21 },
 
     mercado: { planta: 1, x0: 0, x1: 26, z0: 0, z1: 11, nombre: 'Sala de mercados', suelo: 'roble', puerta: 13 },
     reuniones: { planta: 1, x0: 26, x1: 38, z0: 0, z1: 11, nombre: 'Sala de reuniones', suelo: 'claro', puerta: 32, vidrio: true },
@@ -223,7 +228,9 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     bienestar: { x: 19, z: 6.2, rot: 0, sala: 'pulso' },
     cuentas: { x: 31.5, z: 6.2, rot: 0, sala: 'capital' },
     coach: { x: 8.5, z: 17.6, rot: Math.PI, sala: 'coach' },
-    coordinador: { x: 8, z: 5, rot: 0, sala: 'despacho' },
+    atractor: { x: 8, z: 5, rot: 0, sala: 'despacho' },
+    coordinador: { x: 21, z: 8.5, rot: 0, sala: 'mando' },
+    backtesting: { x: 24.5, z: 17, rot: 0, sala: 'academia' },
   }
   ;['macro', 'estructura', 'volatilidad', 'volumen', 'noticias', 'fed', 'earnings'].forEach((id, i) => {
     const col = i % 4, fila = Math.floor(i / 4)
@@ -237,8 +244,8 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     { x: 12.2, z: 21.8, rot: 0, pose: 'sentado', sala: 'coach', que: 'sesión con el coach' },
     { x: 20.5, z: 16.5, rot: 0, pose: 'andando', sala: 'academia', que: 'cinta' },
     { x: 24.6, z: 21.4, rot: Math.PI / 2, pose: 'de pie', sala: 'academia', que: 'estiramientos' },
-    { x: 31.5, z: 21.2, rot: 0, pose: 'sentado', sala: 'academia', que: 'simulador' },
-    { x: 34.8, z: 21.2, rot: 0, pose: 'sentado', sala: 'academia', que: 'simulador' },
+    { x: 31.5, z: 21.2, rot: 0, pose: 'sentado', sala: 'academia', que: 'replay de entrenamiento' },
+    { x: 34.8, z: 21.2, rot: 0, pose: 'sentado', sala: 'academia', que: 'replay de entrenamiento' },
     { x: 17.6, z: 9.6, rot: Math.PI, pose: 'sentado', sala: 'pulso', que: 'sillón' },
     // Planta 1
     { x: 2.6, z: 21.6, rot: 0, pose: 'sentado', sala: 'cafeteria', que: 'sofá' },
@@ -640,7 +647,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
   for (const x of [4.8, 12.2]) { const s = grupo(x, 21.8, 0); caja(0.6, 0.08, 0.55, M.silla, 0, 0.46, 0, s); caja(0.6, 0.6, 0.08, M.silla, 0, 0.8, 0.26, s) }
   caja(3.0, 0.04, 2.2, M.tela, 8.5, 0.02, 21.2, capa, false)
   planta(0.8, 13.8); planta(16.2, 24.2, 1.6)
-  // Academia: cinta, esterilla, mancuernas, espejo y dos simuladores
+  // Backtesting y entrenamiento: cinta, esterilla, mancuernas, espejo y dos simuladores para el replay
   caja(0.9, 0.22, 2.1, M.negro, 20.5, 0.11, 16.5); caja(0.8, 1.2, 0.1, M.patas, 20.5, 0.8, 15.5); caja(0.9, 0.08, 0.35, M.negro, 20.5, 1.35, 15.6)
   caja(1.8, 0.02, 0.8, mat(0x2f7a6d), 24.6, 0.012, 21.4, capa, false)
   for (let k = 0; k < 5; k++) caja(0.5, 0.12, 0.14, M.laton, 27.4, 0.2 + k * 0.25, 15 + (k % 2) * 0.1)
@@ -1133,7 +1140,7 @@ li button[aria-pressed="true"] .mensaje { color: var(--texto); }
     if (!r.ok) return
     const m = await r.json()
     let alguno = false
-    for (const [id, url] of [['ir-markets', m.markets], ['ir-analytics', m.analytics]]) {
+    for (const [id, url] of [['ir-markets', m.markets], ['ir-analytics', m.analytics], ['ir-backtesting', m.backtesting]]) {
       if (!url) continue
       const a = document.getElementById(id)
       a.href = url

@@ -104,7 +104,7 @@ export default function TuHoy() {
 
   return (
     <div className="page-inner">
-      <PageHeader title="Hoy" subtitle="Lo que te dice Atractor, cómo van tus métricas y cómo vas tú, que eres quien ejecuta." />
+      <PageHeader title="Hoy" subtitle="Lo que te escribe Guía, cómo van tus métricas y cómo vas tú, que eres quien ejecuta." />
 
       {tu === null && (
         <div className="card" style={{ marginBottom: 20, color: 'var(--text2)' }}>
@@ -113,7 +113,7 @@ export default function TuHoy() {
       )}
 
       <div style={{ marginBottom: 20 }}>
-        <Card title="Atractor · lo que te ha dicho hoy">
+        <Card title="Guía · lo que te ha escrito hoy">
           <Atractor mensajes={tu?.atractor} />
         </Card>
       </div>

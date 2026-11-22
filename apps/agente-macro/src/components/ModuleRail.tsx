@@ -18,6 +18,9 @@ const IconMarkets: Icono = p => (
 const IconAnalytics: Icono = p => (
   <svg viewBox="0 0 24 24" {...trazo} {...p}><path d="M4 19.5h16" /><path d="M6.5 16V11M11 16V6.5M15.5 16v-3.5M20 16V9" /></svg>
 )
+const IconBacktesting: Icono = p => (
+  <svg viewBox="0 0 24 24" {...trazo} {...p}><path d="M4 12a8 8 0 1 0 2.4-5.7" /><path d="M4 4v4h4" /><path d="M12 8v4l3 2" /></svg>
+)
 const IconFoco: Icono = p => (
   <svg viewBox="0 0 24 24" {...trazo} {...p}><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3.2" /></svg>
 )
@@ -26,6 +29,7 @@ const MODULOS: { id: string; nombre: string; Icon: Icono; href?: string; activo?
   { id: 'intelligence', nombre: 'Atractor', Icon: IconIntelligence, href: process.env.NEXT_PUBLIC_URL_INTELLIGENCE || '/oficina' },
   { id: 'markets', nombre: 'Contexto', Icon: IconMarkets, href: conBase('/home'), activo: true },
   { id: 'analytics', nombre: 'Control', Icon: IconAnalytics, href: process.env.NEXT_PUBLIC_URL_ANALYTICS || '/analytics/hoy' },
+  { id: 'backtesting', nombre: 'Backtesting', Icon: IconBacktesting, href: process.env.NEXT_PUBLIC_URL_BACKTESTING || '/backtesting' },
 ]
 
 const CLAVE_FOCO = 'entropia_foco'

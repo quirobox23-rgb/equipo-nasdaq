@@ -16,9 +16,22 @@ Arranca la oficina y sirve las dos apps dentro de ella:
 
 - http://localhost:3000/oficina: la oficina de agentes.
 - http://localhost:3000/markets: Contexto (Entropia Markets).
-- http://localhost:3000/analytics: Tú (Entropia Analytics).
+- http://localhost:3000/analytics: Control (Entropia Analytics).
+- http://localhost:3000/backtesting: Backtesting (tu setup en velas reales y el replay de entrenamiento).
 
 La primera vez instala y compila las apps, así que tarda unos minutos. Si cambias algo en las apps, usa `npm run entropia -- --rehacer`. Sin claves de Firebase o Supabase, las apps funcionan en modo local: no piden login y todo está abierto, pensado para probarlas en tu ordenador.
+
+## Backtesting y Atractor
+
+Tres bloques mandan sus datos a **Atractor**, el mentor, que te dice qué va bien y qué no: **Control** (lo que haces en tus cuentas), **Contexto** (el mercado) y **Backtesting** (lo que tu setup da en el histórico y lo que haces en el replay). **Guía** es quien te lo cuenta por Telegram.
+
+En `/backtesting`:
+
+1. **Datos**: sube un CSV (Databento, NinjaTrader, Sierra Chart o cualquiera con fecha y OHLC; de ticks o de 1 minuto, mejor que de 15) o descarga de Databento pegando tu clave. Antes de descargar te dice cuánto cuesta. La clave no se guarda y las velas quedan solo en `data/backtesting/`: Entropia no trae ni reparte datos de CME.
+2. **Backtest** (`src/backtesting/motor.ts`): giro M15 (máximo o mínimo con N velas a cada lado) → zona fresca (pocos toques antes) → disparo con una vela M15 entera fuera del nivel → orden límite en el retroceso Fibonacci (0,75 por defecto, zona 0,71–0,79) → SL y TP fijos en dólares, sin BE → si la primera del día es pérdida, día cerrado. El SL y el TP se resuelven con las velas base; si los dos caen en la misma vela, cuenta SL (se puede cambiar). Toca una operación para ver su gráfico y comprobar que el motor ve tu setup como tú.
+3. **Ciclos A/B**: las mismas señales con dos riesgos distintos (por defecto A arriesga 1.000 para ganar 500 y B 600 para ganar 800), aplicadas a challenges seguidas para ver cuál aprueba más y cuánto cuesta cada aprobada.
+4. **Replay**: un día real minuto a minuto; entras tú a mercado y el SL y el TP son los del plan. Al terminar se guarda cuántas entradas eran tu setup.
+5. **Atractor** (`src/personal/atractor.ts`): cruza tus operaciones reales con el backtest (¿recortas ganadoras?, ¿alargas el SL?, ¿operas más de lo que da el setup?), el replay y la volatilidad del día. Sus dos líneas principales van en el mensaje de la mañana de Guía (🧠).
 
 ## Cómo está organizada
 

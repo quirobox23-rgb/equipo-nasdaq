@@ -1,4 +1,4 @@
-// Lo que Atractor te ha escrito, guardado para verlo también en Control
+// Lo que Guía te ha escrito, guardado para verlo también en Control
 // (pantalla Hoy) y no solo en Telegram. Se guardan los tres últimos días.
 import { config } from '../config.ts'
 import { leer, guardar } from '../almacen.ts'
