@@ -1,6 +1,6 @@
-// Tus operaciones de hoy contadas desde Telegram, para que Atractor te avise
+// Tus operaciones de hoy contadas desde Telegram, para que Guía te avise
 // en el momento aunque Factor Métricas solo se actualice con el CSV de la
-// noche. Al abrir la sesión Atractor te manda un botón por cuenta (TP, SL,
+// noche. Al abrir la sesión Guía te manda un botón por cuenta (TP, SL,
 // BE, deshacer); al cerrar cada operación pulsas su resultado. También vale
 // escribir "op F1 -300" para un importe concreto.
 import { config } from '../config.ts'
@@ -83,7 +83,7 @@ export async function apuntarOperacion(cuenta: string, que: string, plan: PlanTr
 }
 
 /**
- * Operaciones de hoy para Atractor: en cada cuenta con algo apuntado desde
+ * Operaciones de hoy para Guía: en cada cuenta con algo apuntado desde
  * Telegram mandan esas; en el resto, las de Factor Métricas (sin duplicar
  * cuando por la noche entra el CSV).
  */

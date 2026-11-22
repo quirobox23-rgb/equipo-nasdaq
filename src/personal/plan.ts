@@ -119,11 +119,11 @@ export function bloqueMentor(opsAyer: Operacion[], plan: PlanTrading): string[] 
   return lineas
 }
 
-/** Un aviso de Atractor durante la sesión. La clave evita repetirlo. */
+/** Un aviso de Guía durante la sesión. La clave evita repetirlo. */
 export interface AvisoEnVivo { clave: string; texto: string }
 
 /**
- * Atractor mira tus operaciones de hoy mientras operas y te escribe en el
+ * Guía mira tus operaciones de hoy mientras operas y te escribe en el
  * momento del impulso: tras la primera perdedora en una funded, si vuelves a
  * entrar con el día cerrado, si un SL se ha alargado o si una challenge llega
  * a su pérdida diaria. Mensajes cortos y literales, sin pasar por la IA.

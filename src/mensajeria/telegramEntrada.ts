@@ -8,7 +8,7 @@ import { mensajero } from './index.ts'
 interface Update {
   update_id: number
   message?: { chat: { id: number }; text?: string }
-  /** Un botón pulsado (los de Atractor para apuntar TP o SL). */
+  /** Un botón pulsado (los de Guía para apuntar TP o SL). */
   callback_query?: { id: string; data?: string; message?: { chat: { id: number } } }
 }
 

@@ -22,11 +22,12 @@ import { leerEstado } from './estadoOficina.ts'
 import { modulos, servirAnalytics, pasarAMarkets } from './entropia.ts'
 import { resumenTu, type RegistroSesgoTu } from './tu.ts'
 import type { Nota } from './readiness.ts'
+import { atenderBacktesting, estadoBacktesting, evaluacionAtractor } from './backtesting/servicio.ts'
 
 const PAGINA_OFICINA = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'public', 'oficina.html')
 
 export async function procesarMensaje(texto: string, ahora = new Date()): Promise<string> {
-  // Botones de Atractor (o "op F1 -300"): apunta la operación y avisa al momento si te sales del plan.
+  // Botones de Guía (o "op F1 -300"): apunta la operación y avisa al momento si te sales del plan.
   const op = interpretarOperacion(texto)
   if (op) {
     const linea = await apuntarOperacion(op.cuenta, op.que, await cargarPlan(), ahora)
@@ -105,6 +106,12 @@ async function conZonaTu(e: Awaited<ReturnType<typeof leerEstado>>) {
     ? { estado: 'trabajando', mensaje: tu.consejos[0], hora }
     : { estado: 'descanso', mensaje: 'Sin nada que corregir por ahora.', hora }
   agentes.rendimiento ??= { estado: 'descanso', mensaje: 'Tus métricas, en Analytics → Tú hoy.', hora }
+  agentes.backtesting = { ...(await estadoBacktesting()), hora }
+  // Atractor evalúa los tres bloques; su primer "esto no" (o "esto sí") es lo que enseña.
+  const ev = await evaluacionAtractor().catch(() => null)
+  agentes.atractor = ev?.mal[0] ? { estado: 'alerta', mensaje: ev.mal[0], hora }
+    : ev?.bien[0] ? { estado: 'trabajando', mensaje: ev.bien[0], hora }
+    : { estado: 'descanso', mensaje: ev?.atento[0] ?? 'Esperando datos de Control, Contexto y Backtesting.', hora }
   return { ...e, agentes }
 }
 
@@ -147,6 +154,7 @@ export function arrancarServidor() {
       await servirAnalytics(url.pathname, res)
       return
     }
+    if (await atenderBacktesting(req, res, url)) return
     if (req.method === 'GET' && url.pathname === '/salud') {
       res.writeHead(200).end('ok')
       return
@@ -179,6 +187,6 @@ export function arrancarServidor() {
     }
     res.writeHead(404).end()
   })
-  server.listen(config.puerto, () => console.log(`[oficina] Abre http://localhost:${config.puerto}/oficina (Contexto en /markets, Tú en /analytics)`))
+  server.listen(config.puerto, () => console.log(`[oficina] Abre http://localhost:${config.puerto}/oficina (Contexto en /markets, Control en /analytics, Backtesting en /backtesting)`))
   return server
 }

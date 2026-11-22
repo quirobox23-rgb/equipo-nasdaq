@@ -21,6 +21,7 @@ export function modulos() {
   return {
     markets: config.apps.markets || '/markets/home',
     analytics: config.apps.analytics || '/analytics/hoy',
+    backtesting: '/backtesting',
   }
 }
 

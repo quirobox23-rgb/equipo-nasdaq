@@ -16,6 +16,8 @@ import { equiposActivos, type DefinicionEquipo } from './equipo/definiciones.ts'
 import { analizarNoticias } from './equipo/noticias.ts'
 import { evaluarBienestar, aptitud, cargarAjustesCoach, preguntaCheckin, type CheckIn } from './personal/coach.ts'
 import { cargarReglas, evaluarCuentas, proveedorManual, type ReglasCuenta } from './personal/gestor.ts'
+import { lineasParaGuia } from './personal/atractor.ts'
+import { evaluacionAtractor } from './backtesting/servicio.ts'
 import { avisosEnVivo, bloqueMentor, cargarPlan, recordatorioPlan, revisarDia, type Operacion } from './personal/plan.ts'
 import { guardarCuentasVivo, operacionesVivo, tecladoCuentas, unirOperaciones } from './personal/enVivo.ts'
 import { configurado as configuradoFM, leerFactorMetricas } from './personal/factorMetricas.ts'
@@ -188,11 +190,12 @@ export async function guiaDiaria(ahora = new Date()): Promise<string> {
     `📅 Hoy es ${fechaLarga(ahora)}.`,
     ...describirReadiness(mercado, null, cu.fases),
     ...bloqueMentor(opsAyer, plan),
+    ...lineasParaGuia(await evaluacionAtractor(cu.operaciones ?? [], ahora).catch(() => ({ bien: [], mal: [], atento: [] }))),
     ...(config.soloTexto ? [] : inf.flatMap(i => i.contexto)),
     `💬 ${preguntaCheckin(habitos)}`,
   ]
   const paraIA = [
-    'Empieza diciendo qué día es hoy (📅); justo después pon el bloque de Daily Trading Readiness (🧭) tal cual, luego las líneas de ayer y del plan (📋, 🧑‍🏫, 🎯) tal cual, y después cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
+    'Empieza diciendo qué día es hoy (📅); justo después pon el bloque de Daily Trading Readiness (🧭) tal cual, luego las líneas de ayer y del plan (📋, 🧑‍🏫, 🎯) y las de Atractor (🧠) tal cual, y después cuenta, en este orden: datos macro y la Fed, resultados de empresas, tus cuentas, y volatilidad y rango esperado.',
     'Si hay datos o discursos importantes, explica en una frase por qué pueden mover el NQ, sin adivinar la dirección.',
     'Termina con la pregunta del coach (💬) tal cual.',
     ...(config.soloTexto ? [SIN_PRECIOS] : []),
@@ -256,7 +259,7 @@ export async function vigilancia(ahora = new Date()): Promise<string | null> {
 }
 
 /**
- * Atractor mira tus operaciones de hoy y te escribe en cuanto te sales del
+ * Guía mira tus operaciones de hoy y te escribe en cuanto te sales del
  * plan (primera perdedora en una funded, volver a entrar con el día cerrado,
  * SL alargado, pérdida diaria de una challenge). Cuentan las que apuntas en
  * Telegram y, en las demás cuentas, las de Factor Métricas. Cada aviso sale
@@ -274,7 +277,7 @@ export async function avisosAtractor(ahora = new Date()): Promise<string | null>
   const nuevos = avisos.filter(a => !vistas.has(a.clave))
   if (!nuevos.length) return null
   await guardar('atractor-vivo', { dia: hoy, claves: [...vistas, ...nuevos.map(a => a.clave)] })
-  return ['*Atractor*', ...nuevos.map(a => a.texto)].join('\n')
+  return ['*Guía*', ...nuevos.map(a => a.texto)].join('\n')
 }
 
 /** Cada 5 minutos durante la sesión (por si entran operaciones de Factor Métricas). */
@@ -283,7 +286,7 @@ export async function atractorEnVivo(ahora = new Date()): Promise<string | null>
   return t ? enviar(t) : null
 }
 
-/** 15:25 en España: Atractor abre la sesión con un botón por cuenta para apuntar cada resultado. */
+/** 15:25 en España: Guía abre la sesión con un botón por cuenta para apuntar cada resultado. */
 export async function aperturaAtractor(ahora = new Date()): Promise<string | null> {
   const plan = await cargarPlan()
   const fm = configuradoFM() ? await intentar('factor-metricas', () => leerFactorMetricas(ahora)) : null
@@ -292,7 +295,7 @@ export async function aperturaAtractor(ahora = new Date()): Promise<string | nul
   if (!cuentas.length) return null
   await guardarCuentasVivo(cuentas, ahora)
   const texto = [
-    '*Atractor · sesión abierta*',
+    '*Guía · sesión abierta*',
     recordatorioPlan(plan),
     'Al cerrar cada operación, pulsa su resultado. Si no es TP ni SL, escribe por ejemplo: op F1 -300',
   ].join('\n')

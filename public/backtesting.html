@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Entropia · Backtesting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Mismo mundo que la oficina: grafito, antracita y cian. Solo información, sin adornos. */
+:root {
+  --fondo: #0f1318; --panel: #161c23; --panel-2: #1c242d; --linea: #2a3440;
+  --texto: #e7ecf1; --suave: #93a0ae; --cian: #22d3ee; --azul: #3b82f6; --laton: #c9a46a;
+  --verde: #3ecf8e; --ambar: #f0b04a; --rojo: #ef5b5b;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--fondo); color: var(--texto); }
+body { font-family: var(--sans); font-size: 14px; line-height: 1.45; }
+.envoltura { max-width: 1280px; margin: 0 auto; padding: 18px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 14px; }
+header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; }
+h1 { margin: 0; font-size: clamp(1.2rem, 2.4vw, 1.5rem); font-weight: 600; letter-spacing: -0.01em; }
+h1 span { color: var(--cian); }
+.modulos { display: flex; gap: 8px; flex-wrap: wrap; }
+.modulos a { display: inline-flex; gap: 7px; align-items: center; text-decoration: none; color: var(--texto); background: var(--panel); border: 1px solid var(--linea); border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 500; }
+.modulos a:hover { border-color: var(--cian); }
+.modulos a[aria-current="page"] { border-color: var(--cian); color: var(--cian); }
+.modulos a span { font: 500 10px var(--mono); color: var(--cian); }
+.intro { margin: 0; color: var(--suave); max-width: 80ch; }
+nav.pestanas { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--linea); }
+nav.pestanas button { background: none; border: 0; border-bottom: 2px solid transparent; color: var(--suave); font: 500 13.5px var(--sans); padding: 9px 12px; cursor: pointer; }
+nav.pestanas button[aria-selected="true"] { color: var(--texto); border-bottom-color: var(--cian); }
+nav.pestanas button:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--cian); outline-offset: 2px; }
+section[hidden] { display: none; }
+section { display: grid; gap: 14px; }
+.rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+.tarjeta { background: var(--panel); border: 1px solid var(--linea); border-radius: 10px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+.tarjeta h2 { margin: 0; font-size: 14.5px; font-weight: 600; }
+.tarjeta h3 { margin: 4px 0 0; font-size: 13px; font-weight: 600; color: var(--suave); }
+.nota { margin: 0; color: var(--suave); font-size: 12.5px; }
+.campos { display: grid; gap: 8px 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+label { display: grid; gap: 4px; font-size: 12px; color: var(--suave); }
+input, select { background: var(--panel-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 6px; font: 14px var(--sans); padding: 7px 9px; min-width: 0; width: 100%; }
+input[type="checkbox"] { width: auto; }
+label.check { display: flex; align-items: center; gap: 8px; color: var(--texto); font-size: 13px; }
+.botones { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+button.b { background: var(--panel-2); color: var(--texto); border: 1px solid var(--linea); border-radius: 6px; font: 500 13px var(--sans); padding: 8px 13px; cursor: pointer; }
+button.b:hover:not(:disabled) { border-color: var(--cian); }
+button.b.prim { background: var(--cian); color: #071318; border-color: var(--cian); font-weight: 600; }
+button.b.verde { border-color: var(--verde); color: var(--verde); }
+button.b.rojo { border-color: var(--rojo); color: var(--rojo); }
+button.b:disabled { opacity: .45; cursor: default; }
+.estado { font-size: 12.5px; color: var(--suave); margin: 0; min-height: 1.2em; }
+.estado.error { color: var(--rojo); }
+.estado.ok { color: var(--verde); }
+.kpis { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+.kpi { background: var(--panel-2); border-radius: 8px; padding: 9px 11px; display: grid; gap: 2px; }
+.kpi b { font: 500 18px var(--mono); font-variant-numeric: tabular-nums; }
+.kpi span { font-size: 11.5px; color: var(--suave); }
+.pos { color: var(--verde); } .neg { color: var(--rojo); }
+.tabla { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--linea); white-space: nowrap; }
+th { color: var(--suave); font-weight: 500; }
+tbody tr.clic { cursor: pointer; }
+tbody tr.clic:hover { background: var(--panel-2); }
+tbody tr[aria-selected="true"] { background: rgba(34, 211, 238, .08); }
+.lienzo { width: 100%; height: 260px; display: block; background: #11161c; border-radius: 8px; border: 1px solid var(--linea); }
+.lienzo.alto { height: 380px; }
+@media (max-width: 600px) { .lienzo.alto { height: 300px; } }
+.chip { display: inline-block; font: 500 10.5px var(--mono); letter-spacing: .05em; text-transform: uppercase; border-radius: 3px; padding: 2px 6px; }
+.chip.tp { background: rgba(62, 207, 142, .12); color: var(--verde); }
+.chip.sl { background: rgba(239, 91, 91, .14); color: var(--rojo); }
+.chip.cierre { background: rgba(240, 176, 74, .12); color: var(--ambar); }
+.comparar { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
+.lista-atractor { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.lista-atractor li { background: var(--panel-2); border-radius: 8px; padding: 9px 11px; border-left: 3px solid var(--linea); }
+.lista-atractor.bien li { border-left-color: var(--verde); }
+.lista-atractor.mal li { border-left-color: var(--rojo); }
+.lista-atractor.atento li { border-left-color: var(--ambar); }
+.replay-barra { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.reloj-replay { font: 500 13px var(--mono); color: var(--suave); }
+.posicion { font: 500 13px var(--mono); }
+</style>
+</head>
+<body>
+<div class="envoltura">
+  <header>
+    <h1>Entropia · <span>Backtesting</span></h1>
+    <nav class="modulos" aria-label="Módulos de Entropia">
+      <a href="/oficina"><span>01</span>Atractor</a>
+      <a href="/markets/home"><span>02</span>Contexto</a>
+      <a href="/analytics/hoy"><span>03</span>Control</a>
+      <a href="/backtesting" aria-current="page"><span>04</span>Backtesting</a>
+    </nav>
+  </header>
+  <p class="intro">Tu setup en velas reales de NQ/MNQ: rotura M15 con la vela entera fuera del nivel, zona fresca, entrada en el retroceso 0,71–0,79, SL y TP fijos y día cerrado si la primera es pérdida. Los resultados le llegan a Atractor, que los cruza con Control y Contexto.</p>
+
+  <nav class="pestanas" role="tablist" aria-label="Secciones">
+    <button role="tab" aria-selected="true" data-p="datos">1 · Datos</button>
+    <button role="tab" aria-selected="false" data-p="backtest">2 · Backtest</button>
+    <button role="tab" aria-selected="false" data-p="ciclos">3 · Ciclos A/B</button>
+    <button role="tab" aria-selected="false" data-p="replay">4 · Replay</button>
+    <button role="tab" aria-selected="false" data-p="atractor">5 · Atractor</button>
+  </nav>
+
+  <!-- ───────── Datos ───────── -->
+  <section id="p-datos" role="tabpanel">
+    <div class="tarjeta">
+      <h2>Velas cargadas</h2>
+      <p class="nota" id="info-datos">Cargando…</p>
+    </div>
+    <div class="rejilla">
+      <div class="tarjeta">
+        <h2>Subir un CSV</h2>
+        <p class="nota">De Databento, NinjaTrader (Exportar datos), Sierra Chart (Export to text) o cualquiera con fecha, open, high, low y close. Mejor de 1 minuto o de ticks: así se sabe si llegó antes el SL o el TP.</p>
+        <div class="campos">
+          <label>Archivo<input type="file" id="csv" accept=".csv,.txt,.tsv"></label>
+          <label>Hora del archivo
+            <select id="csv-tz">
+              <option value="utc">UTC (Databento)</option>
+              <option value="ny">Nueva York</option>
+              <option value="chicago">Chicago (CME)</option>
+              <option value="madrid">España</option>
+            </select>
+          </label>
+        </div>
+        <div class="botones"><button class="b prim" id="subir" type="button">Subir y leer</button></div>
+        <p class="estado" id="estado-csv" role="status"></p>
+      </div>
+      <div class="tarjeta">
+        <h2>Descargar de Databento con tu clave</h2>
+        <p class="nota">Pega tu clave de API de databento.com. No se guarda: se usa para esta descarga y las velas se quedan solo en este ordenador. Databento cobra la descarga a tu cuenta; antes te digo cuánto cuesta.</p>
+        <div class="campos">
+          <label style="grid-column: 1 / -1">Clave (db-…)<input type="password" id="db-clave" autocomplete="off" placeholder="db-…"></label>
+          <label>Instrumento<select id="db-inst"><option>MNQ</option><option>NQ</option></select></label>
+          <label>Velas<select id="db-esq"><option value="ohlcv-1m">1 minuto</option><option value="ohlcv-1s">1 segundo (más fiel, más pesado)</option></select></label>
+          <label>Desde<input type="date" id="db-desde"></label>
+          <label>Hasta<input type="date" id="db-hasta"></label>
+        </div>
+        <div class="botones">
+          <button class="b" id="db-coste" type="button">Ver coste</button>
+          <button class="b prim" id="db-bajar" type="button" disabled>Descargar</button>
+        </div>
+        <p class="estado" id="estado-db" role="status"></p>
+      </div>
+    </div>
+    <p class="nota">Licencia: los datos de CME son de quien los paga. Entropia no trae ni reparte velas; cada usuario usa su CSV o su propia cuenta de Databento.</p>
+  </section>
+
+  <!-- ───────── Backtest ───────── -->
+  <section id="p-backtest" role="tabpanel" hidden>
+    <div class="tarjeta">
+      <h2>Tu setup</h2>
+      <div class="campos" id="ajustes">
+        <label>Instrumento<select name="instrumento"><option>MNQ</option><option>NQ</option></select></label>
+        <label>Contratos<input name="contratos" type="number" min="1" step="1" value="4"></label>
+        <label>SL ($)<input name="slUsd" type="number" min="1" value="240"></label>
+        <label>TP ($)<input name="tpUsd" type="number" min="1" value="440"></label>
+        <label>Entrada Fibo<input name="fibo" type="number" min="0.5" max="0.95" step="0.01" value="0.75"></label>
+        <label>Dirección<select name="direccion"><option value="ambas">Compras y ventas</option><option value="largos">Solo compras</option><option value="cortos">Solo ventas</option></select></label>
+        <label>Toques máx. (zona fresca)<input name="maxToques" type="number" min="0" step="1" value="1"></label>
+        <label>Velas a cada lado del giro<input name="pivote" type="number" min="1" step="1" value="2"></label>
+        <label>Margen de toque (pts)<input name="toleranciaPts" type="number" min="0" step="0.25" value="2"></label>
+        <label>Espera de la orden (velas M15)<input name="caducidad" type="number" min="1" step="1" value="8"></label>
+        <label>Sesión desde (Nueva York)<input name="sesionInicio" type="time" value="09:30"></label>
+        <label>Sesión hasta (Nueva York)<input name="sesionFin" type="time" value="16:00"></label>
+        <label>Máx. operaciones al día<input name="maxOpsDia" type="number" min="1" step="1" value="2"></label>
+        <label>Comisión por operación ($)<input name="comisionUsd" type="number" min="0" step="0.5" value="0"></label>
+        <label>Si SL y TP caen en la misma vela<select name="ambiguo"><option value="sl">Cuento SL (prudente)</option><option value="tp">Cuento TP</option></select></label>
+        <label class="check"><input name="primeraPerdidaCierra" type="checkbox" checked> Si la primera es pérdida, día cerrado</label>
+      </div>
+      <p class="nota" id="puntos-nota"></p>
+      <div class="botones"><button class="b prim" id="ejecutar" type="button">Pasar el backtest</button></div>
+      <p class="estado" id="estado-bt" role="status"></p>
+    </div>
+    <div id="resultado" hidden>
+      <div class="tarjeta">
+        <h2>Resultado</h2>
+        <div class="kpis" id="kpis"></div>
+        <p class="nota" id="nota-bt"></p>
+        <canvas class="lienzo" id="curva" aria-label="Curva de resultados acumulados"></canvas>
+      </div>
+      <div class="rejilla" style="margin-top:14px">
+        <div class="tarjeta"><h2>Por hora de entrada (España)</h2><div class="tabla" id="t-hora"></div></div>
+        <div class="tarjeta"><h2>Por día y lado</h2><div class="tabla" id="t-dia"></div><h3>Según el rango del día anterior (Contexto)</h3><div class="tabla" id="t-vol"></div></div>
+      </div>
+      <div class="tarjeta" style="margin-top:14px">
+        <h2>Operaciones</h2>
+        <p class="nota">Toca una para ver el gráfico de ese día con el nivel, la entrada, el SL y el TP. Sirve para comprobar que el motor ve tu setup como lo ves tú.</p>
+        <canvas class="lienzo alto" id="grafico-op" hidden aria-label="Gráfico de la operación"></canvas>
+        <div class="tabla" id="t-ops" style="max-height: 420px; overflow-y: auto"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── Ciclos ───────── -->
+  <section id="p-ciclos" role="tabpanel" hidden>
+    <div class="tarjeta">
+      <h2>Ciclos de challenge: ¿cuál tiene más ventaja?</h2>
+      <p class="nota">Mismo setup y mismas señales, cambiando solo cuánto arriesgas y cuánto buscas. Cada ciclo se aplica a cuentas seguidas: cuando una se aprueba o se quema, empieza otra. Los contratos y filtros son los de la pestaña Backtest.</p>
+      <div class="comparar">
+        <div class="campos">
+          <label>Ciclo A · arriesgo ($)<input id="a-sl" type="number" value="1000"></label>
+          <label>Ciclo A · busco ($)<input id="a-tp" type="number" value="500"></label>
+        </div>
+        <div class="campos">
+          <label>Ciclo B · arriesgo ($)<input id="b-sl" type="number" value="600"></label>
+          <label>Ciclo B · busco ($)<input id="b-tp" type="number" value="800"></label>
+        </div>
+      </div>
+      <h3>Reglas de la challenge</h3>
+      <div class="campos">
+        <label>Objetivo ($)<input id="r-obj" type="number" value="3000"></label>
+        <label>Drawdown máx. EOD ($)<input id="r-dd" type="number" value="2000"></label>
+        <label>Pérdida diaria máx. ($)<input id="r-pd" type="number" value="1000"></label>
+        <label>Consistencia (mejor día ≤ %)<input id="r-cons" type="number" value="45"></label>
+        <label>Precio de la challenge ($)<input id="r-precio" type="number" value="0"></label>
+      </div>
+      <div class="botones"><button class="b prim" id="comparar" type="button">Comparar ciclos</button></div>
+      <p class="estado" id="estado-ciclos" role="status"></p>
+    </div>
+    <div class="comparar" id="res-ciclos"></div>
+  </section>
+
+  <!-- ───────── Replay ───────── -->
+  <section id="p-replay" role="tabpanel" hidden>
+    <div class="tarjeta">
+      <h2>Replay · sala de Entrenamiento</h2>
+      <p class="nota">Un día real, vela a vela. Tú decides dónde entrar; el SL y el TP son los de tu plan y no se tocan. Al terminar, Atractor ve cuántas de tus entradas eran tu setup.</p>
+      <div class="botones">
+        <label style="min-width: 180px">Día<select id="rp-dia"></select></label>
+        <button class="b" id="rp-azar" type="button">Día al azar</button>
+        <button class="b prim" id="rp-empezar" type="button">Empezar</button>
+        <label class="check"><input type="checkbox" id="rp-setups"> Enseñar los setups del motor</label>
+      </div>
+      <div class="replay-barra">
+        <span class="reloj-replay" id="rp-reloj">—</span>
+        <span class="posicion" id="rp-pos"></span>
+      </div>
+      <canvas class="lienzo alto" id="rp-lienzo" aria-label="Gráfico del replay en velas de 15 minutos"></canvas>
+      <div class="replay-barra">
+        <div class="botones">
+          <button class="b" id="rp-1" type="button" disabled>+1 min</button>
+          <button class="b" id="rp-5" type="button" disabled>+5 min</button>
+          <button class="b" id="rp-15" type="button" disabled>+15 min</button>
+          <button class="b" id="rp-play" type="button" disabled>▶ Reproducir</button>
+        </div>
+        <div class="botones">
+          <button class="b verde" id="rp-compra" type="button" disabled>Comprar</button>
+          <button class="b rojo" id="rp-venta" type="button" disabled>Vender</button>
+          <button class="b" id="rp-fin" type="button" disabled>Terminar sesión</button>
+        </div>
+      </div>
+      <p class="estado" id="estado-rp" role="status"></p>
+      <div class="tabla" id="rp-ops"></div>
+    </div>
+  </section>
+
+  <!-- ───────── Atractor ───────── -->
+  <section id="p-atractor" role="tabpanel" hidden>
+    <div class="tarjeta">
+      <h2>Lo que dice Atractor</h2>
+      <p class="nota">Cruza tus operaciones reales (Control), el mercado de hoy (Contexto) y tu backtest y replay. Guía te lo resume por la mañana en Telegram.</p>
+      <div class="botones"><button class="b" id="at-recargar" type="button">Actualizar</button></div>
+    </div>
+    <div class="rejilla">
+      <div class="tarjeta"><h2 class="pos">Va bien</h2><ul class="lista-atractor bien" id="at-bien"></ul></div>
+      <div class="tarjeta"><h2 class="neg">A corregir</h2><ul class="lista-atractor mal" id="at-mal"></ul></div>
+      <div class="tarjeta"><h2 style="color: var(--ambar)">Atenta a</h2><ul class="lista-atractor atento" id="at-atento"></ul></div>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id)
+  const API = 'backtesting/api/'
+  const base = location.pathname.endsWith('/') ? '../' : ''
+  const url = p => base + p
+  const usd = x => `${x < 0 ? '-' : ''}${Math.abs(Math.round(x)).toLocaleString('es-ES')} $`
+  const num = (x, d = 1) => Number(x).toLocaleString('es-ES', { maximumFractionDigits: d })
+  const horaEs = t => new Date(t).toLocaleString('es-ES', { timeZone: 'Europe/Madrid', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+  const soloHora = t => new Date(t).toLocaleTimeString('es-ES', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit' })
+  const VALOR = { NQ: 20, MNQ: 2 }
+
+  async function pedir(ruta, opciones) {
+    const r = await fetch(url(ruta), opciones)
+    const j = await r.json().catch(() => ({ error: `Error ${r.status}` }))
+    if (!r.ok || (j && j.error)) throw new Error(j?.error || `Error ${r.status}`)
+    return j
+  }
+  const post = (ruta, cuerpo) => pedir(ruta, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+  function estado(el, texto, tipo = '') { el.textContent = texto; el.className = `estado ${tipo}` }
+  function guardarLocal(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} }
+  function leerLocal(k) { try { return JSON.parse(localStorage.getItem(k) || 'null') } catch { return null } }
+
+  // ───────── Pestañas ─────────
+  const pestanas = [...document.querySelectorAll('nav.pestanas button')]
+  function abrir(p) {
+    for (const b of pestanas) b.setAttribute('aria-selected', String(b.dataset.p === p))
+    for (const b of pestanas) $(`p-${b.dataset.p}`).hidden = b.dataset.p !== p
+    guardarLocal('bt-pestana', p)
+    if (p === 'atractor') cargarAtractor()
+    if (p === 'replay') prepararReplay()
+    if (p === 'backtest') requestAnimationFrame(() => { if (ultimo) pintarCurva(ultimo) })
+  }
+  pestanas.forEach(b => b.addEventListener('click', () => abrir(b.dataset.p)))
+
+  // ───────── Datos ─────────
+  let datos = null
+  async function cargarDatos() {
+    try {
+      datos = await pedir(API + 'datos')
+      const el = $('info-datos')
+      el.textContent = datos.hay
+        ? `${datos.simbolo} · ${datos.origen} · ${datos.velas.toLocaleString('es-ES')} velas de ${datos.resolucion >= 60 ? `${datos.resolucion / 60} min` : `${datos.resolucion} s`} · del ${datos.desde} al ${datos.hasta}.`
+        : 'Todavía no hay velas. Sube un CSV o descárgalas de Databento con tu clave.'
+      if (datos.clavePorEnv) $('db-clave').placeholder = 'Usando DATABENTO_KEY del .env (o pega otra)'
+    } catch (e) { $('info-datos').textContent = e.message }
+  }
+  const hoy = new Date()
+  $('db-hasta').value = hoy.toISOString().slice(0, 10)
+  $('db-desde').value = new Date(hoy.getTime() - 365 * 86400000).toISOString().slice(0, 10)
+
+  $('subir').addEventListener('click', () => {
+    const f = $('csv').files[0]
+    const el = $('estado-csv')
+    if (!f) return estado(el, 'Elige un archivo primero.', 'error')
+    const xhr = new XMLHttpRequest()
+    xhr.open('POST', url(`${API}csv?tz=${$('csv-tz').value}&nombre=${encodeURIComponent(f.name)}`))
+    xhr.upload.onprogress = ev => { if (ev.lengthComputable) estado(el, `Subiendo… ${Math.round(ev.loaded / ev.total * 100)} %`) }
+    xhr.upload.onload = () => estado(el, 'Leyendo velas…')
+    xhr.onload = () => {
+      let j = {}
+      try { j = JSON.parse(xhr.responseText) } catch {}
+      if (xhr.status >= 400 || j.error) return estado(el, j.error || `Error ${xhr.status}`, 'error')
+      estado(el, `Listo: ${j.formato}, ${j.velas.toLocaleString('es-ES')} velas del ${j.desde} al ${j.hasta}. ${(j.avisos || []).join(' ')}`, 'ok')
+      cargarDatos(); diasReplay = null
+    }
+    xhr.onerror = () => estado(el, 'No se pudo subir el archivo.', 'error')
+    xhr.send(f)
+  })
+
+  const peticionDb = () => ({ clave: $('db-clave').value, instrumento: $('db-inst').value, esquema: $('db-esq').value, desde: $('db-desde').value, hasta: $('db-hasta').value })
+  $('db-coste').addEventListener('click', async () => {
+    const el = $('estado-db')
+    estado(el, 'Preguntando a Databento…')
+    try {
+      const { usd: c } = await post(API + 'databento/coste', peticionDb())
+      estado(el, `La descarga cuesta ${c.toLocaleString('es-ES', { maximumFractionDigits: 2 })} $ (lo cobra Databento a tu cuenta).`, 'ok')
+      $('db-bajar').disabled = false
+    } catch (e) { estado(el, e.message, 'error') }
+  })
+  ;['db-inst', 'db-esq', 'db-desde', 'db-hasta'].forEach(id => $(id).addEventListener('change', () => { $('db-bajar').disabled = true }))
+  $('db-bajar').addEventListener('click', async () => {
+    const el = $('estado-db')
+    $('db-bajar').disabled = true
+    estado(el, 'Descargando y leyendo velas… (un año de 1 minuto tarda un poco)')
+    try {
+      const j = await post(API + 'databento', peticionDb())
+      estado(el, `Listo: ${j.velas.toLocaleString('es-ES')} velas del ${j.desde} al ${j.hasta}. ${(j.avisos || []).join(' ')}`, 'ok')
+      $('db-clave').value = ''
+      cargarDatos(); diasReplay = null
+    } catch (e) { estado(el, e.message, 'error') }
+  })
+
+  // ───────── Ajustes ─────────
+  const formAjustes = $('ajustes')
+  function leerAjustes() {
+    const a = {}
+    for (const el of formAjustes.querySelectorAll('[name]')) a[el.name] = el.type === 'checkbox' ? el.checked : el.type === 'number' ? Number(el.value) : el.value
+    return a
+  }
+  function ponerAjustes(a) {
+    if (!a) return
+    for (const el of formAjustes.querySelectorAll('[name]')) if (a[el.name] !== undefined) { if (el.type === 'checkbox') el.checked = a[el.name]; else el.value = a[el.name] }
+  }
+  function notaPuntos() {
+    const a = leerAjustes()
+    const pp = VALOR[a.instrumento] * Math.max(1, a.contratos)
+    const r = x => Math.max(0.25, Math.round(x / pp / 0.25) * 0.25)
+    $('puntos-nota').textContent = `Con ${a.contratos} ${a.instrumento} (${pp} $ por punto): SL ${num(r(a.slUsd), 2)} puntos y TP ${num(r(a.tpUsd), 2)} puntos. Las horas de sesión van en Nueva York: 09:30 son las 15:30 en España.`
+    guardarLocal('bt-ajustes', a)
+  }
+  formAjustes.addEventListener('input', notaPuntos)
+  ponerAjustes(leerLocal('bt-ajustes'))
+  notaPuntos()
+
+  // ───────── Backtest ─────────
+  let ultimo = null
+  $('ejecutar').addEventListener('click', async () => {
+    const el = $('estado-bt')
+    estado(el, 'Pasando el backtest…')
+    $('ejecutar').disabled = true
+    try {
+      const r = await post(API + 'ejecutar', { ajustes: leerAjustes() })
+      estado(el, '')
+      pintarResultado(r)
+    } catch (e) { estado(el, e.message, 'error') }
+    $('ejecutar').disabled = false
+  })
+
+  function kpi(valor, texto, clase = '') { return `<div class="kpi"><b class="${clase}">${valor}</b><span>${texto}</span></div>` }
+  function tabla(cab, filas) {
+    return `<table><thead><tr>${cab.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${filas.join('')}</tbody></table>`
+  }
+  const filaGrupo = (k, g) => `<tr><td>${k}</td><td>${g.n}</td><td>${num(g.acierto)} %</td><td class="${g.usd >= 0 ? 'pos' : 'neg'}">${usd(g.usd)}</td></tr>`
+
+  function pintarResultado(r) {
+    ultimo = r
+    const s = r.stats
+    $('resultado').hidden = false
+    $('kpis').innerHTML = [
+      kpi(s.operaciones, 'operaciones'),
+      kpi(`${num(s.acierto)} %`, 'acierto'),
+      kpi(usd(s.pnl), 'resultado', s.pnl >= 0 ? 'pos' : 'neg'),
+      kpi(usd(s.esperanza), 'por operación', s.esperanza >= 0 ? 'pos' : 'neg'),
+      kpi(s.profitFactor === null ? '—' : num(s.profitFactor, 2), 'profit factor'),
+      kpi(usd(-s.maxDrawdown), 'drawdown máx.', 'neg'),
+      kpi(s.rachaPerdidas, 'SL seguidos (peor racha)'),
+      kpi(s.diasOperados, 'días operados'),
+    ].join('')
+    $('nota-bt').textContent = `${r.setups} disparos del setup; ${r.sinLlenar} órdenes sin llenar y ${r.saltadosDia} saltadas por la regla del día. SL ${num(r.puntos.sl, 2)} pts y TP ${num(r.puntos.tp, 2)} pts.${s.ambiguas ? ` ${s.ambiguas} operaciones con SL y TP en la misma vela (contadas como ${r.ajustes.ambiguo.toUpperCase()}).` : ''}${s.cierres ? ` ${s.cierres} cerradas al final de la sesión.` : ''}`
+    $('t-hora').innerHTML = s.porHora.length ? tabla(['Hora', 'Ops', 'Acierto', 'Resultado'], s.porHora.map(h => filaGrupo(h.hora, h))) : '<p class="nota">Sin operaciones.</p>'
+    $('t-dia').innerHTML = tabla(['', 'Ops', 'Acierto', 'Resultado'], [...s.porDiaSemana.map(d => filaGrupo(d.dia, d)), ...s.porLado.map(l => filaGrupo(l.lado === 'largo' ? 'Compras' : 'Ventas', l))])
+    $('t-vol').innerHTML = s.porVolatilidad.length ? tabla(['Rango previo', 'Ops', 'Acierto', 'Resultado'], s.porVolatilidad.map(v => filaGrupo(v.regimen, v))) : '<p class="nota">Hacen falta más días.</p>'
+    const ops = [...r.operaciones].reverse()
+    $('t-ops').innerHTML = tabla(['Entrada (España)', 'Lado', 'Nivel', 'Entrada', 'SL', 'TP', 'Salida', '', 'Resultado'],
+      ops.map((o, i) => `<tr class="clic" data-i="${i}" tabindex="0"><td>${horaEs(o.entradaT)}</td><td>${o.lado === 'largo' ? 'Compra' : 'Venta'}</td><td>${num(o.nivel, 2)}</td><td>${num(o.entrada, 2)}</td><td>${num(o.sl, 2)}</td><td>${num(o.tp, 2)}</td><td>${num(o.salida, 2)}</td><td><span class="chip ${o.motivo}">${o.motivo}${o.ambigua ? '?' : ''}</span></td><td class="${o.usd >= 0 ? 'pos' : 'neg'}">${usd(o.usd)}</td></tr>`))
+    $('t-ops').querySelectorAll('tr.clic').forEach(tr => {
+      const ver = () => { $('t-ops').querySelectorAll('tr').forEach(x => x.removeAttribute('aria-selected')); tr.setAttribute('aria-selected', 'true'); verOperacion(ops[Number(tr.dataset.i)]) }
+      tr.addEventListener('click', ver)
+      tr.addEventListener('keydown', e => { if (e.key === 'Enter') ver() })
+    })
+    requestAnimationFrame(() => pintarCurva(r))
+  }
+
+  function lienzo(c) {
+    const ratio = Math.min(2, window.devicePixelRatio || 1)
+    const w = c.clientWidth, h = c.clientHeight
+    c.width = w * ratio; c.height = h * ratio
+    const ctx = c.getContext('2d')
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
+    ctx.clearRect(0, 0, w, h)
+    return { ctx, w, h }
+  }
+  const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim()
+
+  function pintarCurva(r) {
+    const c = $('curva')
+    if (!c.clientWidth) return
+    const { ctx, w, h } = lienzo(c)
+    const pts = [{ usd: 0 }, ...r.stats.curva]
+    const min = Math.min(0, ...pts.map(p => p.usd)), max = Math.max(0, ...pts.map(p => p.usd))
+    const pad = 28
+    const x = i => pad + (w - pad - 10) * (pts.length > 1 ? i / (pts.length - 1) : 0)
+    const y = v => 10 + (h - 30) * (1 - (v - min) / Math.max(1, max - min))
+    ctx.strokeStyle = css('--linea'); ctx.lineWidth = 1
+    ctx.beginPath(); ctx.moveTo(pad, y(0)); ctx.lineTo(w - 10, y(0)); ctx.stroke()
+    ctx.fillStyle = css('--suave'); ctx.font = '11px IBM Plex Mono, monospace'
+    ctx.fillText(usd(max), 4, 14); ctx.fillText(usd(min), 4, h - 6)
+    ctx.strokeStyle = css('--cian'); ctx.lineWidth = 2
+    ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(x(i), y(p.usd)) : ctx.moveTo(x(i), y(p.usd))); ctx.stroke()
+  }
+
+  // ───────── Gráfico de velas (operación y replay) ─────────
+  function m15(base) {
+    const out = []
+    for (const v of base) {
+      const t = Math.floor(v.t / 900000) * 900000
+      const u = out[out.length - 1]
+      if (u && u.t === t) { u.h = Math.max(u.h, v.h); u.l = Math.min(u.l, v.l); u.c = v.c }
+      else out.push({ t, o: v.o, h: v.h, l: v.l, c: v.c })
+    }
+    return out
+  }
+  function velas(c, lista, lineas = [], marcas = []) {
+    const { ctx, w, h } = lienzo(c)
+    if (!lista.length) return
+    const derecha = 118
+    const ancho = Math.max(3, Math.min(12, (w - derecha - 10) / lista.length))
+    const visibles = lista.slice(-Math.floor((w - derecha - 10) / ancho))
+    const precios = [...visibles.flatMap(v => [v.h, v.l]), ...lineas.map(l => l.p)]
+    const min = Math.min(...precios), max = Math.max(...precios), r = Math.max(1, max - min)
+    const y = p => 12 + (h - 34) * (1 - (p - min) / r)
+    const x = i => 8 + i * ancho + ancho / 2
+    ctx.font = '10.5px IBM Plex Mono, monospace'
+    // Horas cada 2 h
+    ctx.fillStyle = css('--suave')
+    let ultimaX = -Infinity
+    visibles.forEach((v, i) => { if (v.t % 7200000 === 0 && x(i) - ultimaX > 44) { ctx.fillText(soloHora(v.t), x(i) - 14, h - 6); ultimaX = x(i) } })
+    for (const l of lineas) {
+      ctx.strokeStyle = l.color; ctx.setLineDash(l.guion ? [4, 4] : []); ctx.lineWidth = 1
+      ctx.beginPath(); ctx.moveTo(8, y(l.p)); ctx.lineTo(w - derecha, y(l.p)); ctx.stroke()
+      ctx.fillStyle = l.color; ctx.fillText(`${l.texto} ${num(l.p, 2)}`, w - derecha + 3, y(l.p) + 3)
+    }
+    ctx.setLineDash([])
+    const sube = css('--verde'), baja = css('--rojo')
+    visibles.forEach((v, i) => {
+      ctx.strokeStyle = ctx.fillStyle = v.c >= v.o ? sube : baja
+      ctx.beginPath(); ctx.moveTo(x(i), y(v.h)); ctx.lineTo(x(i), y(v.l)); ctx.stroke()
+      const top = y(Math.max(v.o, v.c)), alto = Math.max(1, Math.abs(y(v.o) - y(v.c)))
+      ctx.fillRect(x(i) - ancho * 0.35, top, ancho * 0.7, alto)
+    })
+    for (const m of marcas) {
+      // Por hora y no por posición: entre sesiones hay huecos sin velas.
+      const i = visibles.findIndex(v => v.t === m.t)
+      if (i < 0) continue
+      ctx.fillStyle = m.color
+      const yy = m.arriba ? y(visibles[i].h) - 10 : y(visibles[i].l) + 10
+      ctx.beginPath(); ctx.arc(x(i), yy, 4, 0, Math.PI * 2); ctx.fill()
+      if (m.texto) ctx.fillText(m.texto, x(i) + 6, yy + 3)
+    }
+  }
+
+  async function verOperacion(o) {
+    const c = $('grafico-op')
+    c.hidden = false
+    try {
+      const d = await pedir(`${API}dia?d=${o.dia}`)
+      const lista = m15(d.base).filter(v => v.t <= o.salidaT + 3 * 3600000)
+      velas(c, lista, [
+        { p: o.nivel, color: css('--laton'), texto: 'nivel', guion: true },
+        { p: o.entrada, color: css('--cian'), texto: 'entrada' },
+        { p: o.sl, color: css('--rojo'), texto: 'SL' },
+        { p: o.tp, color: css('--verde'), texto: 'TP' },
+      ], [
+        { t: o.setup, color: css('--laton'), arriba: o.lado === 'largo', texto: 'disparo' },
+        { t: Math.floor(o.entradaT / 900000) * 900000, color: css('--cian'), arriba: o.lado !== 'largo' },
+      ])
+      c.scrollIntoView({ block: 'nearest', behavior: 'smooth' })
+    } catch (e) { estado($('estado-bt'), e.message, 'error') }
+  }
+
+  // ───────── Ciclos ─────────
+  function pintarCiclos(r) {
+    const caja = (nombre, x, mejor) => {
+      const s = x.stats, cu = x.cuentas
+      return `<div class="tarjeta"${mejor ? ' style="border-color: var(--cian)"' : ''}><h2>Ciclo ${nombre}: arriesgo ${usd(x.slUsd)} · busco ${usd(x.tpUsd)}${mejor ? ' · <span style="color: var(--cian)">más ventaja</span>' : ''}</h2>
+        <div class="kpis">${[
+          kpi(`${num(cu.tasa)} %`, 'cuentas aprobadas'),
+          kpi(`${cu.aprobadas} / ${cu.quemadas}`, 'aprobadas / quemadas'),
+          kpi(cu.diasMedios === null ? '—' : num(cu.diasMedios), 'días por cuenta'),
+          kpi(cu.costePorAprobada === null ? '—' : usd(cu.costePorAprobada), 'coste por aprobada'),
+          kpi(`${num(s.acierto)} %`, 'acierto'),
+          kpi(usd(s.esperanza), 'por operación', s.esperanza >= 0 ? 'pos' : 'neg'),
+          kpi(s.rachaPerdidas, 'peor racha de SL'),
+          kpi(s.operaciones, 'operaciones'),
+        ].join('')}</div>${cu.enCurso ? '<p class="nota">La última cuenta quedó a medias al acabarse los datos.</p>' : ''}</div>`
+    }
+    const bMejor = r.b.cuentas.tasa > r.a.cuentas.tasa || (r.b.cuentas.tasa === r.a.cuentas.tasa && r.b.stats.esperanza > r.a.stats.esperanza)
+    $('res-ciclos').innerHTML = caja('A', r.a, !bMejor) + caja('B', r.b, bMejor)
+  }
+  $('comparar').addEventListener('click', async () => {
+    const el = $('estado-ciclos')
+    estado(el, 'Comparando…')
+    try {
+      const r = await post(API + 'ciclos', {
+        ajustes: leerAjustes(),
+        a: { slUsd: +$('a-sl').value, tpUsd: +$('a-tp').value },
+        b: { slUsd: +$('b-sl').value, tpUsd: +$('b-tp').value },
+        reglas: { objetivo: +$('r-obj').value, drawdown: +$('r-dd').value, perdidaDiaria: +$('r-pd').value, consistencia: +$('r-cons').value / 100, precio: +$('r-precio').value },
+      })
+      estado(el, '')
+      pintarCiclos(r)
+    } catch (e) { estado(el, e.message, 'error') }
+  })
+
+  // ───────── Replay ─────────
+  let diasReplay = null
+  const rp = { base: [], i: 0, dia: null, setups: [], pos: null, ops: [], puntos: null, ajustes: null, inicio: 0, timer: null }
+  async function prepararReplay() {
+    if (diasReplay) return
+    try {
+      diasReplay = await pedir(API + 'dias')
+      $('rp-dia').innerHTML = diasReplay.slice(1).reverse().map(d => `<option>${d}</option>`).join('')
+      if (!diasReplay.length) estado($('estado-rp'), 'Primero carga velas en la pestaña Datos.', 'error')
+    } catch (e) { estado($('estado-rp'), e.message, 'error') }
+  }
+  $('rp-azar').addEventListener('click', () => {
+    const op = $('rp-dia').options
+    if (op.length) $('rp-dia').selectedIndex = Math.floor(Math.random() * op.length)
+  })
+  const botonesRp = on => ['rp-1', 'rp-5', 'rp-15', 'rp-play', 'rp-compra', 'rp-venta', 'rp-fin'].forEach(id => { $(id).disabled = !on })
+
+  $('rp-empezar').addEventListener('click', async () => {
+    const dia = $('rp-dia').value
+    if (!dia) return
+    pararPlay()
+    try {
+      const [d, s] = await Promise.all([pedir(`${API}dia?d=${dia}`), post(API + 'setups', { dia, ajustes: leerAjustes() })])
+      Object.assign(rp, { base: d.base, dia, setups: s.setups, puntos: s.puntos, ajustes: s.ajustes, pos: null, ops: [] })
+      // Empieza a la hora de inicio de la sesión (Nueva York) de ese día.
+      const [hh, mm] = s.ajustes.sesionInicio.split(':').map(Number)
+      const ny = t => { const p = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(t)); const g = k => p.find(x => x.type === k).value; return { dia: `${g('year')}-${g('month')}-${g('day')}`, min: +g('hour') * 60 + +g('minute') } }
+      rp.i = Math.max(1, rp.base.findIndex(v => { const n = ny(v.t); return n.dia === dia && n.min >= hh * 60 + mm }))
+      rp.nyMin = ny
+      botonesRp(true)
+      estado($('estado-rp'), `SL ${num(s.puntos.sl, 2)} pts (${usd(s.ajustes.slUsd)}) y TP ${num(s.puntos.tp, 2)} pts (${usd(s.ajustes.tpUsd)}). Entra a mercado con Comprar o Vender.`)
+      pintarReplay()
+    } catch (e) { estado($('estado-rp'), e.message, 'error') }
+  })
+
+  function precioActual() { return rp.base[rp.i - 1]?.c }
+  function avanzar(n) {
+    for (let k = 0; k < n && rp.i < rp.base.length; k++) {
+      const v = rp.base[rp.i]
+      rp.i++
+      if (rp.pos) {
+        const p = rp.pos, largo = p.lado === 'largo'
+        const sl = largo ? v.l <= p.sl : v.h >= p.sl
+        const tp = largo ? v.h >= p.tp : v.l <= p.tp
+        if (sl || tp) cerrar(sl ? p.sl : p.tp, sl ? 'sl' : 'tp', v.t)
+      }
+    }
+    if (rp.i >= rp.base.length) { pararPlay(); if (rp.pos) cerrar(precioActual(), 'cierre', rp.base[rp.base.length - 1].t); estado($('estado-rp'), 'Fin del día. Pulsa Terminar sesión para guardarla.') }
+    pintarReplay()
+  }
+  function entrar(lado) {
+    if (rp.pos || !rp.puntos) return
+    const e = precioActual(), d = lado === 'largo' ? 1 : -1
+    const t = rp.base[rp.i - 1].t
+    // ¿Coincide con un setup del motor? Mismo lado y disparado en la última hora.
+    const coincide = rp.setups.some(s => s.lado === lado && s.cierre <= t + 60000 && t - s.cierre <= 4 * 900000)
+    rp.pos = { lado, entrada: e, sl: e - d * rp.puntos.sl, tp: e + d * rp.puntos.tp, t, coincide }
+    pintarReplay()
+  }
+  function cerrar(precio, motivo, t) {
+    const p = rp.pos, d = p.lado === 'largo' ? 1 : -1
+    const usdOp = Math.round((precio - p.entrada) * d * VALOR[rp.ajustes.instrumento] * rp.ajustes.contratos - rp.ajustes.comisionUsd)
+    rp.ops.push({ ...p, salida: precio, motivo, usd: usdOp, salidaT: t })
+    rp.pos = null
+    pintarOpsReplay()
+  }
+  function pintarOpsReplay() {
+    $('rp-ops').innerHTML = rp.ops.length ? tabla(['Entrada', 'Lado', 'Precio', 'Salida', '', 'Resultado', '¿Tu setup?'], rp.ops.map(o =>
+      `<tr><td>${soloHora(o.t)}</td><td>${o.lado === 'largo' ? 'Compra' : 'Venta'}</td><td>${num(o.entrada, 2)}</td><td>${num(o.salida, 2)}</td><td><span class="chip ${o.motivo}">${o.motivo}</span></td><td class="${o.usd >= 0 ? 'pos' : 'neg'}">${usd(o.usd)}</td><td>${o.coincide ? 'Sí' : 'No'}</td></tr>`)) : ''
+  }
+  function pintarReplay() {
+    const visto = rp.base.slice(0, rp.i)
+    const ahora = visto[visto.length - 1]
+    $('rp-reloj').textContent = ahora ? `${rp.dia} · ${soloHora(ahora.t)} España · ${num(ahora.c, 2)}` : '—'
+    const lineas = []
+    if (rp.pos) {
+      lineas.push({ p: rp.pos.entrada, color: css('--cian'), texto: 'entrada' }, { p: rp.pos.sl, color: css('--rojo'), texto: 'SL' }, { p: rp.pos.tp, color: css('--verde'), texto: 'TP' })
+      const flot = Math.round((ahora.c - rp.pos.entrada) * (rp.pos.lado === 'largo' ? 1 : -1) * VALOR[rp.ajustes.instrumento] * rp.ajustes.contratos)
+      $('rp-pos').innerHTML = `${rp.pos.lado === 'largo' ? 'Comprada' : 'Vendida'} en ${num(rp.pos.entrada, 2)} · <span class="${flot >= 0 ? 'pos' : 'neg'}">${usd(flot)}</span>`
+    } else {
+      const total = rp.ops.reduce((a, o) => a + o.usd, 0)
+      $('rp-pos').innerHTML = rp.ops.length ? `Sin posición · sesión <span class="${total >= 0 ? 'pos' : 'neg'}">${usd(total)}</span>` : 'Sin posición'
+    }
+    $('rp-compra').disabled = $('rp-venta').disabled = !!rp.pos || rp.i >= rp.base.length
+    const marcas = $('rp-setups').checked && ahora
+      ? rp.setups.filter(s => s.cierre <= ahora.t + 60000).map(s => ({ t: s.t, color: css('--laton'), arriba: s.lado === 'largo', texto: s.lado === 'largo' ? '▲' : '▼' }))
+      : []
+    for (const o of rp.ops) marcas.push({ t: Math.floor(o.t / 900000) * 900000, color: o.usd >= 0 ? css('--verde') : css('--rojo'), arriba: o.lado !== 'largo' })
+    velas($('rp-lienzo'), m15(visto), lineas, marcas)
+  }
+  $('rp-setups').addEventListener('change', pintarReplay)
+  $('rp-1').addEventListener('click', () => avanzar(1))
+  $('rp-5').addEventListener('click', () => avanzar(5))
+  $('rp-15').addEventListener('click', () => avanzar(15))
+  function pararPlay() { if (rp.timer) { clearInterval(rp.timer); rp.timer = null; $('rp-play').textContent = '▶ Reproducir' } }
+  $('rp-play').addEventListener('click', () => {
+    if (rp.timer) return pararPlay()
+    rp.timer = setInterval(() => avanzar(1), 350)
+    $('rp-play').textContent = '❚❚ Pausa'
+  })
+  $('rp-compra').addEventListener('click', () => entrar('largo'))
+  $('rp-venta').addEventListener('click', () => entrar('corto'))
+  $('rp-fin').addEventListener('click', async () => {
+    pararPlay()
+    if (rp.pos) cerrar(precioActual(), 'cierre', rp.base[rp.i - 1].t)
+    botonesRp(false)
+    if (!rp.ops.length) return estado($('estado-rp'), 'Sesión sin operaciones: no se guarda nada.')
+    try {
+      const r = await post(API + 'replay', { dia: rp.dia, ops: rp.ops.map(o => ({ lado: o.lado, usd: o.usd, motivo: o.motivo, coincide: o.coincide })) })
+      const de = rp.ops.filter(o => o.coincide).length
+      estado($('estado-rp'), `Guardada. Hoy ${de} de ${rp.ops.length} entradas eran tu setup. En total llevas ${r.sesiones} sesiones de replay.`, 'ok')
+    } catch (e) { estado($('estado-rp'), e.message, 'error') }
+  })
+  document.addEventListener('keydown', e => {
+    if ($('p-replay').hidden || /INPUT|SELECT/.test(document.activeElement?.tagName)) return
+    if (e.key === 'ArrowRight' && !$('rp-1').disabled) { e.preventDefault(); avanzar(e.shiftKey ? 15 : 1) }
+  })
+
+  // ───────── Atractor ─────────
+  async function cargarAtractor() {
+    try {
+      const ev = await pedir('atractor')
+      const poner = (id, xs, vacio) => { $(id).innerHTML = ''; for (const t of xs.length ? xs : [vacio]) { const li = document.createElement('li'); li.textContent = t; $(id).append(li) } }
+      poner('at-bien', ev.bien, 'Nada destacable todavía.')
+      poner('at-mal', ev.mal, 'Nada que corregir con los datos que hay.')
+      poner('at-atento', ev.atento, 'Nada más.')
+    } catch (e) { $('at-mal').innerHTML = `<li>${e.message}</li>` }
+  }
+  $('at-recargar').addEventListener('click', cargarAtractor)
+
+  addEventListener('resize', () => { if (ultimo && !$('p-backtest').hidden) pintarCurva(ultimo); if (!$('p-replay').hidden && rp.base.length) pintarReplay() })
+
+  // Arranque
+  cargarDatos()
+  pedir(API + 'resultado').then(r => { if (r) { ponerAjustes(r.ajustes); notaPuntos(); pintarResultado(r) } }).catch(() => {})
+  pedir(API + 'ciclos').then(r => { if (r) pintarCiclos(r) }).catch(() => {})
+  abrir(leerLocal('bt-pestana') || 'datos')
+})()
+</script>
+</body>
+</html>
